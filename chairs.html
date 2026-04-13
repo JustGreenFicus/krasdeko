@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дизайнерские стулья — Kras Deco</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="catalog-header">
+        <nav class="navbar">
+            <div class="logo">KRAS<br><span>DECO</span></div>
+            <div class="menu-toggle" id="mobile-menu">
+                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="tables.html">Столы</a></li>
+                <li><a href="chairs.html" style="opacity: 1; font-weight: bold;">Стулья</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+            </ul>
+        </nav>
+        <div class="page-title">
+            <h1>ДИЗАЙНЕРСКИЕ СТУЛЬЯ</h1>
+            <p>Комфорт, который вы заслуживаете</p>
+        </div>
+    </header>
+
+    <main class="catalog-section">
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="product-img"><img src="img/orion.jpg" alt="Орион"></div>
+                <div class="product-info"><h3>Орион</h3><p>Мягкая обивка и эргономика</p><span class="price">5 200 ₽</span><a href="#" class="btn-buy">ЗАКАЗАТЬ</a></div>
+            </div>
+            <div class="product-card">
+                <div class="product-img"><img src="img/valencia.jpg" alt="Валенсия"></div>
+                <div class="product-info"><h3>Валенсия</h3><p>Изысканный средиземноморский стиль</p><span class="price">6 100 ₽</span><a href="#" class="btn-buy">ЗАКАЗАТЬ</a></div>
+            </div>
+            <div class="product-card">
+                <div class="product-img"><img src="img/uyut.jpg" alt="Уют"></div>
+                <div class="product-info"><h3>Уют</h3><p>Ваше любимое место в доме</p><span class="price">4 500 ₽</span><a href="#" class="btn-buy">ЗАКАЗАТЬ</a></div>
+            </div>
+            <div class="product-card">
+                <div class="product-img"><img src="img/arti.jpg" alt="Арти"></div>
+                <div class="product-info"><h3>Арти</h3><p>Яркий акцент в современном стиле</p><span class="price">5 800 ₽</span><a href="#" class="btn-buy">ЗАКАЗАТЬ</a></div>
+            </div>
+            <div class="product-card">
+                <div class="product-img"><img src="img/scandi.jpg" alt="Сканди"></div>
+                <div class="product-info"><h3>Сканди</h3><p>Легендарный северный минимализм</p><span class="price">4 800 ₽</span><a href="#" class="btn-buy">ЗАКАЗАТЬ</a></div>
+            </div>
+            <div class="product-card">
+                <div class="product-img"><img src="img/saturn.jpg" alt="Сатурн"></div>
+                <div class="product-info"><h3>Сатурн</h3><p>Надежность и футуристичный дизайн</p><span class="price">6 500 ₽</span><a href="#" class="btn-buy">ЗАКАЗАТЬ</a></div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Оформить заказ</h2>
+            <form id="contactForm">
+                <input type="text" placeholder="Ваше имя" required>
+                <input type="tel" placeholder="Ваш телефон" required>
+                <button type="submit" class="btn-catalog">ОТПРАВИТЬ</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
