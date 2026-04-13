@@ -1,4 +1,4 @@
-/* Общие стили */
+/* --- 1. ОБЩИЕ СТИЛИ --- */
 * {
     margin: 0;
     padding: 0;
@@ -6,18 +6,17 @@
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Чтобы на мобильных не было горизонтальной прокрутки */
 html, body {
     overflow-x: hidden;
     width: 100%;
+    background-color: #fff;
 }
 
+/* --- 2. ГЛАВНЫЙ ЭКРАН (HERO) --- */
 .hero {
-    /* На мобильных 100vh иногда работает некорректно из-за панели браузера, 
-       min-height надежнее */
     min-height: 100vh;
     width: 100%;
-    background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), 
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
                 url('img/main-bg.jpg') no-repeat center center/cover;
     display: flex;
     flex-direction: column;
@@ -26,13 +25,15 @@ html, body {
     position: relative;
 }
 
-/* Навигация */
+/* --- 3. НАВИГАЦИЯ --- */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 30px 0;
     width: 100%;
+    position: relative;
+    z-index: 1500; /* Шапка всегда выше контента */
 }
 
 .logo {
@@ -43,9 +44,7 @@ html, body {
     text-transform: uppercase;
 }
 
-.logo span {
-    font-weight: 300;
-}
+.logo span { font-weight: 300; }
 
 .nav-links {
     list-style: none;
@@ -61,16 +60,42 @@ html, body {
     transition: 0.3s;
 }
 
-.nav-links a:hover {
-    opacity: 1;
+.nav-links a:hover { opacity: 1; }
+
+/* --- 4. БУРГЕР-МЕНЮ И АНИМАЦИЯ --- */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    z-index: 2000;
 }
 
-/* Главный текст */
+.bar {
+    width: 25px;
+    height: 3px;
+    background-color: white;
+    margin: 4px 0;
+    transition: 0.4s;
+    border-radius: 2px;
+}
+
+/* Анимация превращения в КРЕСТИК */
+.menu-toggle.open .bar:nth-child(1) {
+    transform: translateY(11px) rotate(45deg);
+}
+.menu-toggle.open .bar:nth-child(2) {
+    opacity: 0;
+}
+.menu-toggle.open .bar:nth-child(3) {
+    transform: translateY(-11px) rotate(-45deg);
+}
+
+/* --- 5. КОНТЕНТ --- */
 .hero-content {
     margin-top: auto;
     margin-bottom: auto;
     max-width: 600px;
-    z-index: 2; /* Чтобы текст всегда был поверх фона и кликабелен */
+    z-index: 1; /* Текст ниже выпадающего меню */
 }
 
 .hero-content h1 {
@@ -86,7 +111,6 @@ html, body {
     opacity: 0.9;
 }
 
-/* Кнопка — сделал её более округлой для удобства нажатия */
 .btn-catalog {
     display: inline-block;
     padding: 18px 35px;
@@ -94,8 +118,8 @@ html, body {
     color: #1a1a1a;
     text-decoration: none;
     font-weight: bold;
-    border-radius: 50px; /* Полностью скругленные края */
-    transition: transform 0.3s, background 0.3s;
+    border-radius: 50px;
+    transition: 0.3s;
 }
 
 .btn-catalog:hover {
@@ -103,215 +127,65 @@ html, body {
     background-color: #d4b375;
 }
 
-/* Информация о товаре */
-.product-tag {
-    position: absolute;
-    bottom: 10%;
-    right: 35%;
-    font-size: 0.85rem;
-    line-height: 1.5;
-}
-
-.product-name {
-    display: block;
-    opacity: 0.8;
-}
-
-.product-price {
-    display: block;
-    font-weight: bold;
-}
-
-/* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ */
+/* --- 6. МОБИЛЬНАЯ АДАПТАЦИЯ --- */
 @media (max-width: 768px) {
+    .menu-toggle { display: flex; }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: rgba(26, 26, 26, 0.98); /* Плотный фон, чтобы перекрыть текст */
+        padding-top: 120px;
+        text-align: center;
+        z-index: 1000;
+    }
+
+    .nav-links.active { display: flex; }
+
+    .nav-links li { margin: 20px 0; }
+
+    .nav-links a { font-size: 1.5rem; }
+
     .hero {
-        padding: 0 20px; /* Увеличиваем отступы по бокам */
-        justify-content: flex-start; /* На мобильных лучше контент сместить чуть выше */
-    }
-
-    .navbar {
-        padding: 20px 0;
-    }
-
-    /* На мобильных меню скрываем (или можно сделать его в ряд, если ссылок мало) */
-    .nav-links { 
-        display: none; 
+        padding: 0 20px;
+        justify-content: flex-start;
     }
 
     .hero-content {
-        margin-top: 15vh; /* Смещаем заголовок чуть ниже от логотипа */
-        max-width: 100%;
-        text-align: center; /* Центрируем текст для баланса на узком экране */
-    }
-
-    .hero-content h1 { 
-        font-size: 2.2rem; /* Уменьшаем шрифт, чтобы не вылезал за края */
-        line-height: 1.2;
-    }
-
-    .hero-content p {
-        font-size: 1rem;
-    }
-
-    .btn-catalog {
-        width: 100%; /* На телефоне кнопка на всю ширину удобнее для пальца */
+        margin-top: 20vh;
         text-align: center;
-        padding: 15px 0;
     }
 
-    /* Тег товара перемещаем вниз или скрываем, чтобы не мешал кнопке */
-    .product-tag {
-        position: relative;
-        right: auto;
-        bottom: auto;
-        margin-top: 40px;
-        text-align: center;
-        width: 100%;
-    }
-}
-/* Навигация для внутренних страниц (темный текст) */
-.dark-nav {
-    background: #fff;
-    padding: 20px 5%;
-    border-bottom: 1px solid #eee;
+    .hero-content h1 { font-size: 2.2rem; }
+
+    .product-tag { display: none; } /* Скрываем на мобильных, чтобы не мешал */
 }
 
-.dark-nav .logo, .dark-nav .nav-links a {
-    color: #1a1a1a;
-}
-
-/* Секция каталога */
-.catalog-section {
-    padding: 60px 5%;
-    background: #f9f9f9;
-}
-
-.section-title {
-    font-size: 2rem;
-    text-align: center;
-    margin-bottom: 40px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-/* Сетка товаров */
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* Карточка товара */
-.product-card {
-    background: #fff;
-    border-radius: 20px; /* Скругленные углы как в дизайне */
-    overflow: hidden;
-    transition: transform 0.3s;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-}
-
-.product-card:hover {
-    transform: translateY(-10px);
-}
-
-.product-img {
-    height: 300px;
-    background: #eee; /* Заглушка, пока нет фото */
-}
-
-.product-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.product-info {
-    padding: 20px;
-    text-align: center;
-}
-
-.product-info h3 {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-}
-
-.product-info .price {
-    color: #c5a059;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
-
-.btn-buy {
-    display: block;
-    padding: 12px;
-    border: 1px solid #c5a059;
-    color: #1a1a1a;
-    text-decoration: none;
-    border-radius: 50px;
-    transition: 0.3s;
-}
-
-.btn-buy:hover {
-    background: #c5a059;
-    color: #fff;
-}
-
-/* Футер */
-.footer {
-    padding: 40px 5%;
-    background: #1a1a1a;
-    color: #fff;
-    text-align: center;
-    font-size: 0.9rem;
-}
-
-.footer-content p {
-    margin-bottom: 10px;
-    opacity: 0.7;
-}
-
-/* Адаптивность для мобильных */
-@media (max-width: 768px) {
-    .product-grid {
-        grid-template-columns: 1fr; /* На телефоне карточки в одну колонку */
-    }
-}
-/* Стили для бургер-меню */
-.menu-toggle {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-}
-
-.bar {
-    width: 25px;
-    height: 3px;
-    background-color: white;
-    margin: 4px 0;
-    transition: 0.4s;
-}
-
-/* Стили модального окна */
+/* --- 7. МОДАЛЬНОЕ ОКНО --- */
 .modal {
     display: none; 
     position: fixed;
-    z-index: 1000;
+    z-index: 3000;
     left: 0; top: 0;
     width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.8);
+    background-color: rgba(0,0,0,0.85);
 }
 
 .modal-content {
     background-color: #fff;
-    margin: 10% auto;
+    margin: 15% auto;
     padding: 40px;
     width: 90%;
-    max-width: 500px;
-    border-radius: 20px;
+    max-width: 450px;
+    border-radius: 25px;
     text-align: center;
     position: relative;
+    color: #1a1a1a;
 }
 
 .close-modal {
@@ -327,19 +201,4 @@ html, body {
     margin: 10px 0;
     border: 1px solid #ddd;
     border-radius: 10px;
-}
-
-/* Адаптивность меню */
-@media (max-width: 768px) {
-    .menu-toggle { display: flex; }
-    .nav-links {
-        display: none; /* Скрываем по умолчанию */
-        flex-direction: column;
-        position: absolute;
-        top: 80px; left: 0;
-        width: 100%; background: #1a1a1a;
-        padding: 20px;
-        text-align: center;
-    }
-    .nav-links.active { display: flex; } /* Показываем при клике */
-}
+        } 
