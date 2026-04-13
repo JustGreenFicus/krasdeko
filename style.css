@@ -6,17 +6,24 @@
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-.hero {
-    height: 100vh;
+/* Чтобы на мобильных не было горизонтальной прокрутки */
+html, body {
+    overflow-x: hidden;
     width: 100%;
-    /* Путь указывает в папку img на файл main-bg.jpg */
+}
+
+.hero {
+    /* На мобильных 100vh иногда работает некорректно из-за панели браузера, 
+       min-height надежнее */
+    min-height: 100vh;
+    width: 100%;
     background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), 
                 url('img/main-bg.jpg') no-repeat center center/cover;
     display: flex;
     flex-direction: column;
     color: white;
     padding: 0 5%;
-    position: relative; /* Добавил, чтобы product-tag позиционировался корректно */
+    position: relative;
 }
 
 /* Навигация */
@@ -25,6 +32,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 30px 0;
+    width: 100%;
 }
 
 .logo {
@@ -32,6 +40,7 @@
     font-size: 1.5rem;
     line-height: 0.9;
     letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
 .logo span {
@@ -61,6 +70,7 @@
     margin-top: auto;
     margin-bottom: auto;
     max-width: 600px;
+    z-index: 2; /* Чтобы текст всегда был поверх фона и кликабелен */
 }
 
 .hero-content h1 {
@@ -76,15 +86,15 @@
     opacity: 0.9;
 }
 
-/* Кнопка */
+/* Кнопка — сделал её более округлой для удобства нажатия */
 .btn-catalog {
     display: inline-block;
     padding: 18px 35px;
-    background-color: #c5a059; /* Золотисто-бежевый как на картинке */
+    background-color: #c5a059;
     color: #1a1a1a;
     text-decoration: none;
     font-weight: bold;
-    border-radius: 12px;
+    border-radius: 50px; /* Полностью скругленные края */
     transition: transform 0.3s, background 0.3s;
 }
 
@@ -112,9 +122,50 @@
     font-weight: bold;
 }
 
-/* Адаптивность для мобильных */
+/* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ */
 @media (max-width: 768px) {
-    .hero-content h1 { font-size: 2.5rem; }
-    .nav-links { display: none; }
-    .product-tag { display: none; }
+    .hero {
+        padding: 0 20px; /* Увеличиваем отступы по бокам */
+        justify-content: flex-start; /* На мобильных лучше контент сместить чуть выше */
+    }
+
+    .navbar {
+        padding: 20px 0;
+    }
+
+    /* На мобильных меню скрываем (или можно сделать его в ряд, если ссылок мало) */
+    .nav-links { 
+        display: none; 
+    }
+
+    .hero-content {
+        margin-top: 15vh; /* Смещаем заголовок чуть ниже от логотипа */
+        max-width: 100%;
+        text-align: center; /* Центрируем текст для баланса на узком экране */
+    }
+
+    .hero-content h1 { 
+        font-size: 2.2rem; /* Уменьшаем шрифт, чтобы не вылезал за края */
+        line-height: 1.2;
+    }
+
+    .hero-content p {
+        font-size: 1rem;
+    }
+
+    .btn-catalog {
+        width: 100%; /* На телефоне кнопка на всю ширину удобнее для пальца */
+        text-align: center;
+        padding: 15px 0;
+    }
+
+    /* Тег товара перемещаем вниз или скрываем, чтобы не мешал кнопке */
+    .product-tag {
+        position: relative;
+        right: auto;
+        bottom: auto;
+        margin-top: 40px;
+        text-align: center;
+        width: 100%;
+    }
 }
