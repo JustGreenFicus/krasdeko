@@ -9,47 +9,53 @@
 </head>
 <body>
 
-    <header class="catalog-header">
-        <nav class="navbar">
-            <div class="logo">KRAS<br><span>DECO</span></div>
-            <div class="menu-toggle" id="mobile-menu">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html">Главная</a></li>
-                <li><a href="catalog.html">Каталог</a></li>
-                <li><a href="contacts.html" style="opacity: 1; font-weight: bold;">Контакты</a></li>
-            </ul>
-        </nav>
-        <div class="page-title">
-            <h1>КОНТАКТЫ</h1>
-            <p>Мы всегда на связи</p>
+    <nav class="navbar">
+        <div class="logo">KRAS<br><span>DECO</span></div>
+        <div class="menu-toggle" id="mobile-menu">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span>
         </div>
-    </header>
+        <ul class="nav-links">
+            <li><a href="index.html">Главная</a></li>
+            <li><a href="tables.html">Столы</a></li>
+            <li><a href="chairs.html">Стулья</a></li>
+            <li><a href="contacts.html" style="color: #c5a059;">Контакты</a></li>
+        </ul>
+    </nav>
 
-    <main class="contacts-container">
+    <main class="contacts-page">
         <div class="contact-card">
-            <h2>Наши соцсети</h2>
+            <h2>СВЯЗАТЬСЯ С НАМИ</h2>
+            <p class="contact-subtitle">Выберите удобный способ для связи или заказа</p>
+            
             <div class="social-icons">
-                <a href="https://m.vk.com/kakoy_to_kirill" target="_blank" class="social-link vk">
+                <a href="https://m.vk.com/kakoy_to_kirill" target="_blank" class="social-link">
                     <i class="fa-brands fa-vk"></i>
                 </a>
-                <a href="https://t.me/JustGreenFicus" target="_blank" class="social-link tg">
+                <a href="https://t.me/JustGreenFicus" target="_blank" class="social-link">
                     <i class="fa-brands fa-telegram"></i>
                 </a>
             </div>
-            <div class="contact-info-text">
-                <p><strong>Телефон:</strong> 8 (918) 008 15 46</p>
-                <p><strong>Email:</strong> stol-art.ru@mail.ru</p>
+
+            <div class="contact-details">
+                <p><strong>Наш номер</strong> 8 (918) 008 15 46</p>
+                <p><strong>Наша почта</strong> stol-art.ru@mail.ru</p>
             </div>
+
+            <button class="btn-catalog btn-order" style="margin-top: 30px;">ЗАКАЗАТЬ ЗВОНОК</button>
         </div>
     </main>
 
-    <footer class="footer">
-        <p>© 2026 Kras Deco</p>
-    </footer>
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Ждём ваш вопрос</h2>
+            <form id="contactForm">
+                <input type="text" placeholder="Ваше имя" required>
+                <input type="tel" placeholder="Ваш телефон" required>
+                <button type="submit" class="btn-catalog">ОТПРАВИТЬ</button>
+            </form>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
