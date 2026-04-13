@@ -1,204 +1,89 @@
-/* --- 1. ОБЩИЕ СТИЛИ --- */
+/* 1. БАЗОВЫЕ СТИЛИ */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, sans-serif;
 }
+html, body { overflow-x: hidden; width: 100%; }
 
-html, body {
-    overflow-x: hidden;
-    width: 100%;
-    background-color: #fff;
+/* 2. ШАПКА И НАВИГАЦИЯ */
+.hero, .catalog-header {
+    width: 100%; position: relative; color: white;
 }
-
-/* --- 2. ГЛАВНЫЙ ЭКРАН (HERO) --- */
 .hero {
     min-height: 100vh;
-    width: 100%;
-    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
-                url('img/main-bg.jpg') no-repeat center center/cover;
-    display: flex;
-    flex-direction: column;
-    color: white;
-    padding: 0 5%;
-    position: relative;
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('img/main-bg.jpg') no-repeat center center/cover;
+    display: flex; flex-direction: column; padding: 0 5%;
 }
+.catalog-header { background: #1a1a1a; padding-bottom: 40px; }
 
-/* --- 3. НАВИГАЦИЯ --- */
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 30px 0;
-    width: 100%;
-    position: relative;
-    z-index: 1500; /* Шапка всегда выше контента */
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 30px 5%; width: 100%; position: relative; z-index: 1500;
 }
-
-.logo {
-    font-weight: bold;
-    font-size: 1.5rem;
-    line-height: 0.9;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
-
+.logo { font-weight: bold; font-size: 1.5rem; line-height: 0.9; letter-spacing: 2px; text-transform: uppercase; }
 .logo span { font-weight: 300; }
 
-.nav-links {
-    list-style: none;
-    display: flex;
-    gap: 30px;
-}
-
-.nav-links a {
-    text-decoration: none;
-    color: white;
-    font-size: 0.9rem;
-    opacity: 0.8;
-    transition: 0.3s;
-}
-
+.nav-links { list-style: none; display: flex; gap: 30px; }
+.nav-links a { text-decoration: none; color: white; font-size: 0.9rem; opacity: 0.8; transition: 0.3s; }
 .nav-links a:hover { opacity: 1; }
 
-/* --- 4. БУРГЕР-МЕНЮ И АНИМАЦИЯ --- */
-.menu-toggle {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-    z-index: 2000;
-}
+/* 3. БУРГЕР-МЕНЮ */
+.menu-toggle { display: none; flex-direction: column; cursor: pointer; z-index: 2000; }
+.bar { width: 25px; height: 3px; background: white; margin: 4px 0; transition: 0.4s; border-radius: 2px; }
 
-.bar {
-    width: 25px;
-    height: 3px;
-    background-color: white;
-    margin: 4px 0;
-    transition: 0.4s;
-    border-radius: 2px;
-}
+.menu-toggle.open .bar:nth-child(1) { transform: translateY(11px) rotate(45deg); }
+.menu-toggle.open .bar:nth-child(2) { opacity: 0; }
+.menu-toggle.open .bar:nth-child(3) { transform: translateY(-11px) rotate(-45deg); }
 
-/* Анимация превращения в КРЕСТИК */
-.menu-toggle.open .bar:nth-child(1) {
-    transform: translateY(11px) rotate(45deg);
-}
-.menu-toggle.open .bar:nth-child(2) {
-    opacity: 0;
-}
-.menu-toggle.open .bar:nth-child(3) {
-    transform: translateY(-11px) rotate(-45deg);
-}
-
-/* --- 5. КОНТЕНТ --- */
-.hero-content {
-    margin-top: auto;
-    margin-bottom: auto;
-    max-width: 600px;
-    z-index: 1; /* Текст ниже выпадающего меню */
-}
-
-.hero-content h1 {
-    font-size: 4rem;
-    line-height: 1.1;
-    margin-bottom: 20px;
-    font-weight: 700;
-}
-
-.hero-content p {
-    font-size: 1.2rem;
-    margin-bottom: 40px;
-    opacity: 0.9;
-}
+/* 4. ГЛАВНЫЙ КОНТЕНТ */
+.hero-content { margin: auto 0; max-width: 600px; z-index: 1; }
+.hero-content h1 { font-size: 4rem; line-height: 1.1; margin-bottom: 20px; }
+.hero-content p { font-size: 1.2rem; margin-bottom: 40px; }
 
 .btn-catalog {
-    display: inline-block;
-    padding: 18px 35px;
-    background-color: #c5a059;
-    color: #1a1a1a;
-    text-decoration: none;
-    font-weight: bold;
-    border-radius: 50px;
-    transition: 0.3s;
+    display: inline-block; padding: 18px 35px; background: #c5a059;
+    color: #1a1a1a; text-decoration: none; font-weight: bold;
+    border-radius: 50px; transition: 0.3s; border: none; cursor: pointer;
 }
+.btn-catalog:hover { transform: translateY(-3px); background: #d4b375; }
 
-.btn-catalog:hover {
-    transform: translateY(-3px);
-    background-color: #d4b375;
+/* 5. КОНТАКТЫ И ИКОНКИ */
+.contacts-container { padding: 80px 5%; display: flex; justify-content: center; background: #fdfdfd; }
+.contact-card {
+    background: white; padding: 50px; border-radius: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.05); text-align: center; width: 100%; max-width: 500px;
 }
+.social-icons { display: flex; justify-content: center; gap: 30px; margin: 30px 0; }
+.social-link {
+    width: 70px; height: 70px; background: #f4f4f4; color: #1a1a1a;
+    font-size: 2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    transition: 0.3s; text-decoration: none;
+}
+.social-link.vk:hover { background: #0077ff; color: white; transform: translateY(-5px); }
+.social-link.tg:hover { background: #229ED9; color: white; transform: translateY(-5px); }
 
-/* --- 6. МОБИЛЬНАЯ АДАПТАЦИЯ --- */
+/* 6. МОДАЛЬНОЕ ОКНО */
+.modal {
+    display: none; position: fixed; z-index: 3000; left: 0; top: 0;
+    width: 100%; height: 100%; background: rgba(0,0,0,0.85);
+}
+.modal-content {
+    background: white; margin: 10vh auto; padding: 40px; width: 90%;
+    max-width: 450px; border-radius: 25px; text-align: center; position: relative;
+}
+.close-modal { position: absolute; right: 20px; top: 10px; font-size: 30px; cursor: pointer; }
+#contactForm input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; }
+
+/* 7. АДАПТИВНОСТЬ */
 @media (max-width: 768px) {
     .menu-toggle { display: flex; }
-
     .nav-links {
-        display: none;
-        flex-direction: column;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        background: rgba(26, 26, 26, 0.98); /* Плотный фон, чтобы перекрыть текст */
-        padding-top: 120px;
-        text-align: center;
-        z-index: 1000;
+        display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
+        background: rgba(26,26,26,0.98); flex-direction: column; padding-top: 100px; z-index: 1000;
     }
-
     .nav-links.active { display: flex; }
-
-    .nav-links li { margin: 20px 0; }
-
-    .nav-links a { font-size: 1.5rem; }
-
-    .hero {
-        padding: 0 20px;
-        justify-content: flex-start;
-    }
-
-    .hero-content {
-        margin-top: 20vh;
-        text-align: center;
-    }
-
     .hero-content h1 { font-size: 2.2rem; }
-
-    .product-tag { display: none; } /* Скрываем на мобильных, чтобы не мешал */
+    .hero-content { text-align: center; margin-top: 20vh; }
+    .product-tag { display: none; }
 }
-
-/* --- 7. МОДАЛЬНОЕ ОКНО --- */
-.modal {
-    display: none; 
-    position: fixed;
-    z-index: 3000;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.85);
-}
-
-.modal-content {
-    background-color: #fff;
-    margin: 15% auto;
-    padding: 40px;
-    width: 90%;
-    max-width: 450px;
-    border-radius: 25px;
-    text-align: center;
-    position: relative;
-    color: #1a1a1a;
-}
-
-.close-modal {
-    position: absolute;
-    right: 20px; top: 10px;
-    font-size: 30px;
-    cursor: pointer;
-}
-
-#contactForm input {
-    width: 100%;
-    padding: 15px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-        } 
+.footer { padding: 30px; background: #1a1a1a; color: white; text-align: center; opacity: 0.8; }
