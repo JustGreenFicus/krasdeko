@@ -30,3 +30,20 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     alert('Спасибо за заказ! Мы свяжемся с вами по номеру ' + this.querySelector('input[type="tel"]').value);
     modal.style.display = "none";
 });
+const menu = document.querySelector('#mobile-menu');
+const navLinks = document.querySelector('.nav-links');
+
+menu.addEventListener('click', () => {
+    // Включаем/выключаем анимацию крестика
+    menu.classList.toggle('open');
+    // Показываем/скрываем само меню
+    navLinks.classList.toggle('active');
+});
+
+// Закрываем меню при клике на любую ссылку внутри
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+        menu.classList.remove('open');
+        navLinks.classList.remove('active');
+    });
+});
