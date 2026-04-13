@@ -1,101 +1,72 @@
-/* --- 1. БАЗОВЫЕ СТИЛИ --- */
-* {
-    margin: 0; padding: 0; box-sizing: border-box;
-    font-family: 'Segoe UI', Roboto, sans-serif;
-}
-html, body { overflow-x: hidden; width: 100%; height: 100%; background: #fff; }
+/* ОБЩИЕ */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', Arial, sans-serif; }
+body { background: #fff; color: #333; }
 
-/* --- 2. НАВИГАЦИЯ --- */
+/* НАВИГАЦИЯ */
 .navbar {
     display: flex; justify-content: space-between; align-items: center;
     padding: 30px 5%; width: 100%; position: absolute; top: 0; z-index: 2000;
 }
-.logo { font-weight: bold; font-size: 1.5rem; color: white; text-transform: uppercase; letter-spacing: 2px; line-height: 0.9; }
+.logo { color: white; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
 .logo span { font-weight: 300; }
-.nav-links { list-style: none; display: flex; gap: 30px; }
-.nav-links a { text-decoration: none; color: white; font-size: 0.9rem; opacity: 0.8; transition: 0.3s; }
-.nav-links a:hover { opacity: 1; color: #c5a059; }
+.nav-links { display: flex; list-style: none; gap: 30px; }
+.nav-links a { color: white; text-decoration: none; font-size: 0.9rem; text-transform: uppercase; }
 
 /* БУРГЕР */
 .menu-toggle { display: none; flex-direction: column; cursor: pointer; z-index: 2100; }
-.bar { width: 28px; height: 3px; background: white; margin: 4px 0; transition: 0.4s; }
+.bar { width: 25px; height: 3px; background: white; margin: 4px 0; transition: 0.4s; }
 .menu-toggle.open .bar:nth-child(1) { transform: translateY(11px) rotate(45deg); }
 .menu-toggle.open .bar:nth-child(2) { opacity: 0; }
 .menu-toggle.open .bar:nth-child(3) { transform: translateY(-11px) rotate(-45deg); }
 
-/* --- 3. ГЛАВНАЯ СТРАНИЦА (ИСПРАВЛЕНО ЦЕНТРИРОВАНИЕ) --- */
+/* ГЛАВНАЯ (ИСПРАВЛЕННОЕ ЦЕНТРИРОВАНИЕ) */
 .hero {
     height: 100vh; width: 100%;
     background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('img/main-bg.jpg') center/cover;
-    display: flex; 
-    justify-content: center; /* Центрирование по горизонтали */
-    align-items: center;     /* Центрирование по вертикали */
-    text-align: center;      /* Текст по центру */
-    padding: 0 20px;
+    display: flex; flex-direction: column;
+    justify-content: center; /* Центр по вертикали */
+    align-items: center;     /* Центр по горизонтали */
+    text-align: center; color: white;
 }
-.hero-content { max-width: 800px; }
-.hero-content h1 { font-size: 4rem; color: white; margin-bottom: 20px; letter-spacing: 3px; }
-.hero-content p { font-size: 1.2rem; color: white; margin-bottom: 40px; opacity: 0.9; }
-
-.btn-catalog {
-    display: inline-block; padding: 18px 45px; background: #c5a059;
-    color: #111; text-decoration: none; font-weight: bold;
-    border-radius: 50px; transition: 0.4s; border: none; cursor: pointer;
+.hero-content h1 { font-size: 3.5rem; margin-bottom: 20px; line-height: 1.2; }
+.btn-catalog-main { 
+    display: inline-block; padding: 18px 40px; background: #c5a059; 
+    color: #000; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 20px;
 }
-.btn-catalog:hover { transform: scale(1.05); background: #d4b375; box-shadow: 0 10px 25px rgba(197,160,89,0.4); }
 
-/* --- 4. СТРАНИЦА КОНТАКТОВ (НОВЫЙ ДИЗАЙН) --- */
-.contacts-page {
-    min-height: 100vh;
-    background: #1a1a1a url('img/main-bg.jpg') no-repeat center/cover;
-    background-blend-mode: overlay;
-    display: flex; justify-content: center; align-items: center;
-    padding: 100px 20px 40px;
-}
-.contact-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(15px); /* Эффект размытия стекла */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 60px 40px;
-    border-radius: 40px;
-    text-align: center;
-    width: 100%; max-width: 600px;
-    color: white;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-}
-.contact-card h2 { font-size: 2.5rem; margin-bottom: 10px; letter-spacing: 2px; }
-.contact-subtitle { opacity: 0.6; margin-bottom: 40px; font-weight: 300; }
+/* МИНИМАЛИСТИЧНЫЙ БЛОК КОНТАКТОВ (ПО СКРИНШОТУ) */
+.footer-minimal { background: #fff; padding: 80px 20px; text-align: center; border-top: 1px solid #eee; }
+.customer-service { margin-bottom: 50px; }
+.customer-service p { font-size: 16px; margin: 5px 0; font-weight: 300; }
+.customer-service .strong { font-weight: 700; font-size: 20px; }
 
-.social-icons { display: flex; justify-content: center; gap: 25px; margin-bottom: 50px; }
-.social-link {
-    width: 80px; height: 80px; background: rgba(255,255,255,0.1);
-    color: white; font-size: 2.5rem; border-radius: 20px; /* Квадратные со скруглением */
-    display: flex; align-items: center; justify-content: center;
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    text-decoration: none; border: 1px solid rgba(255,255,255,0.1);
-}
-.social-link:hover { transform: translateY(-10px); background: #c5a059; color: #111; border-color: #c5a059; }
+.social-minimal { display: flex; justify-content: center; gap: 30px; margin-bottom: 50px; }
+.social-minimal a { color: #000; font-size: 28px; text-decoration: none; transition: 0.3s; }
+.social-minimal a:hover { color: #c5a059; }
 
-.contact-details p { font-size: 1.2rem; margin: 15px 0; opacity: 0.9; }
-.contact-details strong { color: #c5a059; display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+.newsletter-minimal h2 { font-size: 24px; letter-spacing: 2px; margin-bottom: 15px; }
+.newsletter-minimal p { font-weight: 300; margin-bottom: 30px; }
 
-/* --- 5. МОБИЛЬНОЕ МЕНЮ --- */
+.subscribe-form { display: inline-flex; border: 1px solid #000; width: 100%; max-width: 500px; }
+.subscribe-form input { flex: 1; border: none; padding: 15px; outline: none; }
+.subscribe-form button { background: none; border: none; border-left: 1px solid #000; padding: 0 25px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+
+/* МОБИЛЬНОЕ МЕНЮ */
 @media (max-width: 768px) {
     .menu-toggle { display: flex; }
     .nav-links {
-        display: none; position: fixed; top: 0; left: 0; 
-        width: 100%; height: 100vh; background: #111; 
-        flex-direction: column; justify-content: center; align-items: center;
-        z-index: 1000;
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+        background: #111; flex-direction: column; justify-content: center; align-items: center; z-index: 1000;
     }
     .nav-links.active { display: flex; }
-    .hero-content h1 { font-size: 2.5rem; }
-    .contact-card { padding: 40px 20px; }
-    .social-link { width: 65px; height: 65px; font-size: 2rem; }
+    .nav-links li { margin: 20px 0; }
+    .nav-links a { font-size: 1.5rem; }
+    .hero-content h1 { font-size: 2.2rem; }
+    .subscribe-form { flex-direction: column; border: none; }
+    .subscribe-form input, .subscribe-form button { border: 1px solid #000; width: 100%; height: 50px; margin-bottom: 10px; }
 }
 
 /* МОДАЛКА */
-.modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
-.modal-content { background: white; margin: 10vh auto; padding: 40px; width: 90%; max-width: 450px; border-radius: 30px; text-align: center; position: relative; }
-.close-modal { position: absolute; right: 25px; top: 15px; font-size: 35px; cursor: pointer; color: #111; }
-#contactForm input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #eee; border-radius: 15px; background: #f9f9f9; }
+.modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
+.modal-content { background: #fff; margin: 15% auto; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; position: relative; }
+.close-modal { position: absolute; right: 20px; top: 10px; font-size: 30px; cursor: pointer; }
