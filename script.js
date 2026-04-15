@@ -49,3 +49,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 });
+
+// Открытие / Закрытие модалки
+const modal = document.getElementById('authModal');
+const openBtn = document.getElementById('openAuthBtn');
+const closeBtn = document.getElementById('closeAuthBtn');
+
+openBtn.onclick = (e) => {
+    e.preventDefault();
+    modal.style.display = 'flex';
+}
+
+closeBtn.onclick = () => modal.style.display = 'none';
+
+window.onclick = (e) => {
+    if (e.target == modal) modal.style.display = 'none';
+}
+
+// Переключение SIGN IN / SIGN UP
+function switchForm(type, element) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+
+    element.classList.add('active');
+    document.getElementById(type + '-form').classList.add('active');
+
+    // Движение линии
+    const underline = document.querySelector('.underline');
+    underline.style.width = element.offsetWidth + 'px';
+    underline.style.left = element.offsetLeft + 'px';
+        }
