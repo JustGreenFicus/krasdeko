@@ -7,9 +7,9 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body class="contacts-page-body">
 
-    <nav class="navbar">
+    <nav class="navbar dark-nav">
         <div class="logo">KRAS<br><span>DECO</span></div>
         <div class="menu-toggle" id="mobile-menu">
             <span class="bar"></span><span class="bar"></span><span class="bar"></span>
@@ -22,27 +22,55 @@
         </ul>
     </nav>
 
-    <main class="contacts-page">
-        <div class="contact-card">
-            <h2>СВЯЗАТЬСЯ С НАМИ</h2>
-            <p class="contact-subtitle">Выберите удобный способ для связи или заказа</p>
-            
-            <div class="social-icons">
-                <a href="https://m.vk.com/kakoy_to_kirill" target="_blank" class="social-link">
-                    <i class="fa-brands fa-vk"></i>
-                </a>
-                <a href="https://t.me/JustGreenFicus" target="_blank" class="social-link">
-                    <i class="fa-brands fa-telegram"></i>
-                </a>
+    <main class="contacts-container">
+        <div class="breadcrumb">Главная > <span>Контакты</span></div>
+        <h1 class="page-title">Контакты</h1>
+
+        <div class="contacts-grid">
+            <div class="contact-item">
+                <div class="contact-icon"><i class="fa-solid fa-phone"></i></div>
+                <div class="contact-text">
+                    <p class="label">Многоканальный телефон</p>
+                    <p class="value">+7 (918) 008-15-46</p>
+                </div>
             </div>
 
-            <div class="contact-details">
-                <p><strong>Наш номер</strong> 8 (918) 008 15 46</p>
-                <p><strong>Наша почта</strong> stol-art.ru@mail.ru</p>
+            <div class="contact-item">
+                <div class="contact-icon"><i class="fa-solid fa-user-tie"></i></div>
+                <div class="contact-text">
+                    <p class="label">Режим работы операторов</p>
+                    <p class="value"><strong>Пн-Пт 08:00 до 22:00</strong> по Москве</p>
+                    <p class="value"><strong>Сб-Вс 09:00 до 22:00</strong> по Москве</p>
+                </div>
             </div>
 
-            <button class="btn-catalog btn-order" style="margin-top: 30px;">ЗАКАЗАТЬ ЗВОНОК</button>
+            <div class="contact-item">
+                <div class="contact-icon"><i class="fa-solid fa-envelope"></i></div>
+                <div class="contact-text">
+                    <p class="label">Электронная почта</p>
+                    <p class="value"><a href="mailto:stol-art.ru@mail.ru" class="email-link">stol-art.ru@mail.ru</a> <span class="small-note">(почта для заказов)</span></p>
+                </div>
+            </div>
+
+            <div class="contact-item">
+                <div class="contact-icon"><i class="fa-solid fa-truck"></i></div>
+                <div class="contact-text">
+                    <p class="label">Режим работы службы доставки</p>
+                    <p class="value">Уточняйте у выбранного сервиса доставки</p>
+                </div>
+            </div>
         </div>
+
+        <div class="legal-info">
+            <div class="contact-icon"><i class="fa-solid fa-paw"></i></div>
+            <div class="contact-text">
+                <p class="label">Юридическая информация</p>
+                <p><strong>ООО "КРАС ДЕКО"</strong> ОГРН: 1157746510690</p>
+                <p>Юр. адрес: 350000, г. Краснодар, ул. Тайнинская, д. 26, пом. 1, ком. 1</p>
+            </div>
+        </div>
+
+        <button class="btn-catalog btn-order" style="margin-top: 50px;">ЗАКАЗАТЬ ЗВОНОК</button>
     </main>
 
     <div class="modal" id="orderModal">
@@ -52,7 +80,7 @@
             <form id="contactForm">
                 <input type="text" placeholder="Ваше имя" required>
                 <input type="tel" placeholder="Ваш телефон" required>
-                <button type="submit" class="btn-catalog">ОТПРАВИТЬ</button>
+                <button type="submit" class="btn-catalog-main" style="width:100%">ОТПРАВИТЬ</button>
             </form>
         </div>
     </div>
