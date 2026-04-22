@@ -1,13 +1,47 @@
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- 1. ПРОВЕРКА АВТОРИЗАЦИИ (НОВОЕ) ---
+    // --- 1. ЭЛЕМЕНТЫ УПРАВЛЕНИЯ ---
+    const menu = document.querySelector('#mobile-menu');
+    const navLinks = document.querySelector('.nav-links');
+    const authModal = document.getElementById('authModal');
+    const openAuthBtn = document.getElementById('openAuthBtn');
+    const closeAuthBtn = document.getElementById('closeAuthBtn');
+    const loginForm = document.getElementById('login-form');
+
+    // --- 2. ПРОВЕРКА АВТОРИЗАЦИИ ПРИ ЗАГРУЗКЕ ---
     const savedUser = localStorage.getItem('userAccount');
     if (savedUser) {
         updateNavWithUser(savedUser);
     }
 
+    // --- 3. ФУНКЦИЯ УВЕДОМЛЕНИЯ В УГЛУ (СНЭКБАР) ---
+    function showNotification(message) {
+        // Создаем контейнер, если его нет
+        let container = document.querySelector('.notification-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'notification-container';
+            document.body.appendChild(container);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = 'custom-toast';
+        toast.innerHTML = <span>${message}</span>;
+        container.appendChild(toast);
+        
+        // Анимация появления
+        setTimeout(() => toast.classList.add('show'), 100);
+
+        // Удаление через 4 секунды
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    }
+
+    // --- 4. ОБНОВЛЕНИЕ МЕНЮ ПРИ ВХОДЕ ---
     function updateNavWithUser(username) {
-        const authSection = document.getElementById('auth-section') || document.querySelector('#openAuthBtn')?.parentElement;
+        const authSection = document.getElementById('auth-section');
         if (authSection) {
             authSection.innerHTML = 
                 <div class="user-profile-nav">
@@ -18,15 +52,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Глобальная функция выхода
     window.logoutUser = () => {
         localStorage.removeItem('userAccount');
         location.reload();
     };
 
-    // --- 2. МОБИЛЬНОЕ МЕНЮ ---
-    const menu = document.querySelector('#mobile-menu');
-    const navLinks = document.querySelector('.nav-links');
+    // --- 5. ЛОГИКА ОТКРЫТИЯ ОКНА "ВОЙТИ" ---
+    if (openAuthBtn) {
+        openAuthBtn.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
 
+            // Открываем только если не залогинены
+            if (!localStorage.getItem('userAccount')) {
+                authModal.classList.add('active');
+                authModal.style.display = 'flex'; // Дублируем для надежности
+                document.body.style.overflow = 'hidden'; 
+                
+                // Закрываем мобильное меню при открытии модалки
+                if (menu) {
+                    menu.classList.remove('open');
+                    navLinks.classList.remove('active');
+                }
+            }
+        };
+    }
+
+    // --- 6. МОБИЛЬНОЕ МЕНЮ (БУРГЕР) ---
     if (menu && navLinks) {
         menu.onclick = (e) => {
             e.stopPropagation();
@@ -34,75 +87,41 @@ document.addEventListener('DOMContentLoaded', () => {
             navLinks.classList.toggle('active');
             document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : 'auto';
         };
-
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.onclick = () => {
-                menu.classList.remove('open');
-                navLinks.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            };
-        });
     }
 
-    // --- 3. ФУНКЦИЯ ДЛЯ ОТКРЫТИЯ МОДАЛОК ---
-    function openModal(modalId, displayType = 'block') {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.style.display = displayType;
-            document.body.style.overflow = 'hidden';
-            if (menu) {
-                menu.classList.remove('open');
-                navLinks.classList.remove('active');
+    // --- 7. ЗАКРЫТИЕ МОДАЛОК (КРЕСТИК И ФОН) ---
+    window.addEventListener('click', (event) => {
+        if (event.target === authModal  event.target.classList.contains('close-modal')  event.target.closest('.close-modal')) {
+            if (authModal) {
+                authModal.classList.remove('active');
+                authModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
             }
         }
-    }
-
-    const orderBtns = document.querySelectorAll('.btn-order, .btn-buy');
-    orderBtns.forEach(btn => {
-        btn.onclick = (e) => {
-            e.preventDefault();
-            openModal('orderModal', 'block');
-        };
     });
 
-    const openAuthBtn = document.getElementById('openAuthBtn');
-    if (openAuthBtn) {
-        openAuthBtn.onclick = (e) => {
-            e.preventDefault();
-            openModal('authModal', 'flex');
-        };
-    }
-
-    // --- 4. ЗАКРЫТИЕ МОДАЛОК ---
-    window.addEventListener('click', (event) => {
-        const orderModal = document.getElementById('orderModal');
-        const authModal = document.getElementById('authModal');
-
-        if (event.target === orderModal || event.target === authModal) {
-            if (orderModal) orderModal.style.display = 'none';
-            if (authModal) authModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        if (event.target.classList.contains('close-modal') || event.target.closest('.close-modal')) {
-            if (orderModal) orderModal.style.display = 'none';
-            if (authModal) authModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-    });
-
-    // --- 5. ОБРАБОТКА ВХОДА (НОВОЕ) ---
-    const loginForm = document.getElementById('login-form');
+    // --- 8. ОБРАБОТКА ФОРМЫ ВХОДА (ОБЩЕНИЕ С БАЗОЙ) ---
     if (loginForm) {
-        loginForm.onsubmit = (e) => {
+
+loginForm.onsubmit = async (e) => {
             e.preventDefault();
             const username = loginForm.querySelector('input[type="text"]').value;
+            
+            // Здесь логика твоего fetch запроса к Render/MongoDB
+            // Для теста просто сохраняем и показываем уведомление:
             localStorage.setItem('userAccount', username);
-            location.reload(); 
+            
+            showNotification(С возвращением, ${username}!);
+            
+            // Небольшая задержка перед обновлением, чтобы увидеть уведомление
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
         };
     }
 });
 
+// --- 9. ПЕРЕКЛЮЧЕНИЕ ТАБОВ (SIGN IN / SIGN UP) ---
 function switchForm(type, element) {
     const underline = document.querySelector('.underline');
     const targetForm = document.getElementById(type + '-form');
@@ -111,7 +130,7 @@ function switchForm(type, element) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
 
-element.classList.add('active');
+    element.classList.add('active');
     targetForm.classList.add('active');
 
     if (underline) {
