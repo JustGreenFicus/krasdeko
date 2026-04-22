@@ -3,24 +3,23 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const bcrypt = require('bcryptjs');
-const cors = require('cors'); // Добавил корс для стабильности
+const cors = require('cors');
 
 const app = express();
 
-// Middlewares
+// Настройки
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '/')));
 
-// Ссылка на MongoDB
+// Подключение к базе данных
 const mongoURI = 'mongodb+srv://JustGreenFicus:OvEr88888888@krasdecobase.axx0rgf.mongodb.net/krasdeco?retryWrites=true&w=majority&appName=KrasDecoBase';
 
-// Подключение к MongoDB Atlas
 mongoose.connect(mongoURI)
     .then(() => console.log('✅ Успешное подключение к MongoDB Atlas'))
     .catch(err => console.error('❌ Ошибка подключения к базе:', err));
 
-// Схема данных пользователя
+// Модель пользователя
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true },
@@ -29,7 +28,9 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// API: Регистрация
+// --- API МАРШРУТЫ ---
+
+// Регистрация
 app.post('/api/signup', async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -46,7 +47,7 @@ app.post('/api/signup', async (req, res) => {
     }
 });
 
-// API: Вход
+// Вход
 app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -61,17 +62,18 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// Запуск сервера
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Сервер запущен на порту ${PORT}`);
 });
 
-// --- КОД ДЛЯ ПОДДЕРЖАНИЯ АКТИВНОСТИ RENDER ---
-// Каждые 14 минут сервер делает запрос сам к себе, чтобы не уснуть
+// --- АНТИ-СОН (SELF-PING) ---
+// Этот блок кода стучится по ссылке каждые 14 минут, чтобы Render не засыпал
 setInterval(() => {
     https.get('https://krasdeko.onrender.com', (res) => {
-        console.log('Self-ping: Server is awake. Status:', res.statusCode);
+        console.log('Анти-сон: запрос прошел. Статус:', res.statusCode);
     }).on('error', (err) => {
-        console.error('Self-ping error:', err.message);
+        console.error('Ошибка анти-сна:', err.message);
     });
-}, 840000); // 14 минут
+}, 840000);
