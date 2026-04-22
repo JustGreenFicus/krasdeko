@@ -60,4 +60,3 @@ app.post('/api/login', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Сервер запущен на порту ${PORT}`));
 
-https://krasdeko.onrender.com
