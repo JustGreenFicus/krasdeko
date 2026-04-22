@@ -1,106 +1,106 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kras Deco — Мебель для жизни</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kras Deco — Мебель для жизни</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <header class="hero">
-        <nav class="navbar">
-            <div class="logo">KRAS<br><span>DECO</span></div>
-            
-            <div class="menu-toggle" id="mobile-menu">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
+    <header class="hero">
+        <nav class="navbar">
+            <div class="logo">KRAS<br><span>DECO</span></div>
+            
+            <div class="menu-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
 
-            <ul class="nav-links">
-                <li><a href="tables.html">Столы</a></li>
-                <li><a href="chairs.html">Стулья</a></li>
-                <li><a href="contacts.html">Контакты</a></li>
-                <li id="auth-item"><a href="#" id="openAuthBtn"><i class="fa-regular fa-user"></i> ВОЙТИ</a></li>
-            </ul>
-        </nav>
+            <ul class="nav-links">
+                <li><a href="tables.html">Столы</a></li>
+                <li><a href="chairs.html">Стулья</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+                <li><a href="#" id="openAuthBtn"><i class="fa-regular fa-user"></i> ВОЙТИ</a></li>
+            </ul>
+        </nav>
 
-        <div class="hero-content">
-            <h1>СОЗДАЙТЕ УЮТ<br>В ВАШЕМ ДОМЕ</h1>
-            <p>Стильная мебель для жизни</p>
-            <a href="tables.html" class="btn-catalog-main">ПЕРЕЙТИ В КАТАЛОГ ↗</a>
-        </div>
-    </header>
+        <div class="hero-content">
+            <h1>СОЗДАЙТЕ УЮТ<br>В ВАШЕМ ДОМЕ</h1>
+            <p>Стильная мебель для жизни</p>
+            <a href="tables.html" class="btn-catalog-main">ПЕРЕЙТИ В КАТАЛОГ ↗</a>
+        </div>
+    </header>
 
-    <section class="footer-minimal">
-        <div class="customer-service">
-            <p>Wanna chat with customer service?</p>
-            <p class="strong">Call 8 (918) 008 15 46</p>
-            <p>Пн-Пт: 8:00 - 17:00</p>
-        </div>
+    <section class="footer-minimal">
+        <div class="customer-service">
+            <p>Wanna chat with customer service?</p>
+            <p class="strong">Call 8 (918) 008 15 46</p>
+            <p>Пн-Пт: 8:00 - 17:00</p>
+        </div>
 
-        <div class="social-minimal">
-            <a href="https://m.vk.com/kakoy_to_kirill" target="_blank"><i class="fa-brands fa-vk"></i></a>
-            <a href="https://t.me/JustGreenFicus" target="_blank"><i class="fa-brands fa-telegram"></i></a>
-        </div>
+        <div class="social-minimal">
+            <a href="https://m.vk.com/kakoy_to_kirill" target="_blank"><i class="fa-brands fa-vk"></i></a>
+            <a href="https://t.me/JustGreenFicus" target="_blank"><i class="fa-brands fa-telegram"></i></a>
+        </div>
 
-        <div class="newsletter-minimal">
-            <h2>BRIGHTEN UP YOUR INBOX</h2>
-            <p>Присоединяйтесь к нам, чтобы получать новости о новинках и скидку <strong>10%</strong> на заказ.</p>
-            <form class="subscribe-form">
-                <input type="email" placeholder="Enter your email address" required>
-                <button type="submit">SIGN UP</button>
-            </form>
-        </div>
-    </section>
+        <div class="newsletter-minimal">
+            <h2>BRIGHTEN UP YOUR INBOX</h2>
+            <p>Присоединяйтесь к нам, чтобы получать новости о новинках и скидку <strong>10%</strong> на заказ.</p>
+            <form class="subscribe-form">
+                <input type="email" placeholder="Enter your email address" required>
+                <button type="submit">SIGN UP</button>
+            </form>
+        </div>
+    </section>
 
-    <div class="modal-overlay" id="authModal">
-        <div class="auth-container">
-            <span class="close-modal" id="closeAuthBtn">&times;</span>
-            
-            <div class="tab-group">
-                <div class="tab active" onclick="switchForm('login', this)">SIGN IN</div>
-                <div class="tab" onclick="switchForm('signup', this)">SIGN UP</div>
-                <div class="underline"></div>
-            </div>
+    <div class="modal-overlay" id="authModal">
+        <div class="auth-container">
+            <span class="close-modal" id="closeAuthBtn">&times;</span>
+            
+            <div class="tab-group">
+                <div class="tab active" onclick="switchForm('login', this)">SIGN IN</div>
+                <div class="tab" onclick="switchForm('signup', this)">SIGN UP</div>
+                <div class="underline"></div>
+            </div>
 
-            <form id="login-form" class="auth-form active">
-                <div class="input-group">
-                    <label>USERNAME</label>
-                    <input type="text" placeholder="Введите логин" required>
-                </div>
-                <div class="input-group">
-                    <label>PASSWORD</label>
-                    <input type="password" placeholder="Введите пароль" required>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="keep-signed">
-                    <label for="keep-signed">ЗАПОМНИТЬ МЕНЯ</label>
-                </div>
-                <button type="submit" class="btn-auth-submit">SIGN IN</button>
-                <a href="#" class="forgot-pass">Забыли пароль?</a>
-            </form>
+            <form id="login-form" class="auth-form active">
+                <div class="input-group">
+                    <label>USERNAME</label>
+                    <input type="text" placeholder="Введите логин" required>
+                </div>
+                <div class="input-group">
+                    <label>PASSWORD</label>
+                    <input type="password" placeholder="Введите пароль" required>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="keep-signed">
+                    <label for="keep-signed">ЗАПОМНИТЬ МЕНЯ</label>
+                </div>
+                <button type="submit" class="btn-auth-submit">SIGN IN</button>
+                <a href="#" class="forgot-pass">Забыли пароль?</a>
+            </form>
 
-            <form id="signup-form" class="auth-form">
-                <div class="input-group">
-                    <label>USERNAME</label>
-                    <input type="text" placeholder="Придумайте логин" required>
-                </div>
-                <div class="input-group">
-                    <label>EMAIL ADDRESS</label>
-                    <input type="email" placeholder="Ваша почта" required>
-                </div>
-                <div class="input-group">
-                    <label>PASSWORD</label>
-                    <input type="password" placeholder="Придумайте пароль" required>
-                </div>
-                <button type="submit" class="btn-auth-submit">SIGN UP</button>
-            </form>
-        </div>
-    </div>
+            <form id="signup-form" class="auth-form">
+                <div class="input-group">
+                    <label>USERNAME</label>
+                    <input type="text" placeholder="Придумайте логин" required>
+                </div>
+                <div class="input-group">
+                    <label>EMAIL ADDRESS</label>
+                    <input type="email" placeholder="Ваша почта" required>
+                </div>
+                <div class="input-group">
+                    <label>PASSWORD</label>
+                    <input type="password" placeholder="Придумайте пароль" required>
+                </div>
+                <button type="submit" class="btn-auth-submit">SIGN UP</button>
+            </form>
+        </div>
+    </div>
 
-    <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
-</html>
+</html> 
