@@ -1,123 +1,49 @@
-/* Базовые настройки */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: #121212;
-    color: #eeeeee;
-}
+/* Сохрани все свои старые стили для hero, footer и т.д. */
+/* И добавь в конец вот это для блока пользователя: */
 
-header {
-    background: #000000;
-    padding: 15px 50px;
-    border-bottom: 1px solid #333333; /* Тонкая серая линия вместо золота */
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo {
-    font-size: 24px;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.nav-links {
-    list-style: none;
-    display: flex;
-    gap: 30px;
-    margin: 0;
-}
-
-.nav-links a {
-    color: #aaaaaa;
-    text-decoration: none;
-    transition: 0.3s;
-}
-
-.nav-links a:hover {
-    color: #ffffff;
-}
-
-/* Кнопка входа и Профиль */
-.auth-btn {
-    background: #ffffff;
-    color: #000000;
-    padding: 8px 22px;
-    border-radius: 2px; /* Более строгие углы */
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9em;
-    transition: 0.3s;
-}
-
-.auth-btn:hover {
-    background: #cccccc;
-}
-
-/* Панель профиля */
 .user-profile-nod {
     display: flex;
-    align-items: center;
-    gap: 20px;
-    background: #1e1e1e;
-    padding: 8px 16px;
-    border-radius: 4px;
-    border: 1px solid #444444;
+    flex-direction: column;
+    align-items: flex-start;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 5px 10px;
+    border-left: 1px solid #444;
+    margin-left: 15px;
 }
 
 .user-name {
-    color: #ffffff;
-    font-size: 0.9em;
-    font-weight: 500;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
 }
 
 .user-controls {
     display: flex;
-    gap: 12px;
+    gap: 10px;
 }
 
 .settings-btn, .logout-btn {
     background: none;
     border: none;
-    color: #888888;
+    color: #888;
     cursor: pointer;
-    font-size: 0.75em;
+    font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
     padding: 0;
-    transition: 0.3s;
+    text-decoration: underline;
 }
 
-.settings-btn:hover {
-    color: #ffffff;
-}
+.logout-btn { color: #ff5555; }
+.settings-btn:hover { color: #fff; }
 
-.logout-btn:hover {
-    color: #ff5555;
-}
-
-/* Секция Hero */
-.hero {
-    height: 70vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: #121212;
-    text-align: center;
-}
-
-.hero h1 {
-    font-size: 3em;
-    margin-bottom: 10px;
-    font-weight: 300;
+/* Чтобы в мобильном меню профиль не ломался */
+@media screen and (max-width: 768px) {
+    .user-profile-nod {
+        margin: 20px 0;
+        border-left: none;
+        border-top: 1px solid #444;
+        padding-top: 15px;
+    }
 }
