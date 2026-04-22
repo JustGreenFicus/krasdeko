@@ -152,3 +152,82 @@ function togglePassword(inputId, icon) {
         icon.classList.add('fa-eye');
     }
 }
+
+// Функция смены никнейма
+async function updateNickname() {
+    const newUsername = document.getElementById('new-username').value;
+    const user = JSON.parse(localStorage.getItem('userAccount'));
+
+    if (!newUsername || newUsername === user.username) {
+        showNotification("Введите новое имя");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/api/update-username`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                oldUsername: user.username, 
+                newUsername: newUsername 
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Обновляем данные в браузере
+            user.username = newUsername;
+            localStorage.setItem('userAccount', JSON.stringify(user));
+            
+            // Обновляем текст на странице
+            document.getElementById('sidebar-name').innerText = newUsername;
+            showNotification("Никнейм успешно изменен!");
+        } else {
+            showNotification(data.message);
+        }
+    } catch (error) {
+        showNotification("Ошибка сервера");
+    }
+}
+
+// Функция смены пароля
+async function updatePassword() {
+    const oldPassword = document.getElementById('old-password').value;
+    const newPassword = document.getElementById('update-password').value;
+    const user = JSON.parse(localStorage.getItem('userAccount'));
+
+    if (!oldPassword || !newPassword) {
+        showNotification("Заполните оба поля пароля");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/api/update-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                username: user.username, 
+                oldPassword, 
+                newPassword 
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showNotification("Пароль успешно обновлен!");
+            document.getElementById('old-password').value = '';
+            document.getElementById('update-password').value = '';
+        } else {
+            showNotification(data.message);
+        }
+    } catch (error) {
+        showNotification("Ошибка сервера");
+    }
+}
+
+// Заглушка для сброса по почте
+function resetPasswordEmail() {
+    showNotification("Функция в разработке. Скоро добавим!");
+}
