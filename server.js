@@ -3,9 +3,16 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const bcrypt = require('bcryptjs');
+const cors = require('cors'); // Добавил корс для стабильности
+
 const app = express();
 
-// Ссылка с закодированным паролем
+// Middlewares
+app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname, '/')));
+
+// Ссылка на MongoDB
 const mongoURI = 'mongodb+srv://JustGreenFicus:OvEr88888888@krasdecobase.axx0rgf.mongodb.net/krasdeco?retryWrites=true&w=majority&appName=KrasDecoBase';
 
 // Подключение к MongoDB Atlas
@@ -21,9 +28,6 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model('User', userSchema);
-
-app.use(express.json());
-app.use(express.static(path.join(__dirname, '/')));
 
 // API: Регистрация
 app.post('/api/signup', async (req, res) => {
@@ -58,5 +62,16 @@ app.post('/api/login', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Сервер запущен на порту ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`🚀 Сервер запущен на порту ${PORT}`);
+});
 
+// --- КОД ДЛЯ ПОДДЕРЖАНИЯ АКТИВНОСТИ RENDER ---
+// Каждые 14 минут сервер делает запрос сам к себе, чтобы не уснуть
+setInterval(() => {
+    https.get('https://krasdeko.onrender.com', (res) => {
+        console.log('Self-ping: Server is awake. Status:', res.statusCode);
+    }).on('error', (err) => {
+        console.error('Self-ping error:', err.message);
+    });
+}, 840000); // 14 минут
