@@ -1,4 +1,4 @@
-/* ОБЩИЕ СТИЛИ */
+/* 1. ВОЗВРАЩАЕМ ТВОИ СТАРЫЕ СТИЛИ (База) */
 * {
     margin: 0;
     padding: 0;
@@ -7,143 +7,108 @@
 }
 
 body {
-    background: #0f121d; /* Глубокий темный фон */
+    background: #0f121d; /* Твой оригинальный фон */
     color: #fff;
-    overflow-x: hidden;
 }
 
-/* ИСПРАВЛЕНИЕ НАВИГАЦИИ */
+/* Твоя оригинальная навигация */
 .navbar {
-    display: flex; 
-    justify-content: space-between; 
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    padding: 20px 5%; 
-    width: 100%; 
-    position: absolute; 
-    top: 0; 
-    z-index: 1000; /* Чтобы не перекрывать модалку */
+    padding: 20px 5%;
+    position: relative;
+    z-index: 10;
 }
 
-/* МОДАЛЬНОЕ ОКНО (ФОН) */
+/* 2. СТИЛИ МОДАЛЬНОГО ОКНА (Минимальные изменения) */
 .modal-overlay {
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85); 
-    backdrop-filter: blur(10px);
-    display: none; /* Управляется через JS */
-    justify-content: center; 
-    align-items: center; 
-    z-index: 99999; /* Поверх всего */
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    display: none; /* Скрыто по умолчанию */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
 }
 
-/* КОНТЕЙНЕР ФОРМЫ */
 .auth-container {
     background: #1a1f35;
-    width: 90%;
-    max-width: 400px;
-    padding: 40px;
-    border-radius: 20px;
-    position: relative;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-    border: 1px solid rgba(255,255,255,0.1);
+    width: 380px;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
-/* ТАБЫ (ВХОД / РЕГИСТРАЦИЯ) */
+/* Стили вкладок внутри модалки */
 .auth-tabs {
     display: flex;
     position: relative;
-    margin-bottom: 30px;
-    border-bottom: 1px solid #333;
+    margin-bottom: 25px;
 }
 
 .tab {
     flex: 1;
-    padding: 15px;
+    padding: 10px;
     text-align: center;
     cursor: pointer;
-    font-weight: 600;
     color: #888;
-    transition: 0.3s;
 }
 
 .tab.active {
     color: #fff;
+    font-weight: bold;
 }
 
 .underline {
     position: absolute;
-    bottom: -1px;
+    bottom: 0;
     left: 0;
     width: 50%;
-    height: 3px;
-    background: #c5a059; /* Цвет Kras Deco */
-    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 2px;
+    background: #c5a059;
+    transition: 0.3s;
 }
 
-/* ПОЛЯ ВВОДА */
 .auth-form {
     display: none;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
 }
 
 .auth-form.active {
     display: flex;
-    animation: fadeIn 0.4s ease;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
+/* Поля ввода и кнопка */
 input {
-    width: 100%;
-    padding: 12px 15px;
+    padding: 10px;
     background: #252b45;
     border: 1px solid #3d4465;
-    border-radius: 8px;
-    color: white;
-    outline: none;
-    transition: 0.3s;
+    border-radius: 5px;
+    color: #fff;
 }
 
-input:focus {
-    border-color: #c5a059;
-}
-
-/* КНОПКА */
 .auth-btn {
     background: #c5a059;
-    color: #1a1f35;
-    padding: 14px;
+    color: #000;
+    padding: 12px;
     border: none;
-    border-radius: 8px;
-    font-weight: bold;
+    border-radius: 5px;
     cursor: pointer;
-    transition: 0.3s;
-    text-transform: uppercase;
+    font-weight: bold;
 }
 
-.auth-btn:hover {
-    background: #d4b475;
-    transform: translateY(-2px);
-}
-
-.auth-btn:disabled {
-    background: #555;
-    cursor: not-allowed;
-}
-
-/* УВЕДОМЛЕНИЯ (ТОТ САМЫЙ БЛОК) */
+/* 3. ДОБАВЛЯЕМ ТОЛЬКО БЛОК УВЕДОМЛЕНИЙ (Он не влияет на верстку сайта) */
 .notification-container {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    z-index: 1000000;
+    z-index: 10000;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -152,20 +117,14 @@ input:focus {
 .custom-toast {
     background: #252b45;
     color: #fff;
-    padding: 15px 25px;
-    border-radius: 10px;
-    border-left: 5px solid #c5a059;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    min-width: 250px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border-left: 4px solid #c5a059;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     transform: translateX(150%);
-    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.4s ease;
 }
 
 .custom-toast.show {
     transform: translateX(0);
-}
-
-/* ЦВЕТА KRAS DECO ДЛЯ ФУТЕРА И ИКОНОК */
-.footer-info, .social-icon, .user-name-display {
-    color: #b0b0b0 !important;
 }
