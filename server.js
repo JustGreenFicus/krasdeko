@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
+const nodemailer = require('nodemailer'); // Добавили nodemailer
+const crypto = require('crypto'); // Добавили crypto для токенов
 
 const app = express();
 
@@ -19,14 +21,25 @@ mongoose.connect(mongoURI)
     .then(() => console.log('✅ Connected to MongoDB'))
     .catch(err => console.error('❌ MongoDB error:', err));
 
-// Схема пользователя
+// Схема пользователя (Добавлены поля для сброса пароля)
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true },
-    password: { type: String, required: true }
+    password: { type: String, required: true },
+    resetToken: String,      // Поле для временного ключа
+    resetTokenExpiry: Date   // Поле для срока годности ключа
 });
 
 const User = mongoose.model('User', userSchema);
+
+// --- НАСТРОЙКА ПОЧТЫ (NODEMAILER) ---
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'твой-email@gmail.com',  // ЗАМЕНИ НА СВОЙ
+        pass: 'abcd efgh ijkl mnop'    // ЗАМЕНИ НА ПАРОЛЬ ПРИЛОЖЕНИЯ (16 букв)
+    }
+});
 
 // --- API: РЕГИСТРАЦИЯ ---
 app.post('/api/signup', async (req, res) => {
@@ -50,7 +63,7 @@ app.post('/api/login', async (req, res) => {
         const { username, password } = req.body;
         const user = await User.findOne({ username });
         if (user && await bcrypt.compare(password, user.password)) {
-            res.json({ message: 'Успешно!', user: { username: user.username } });
+            res.json({ message: 'Успешно!', user: { username: user.username, email: user.email } });
         } else {
             res.status(400).json({ message: 'Неверные данные' });
         }
@@ -63,8 +76,6 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/update-username', async (req, res) => {
     try {
         const { oldUsername, newUsername } = req.body;
-        
-        // Проверяем занятость нового имени
         const taken = await User.findOne({ username: newUsername });
         if (taken) return res.status(400).json({ message: 'Этот никнейм уже занят' });
 
@@ -81,7 +92,7 @@ app.post('/api/update-username', async (req, res) => {
     }
 });
 
-// --- API: ИЗМЕНЕНИЕ ПАРОЛЯ ---
+// --- API: ИЗМЕНЕНИЕ ПАРОЛЯ (из настроек профиля) ---
 app.post('/api/update-password', async (req, res) => {
     try {
         const { username, oldPassword, newPassword } = req.body;
@@ -89,17 +100,66 @@ app.post('/api/update-password', async (req, res) => {
 
         if (!user) return res.status(404).json({ message: 'Пользователь не найден' });
 
-        // Проверяем старый пароль
         const isMatch = await bcrypt.compare(oldPassword, user.password);
         if (!isMatch) return res.status(400).json({ message: 'Старый пароль неверен' });
 
-        // Хешируем и сохраняем новый
         user.password = await bcrypt.hash(newPassword, 10);
         await user.save();
 
         res.json({ message: 'Пароль обновлен!' });
     } catch (err) {
         res.status(500).json({ message: 'Ошибка при смене пароля' });
+    }
+});
+
+// --- API: ЗАБЫЛИ ПАРОЛЬ (Генерация ссылки на почту) ---
+app.post('/api/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+        
+        if (!user) return res.status(404).json({ message: 'Пользователь не найден' });
+
+        const token = crypto.randomBytes(20).toString('hex');
+        user.resetToken = token;
+        user.resetTokenExpiry = Date.now() + 3600000; // 1 час
+        await user.save();
+
+        const resetLink = `https://krasdeko.onrender.com/reset-password.html?token=${token}`;
+
+        const mailOptions = {
+            from: 'Kras Deco Support <твой-email@gmail.com>',
+            to: user.email,
+            subject: 'Сброс пароля Kras Deco',
+            text: `Для сброса пароля перейдите по ссылке: ${resetLink}`
+        };
+
+        await transporter.sendMail(mailOptions);
+        res.json({ message: 'Ссылка для сброса отправлена на почту!' });
+    } catch (err) {
+        res.status(500).json({ message: 'Ошибка при отправке письма' });
+    }
+});
+
+// --- API: СОХРАНЕНИЕ НОВОГО ПАРОЛЯ (после перехода по ссылке) ---
+app.post('/api/reset-password', async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+        const user = await User.findOne({ 
+            resetToken: token, 
+            resetTokenExpiry: { $gt: Date.now() } 
+        });
+
+        if (!user) return res.status(400).json({ message: 'Ссылка недействительна или просрочена' });
+
+        user.password = await bcrypt.hash(newPassword, 10);
+        user.resetToken = undefined;
+        user.resetTokenExpiry = undefined;
+        await user.save();
+
+        res.json({ message: 'Новый пароль установлен!' });
+    } catch (err) {
+        res.status(500).json({ message: 'Ошибка сервера' });
     }
 });
 
