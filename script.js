@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // ССЫЛКА НА ТВОЙ БЭКЕНД (вставь свою из Render)
     const API_URL = 'https://krasdeko.onrender.com'; 
 
     const authModal = document.getElementById('authModal');
@@ -9,9 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const signupForm = document.getElementById('signup-form');
 
     // 1. Проверка авторизации при загрузке
-    const savedUser = localStorage.getItem('userAccount');
+    const savedUser = JSON.parse(localStorage.getItem('userAccount'));
     if (savedUser) {
-        updateNavWithUser(savedUser);
+        updateNavWithUser(savedUser.username);
     }
 
     // 2. Открытие/Закрытие модалки
@@ -38,16 +37,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const form = e.target;
         const submitBtn = form.querySelector('button');
         
-        // Собираем данные
+        // Находим нужные поля внутри текущей формы
+        const usernameInput = form.querySelector('input[placeholder*="логин"]');
+        const passwordInput = form.querySelector('input[type="password"]');
+        const emailInput = form.querySelector('input[type="email"]');
+
         const formData = {
-            username: form.querySelector('input[type="text"]').value,
-            password: form.querySelector('input[type="password"]').value
+            username: usernameInput.value,
+            password: passwordInput.value
         };
-        if (endpoint === 'register') {
-            formData.email = form.querySelector('input[type="email"]').value;
+        
+        if (endpoint === 'signup') {
+            formData.email = emailInput.value;
         }
 
         submitBtn.disabled = true;
+        const originalBtnText = submitBtn.innerText;
         submitBtn.innerText = 'ЗАГРУЗКА...';
 
         try {
@@ -60,37 +65,42 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                // Если успех
-                localStorage.setItem('userAccount', data.username);
-                showNotification(`Успешно! Привет, ${data.username}`);
-                setTimeout(() => location.reload(), 1500);
+                // Сохраняем объект пользователя для profile.html
+                const userObj = data.user || { username: data.username || formData.username };
+                localStorage.setItem('userAccount', JSON.stringify(userObj));
+                
+                showNotification(`Успешно! Идем в профиль...`);
+                
+                // Редирект в личный кабинет через 1.2 сек
+                setTimeout(() => {
+                    window.location.href = 'profile.html';
+                }, 1200);
             } else {
-                // Если сервер вернул ошибку (имя занято и т.д.)
-                showNotification(data.message || 'Ошибка входа');
+                showNotification(data.message || 'Ошибка');
                 submitBtn.disabled = false;
-                submitBtn.innerText = endpoint === 'register' ? 'SIGN UP' : 'SIGN IN';
+                submitBtn.innerText = originalBtnText;
             }
         } catch (error) {
             showNotification('Сервер не отвечает. Проверьте Render.');
             submitBtn.disabled = false;
-            submitBtn.innerText = 'ПОПРОБОВАТЬ СНОВА';
+            submitBtn.innerText = 'ОШИБКА';
         }
     }
 
-    // Привязываем события
+    // Привязываем события (signup вместо register)
     if (loginForm) loginForm.onsubmit = (e) => handleAuth(e, 'login');
-    if (signupForm) signupForm.onsubmit = (e) => handleAuth(e, 'register');
+    if (signupForm) signupForm.onsubmit = (e) => handleAuth(e, 'signup');
 
     // 4. Функции интерфейса
     function updateNavWithUser(username) {
         const authSection = document.getElementById('auth-section');
         if (authSection) {
             authSection.innerHTML = `
-                <div class="user-profile-nav" style="display: flex; flex-direction: column; border-left: 1px solid #444; padding-left: 15px;">
-                    <a href="profile.html" class="user-name-display" style="color:#fff; font-weight:bold; text-decoration:none; font-size:12px;">
-                       <i class="fa-regular fa-user"></i> ${username.toUpperCase()}
+                <div class="user-profile-nav" style="display: flex; flex-direction: column; border-left: 1px solid #c5a059; padding-left: 15px;">
+                    <a href="profile.html" class="user-name-display" style="color:#fff; font-weight:bold; text-decoration:none; font-size:12px; letter-spacing:1px;">
+                       <i class="fa-regular fa-circle-user"></i> ${username.toUpperCase()}
                     </a>
-                    <button onclick="logout()" style="background:none; border:none; color:#ff5e5e; font-size:10px; cursor:pointer; text-align:left; padding:0; text-decoration:underline;">ВЫХОД</button>
+                    <button onclick="logout()" style="background:none; border:none; color:#ff5e5e; font-size:9px; cursor:pointer; text-align:left; padding:0; text-decoration:underline; margin-top:3px;">ВЫХОД</button>
                 </div>
             `;
         }
@@ -120,19 +130,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Переключение табов в модалке
+// Глобальные функции (вне DOMContentLoaded)
 function switchForm(type, element) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
     element.classList.add('active');
     document.getElementById(type + '-form').classList.add('active');
     const underline = document.querySelector('.underline');
-    underline.style.left = element.offsetLeft + 'px';
+    if(underline) underline.style.left = element.offsetLeft + 'px';
 }
 
 function togglePassword(inputId, icon) {
     const passwordInput = document.getElementById(inputId);
-    
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
         icon.classList.remove('fa-eye');
