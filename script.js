@@ -37,17 +37,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 4000);
     }
 
-    // 3. ОБНОВЛЕНИЕ НАВИГАЦИИ
+    // 3. ОБНОВЛЕНИЕ НАВИГАЦИИ (Строгий дизайн)
     function updateNav(username) {
-        if (openAuthBtn) {
-            openAuthBtn.innerHTML = `<i class="fa-regular fa-user"></i> ${username}`;
-            openAuthBtn.onclick = (e) => {
-                e.preventDefault();
-                if(confirm('Выйти из аккаунта?')) {
-                    localStorage.removeItem('username');
-                    location.reload();
-                }
-            };
+        // Находим контейнер, в котором лежит кнопка "Войти"
+        const authContainer = openAuthBtn ? openAuthBtn.parentElement : document.getElementById('auth-section');
+        
+        if (authContainer) {
+            // Заменяем кнопку на строгий монохромный профиль
+            authContainer.innerHTML = `
+                <div class="user-profile-nod">
+                    <span class="user-name">${username.toUpperCase()}</span>
+                    <div class="user-controls">
+                        <button class="settings-btn" onclick="openSettings()">Настройки</button>
+                        <button class="logout-btn" onclick="logout()">Выход</button>
+                    </div>
+                </div>
+            `;
         }
     }
 
@@ -126,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     localStorage.setItem('username', result.user.username);
                     showNotification('Привет, ' + result.user.username + '!');
-                    updateNav(result.user.username);
+                    updateNav(result.user.username); // Рисуем блок профиля
                     setTimeout(() => {
                         authModal.classList.remove('active');
                         document.body.style.overflow = 'auto';
@@ -141,6 +146,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// --- ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ ПРОФИЛЯ ---
+
+window.logout = function() {
+    if(confirm('Выйти из системы?')) {
+        localStorage.removeItem('username');
+        window.location.reload(); // Перезагружаем, чтобы вернуть кнопку входа
+    }
+};
+
+window.openSettings = function() {
+    alert('Личный кабинет Kras Deco: Раздел находится в разработке.');
+};
+
+// --- ОСТАЛЬНОЙ ТВОЙ КОД ---
+
 function switchForm(type, element) {
     const underline = document.querySelector('.underline');
     const targetForm = document.getElementById(type + '-form');
@@ -154,23 +174,21 @@ function switchForm(type, element) {
         underline.style.left = element.offsetLeft + 'px';
     }
 }
+
 let logoClicks = 0;
 const logo = document.querySelector('.logo');
 
 if (logo) {
-    // Используем 'pointerdown', он лучше всего работает и для мышки, и для пальца
     logo.addEventListener('pointerdown', (e) => {
         logoClicks++;
         
-        // Маленькая визуальная подсказка, что клик засчитан (логотип чуть мигнет)
         logo.style.opacity = '0.5';
         setTimeout(() => logo.style.opacity = '1', 100);
 
         if (logoClicks === 3) {
-            e.preventDefault(); // Чтобы не уйти на главную при секретном нажатии
+            e.preventDefault(); 
             const user = localStorage.getItem('username');
             
-            // Если showNotification не сработает, выведем обычный alert для страховки
             const statusText = user ? `В системе: ${user}` : "Вход не выполнен";
             
             if (typeof showNotification === "function") {
@@ -183,7 +201,6 @@ if (logo) {
         }
     });
 
-    // Сбрасываем счетчик через 2 секунды, если не успел нажать 3 раза
     setInterval(() => {
         if (logoClicks > 0) logoClicks = 0;
     }, 2000);
