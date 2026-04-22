@@ -1,19 +1,40 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = 'https://krasdeko.onrender.com'; 
+// 1. ГЛОБАЛЬНЫЕ НАСТРОЙКИ (вынесены в начало, чтобы все функции их видели)
+const API_URL = 'https://krasdeko.onrender.com'; 
 
+// 2. ФУНКЦИЯ УВЕДОМЛЕНИЙ (теперь доступна везде)
+function showNotification(msg) {
+    let container = document.querySelector('.notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'notification-container';
+        document.body.appendChild(container);
+    }
+    const toast = document.createElement('div');
+    toast.className = 'custom-toast';
+    toast.innerText = msg;
+    container.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 100);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
+}
+
+// 3. ОСНОВНАЯ ЛОГИКА СТРАНИЦЫ
+document.addEventListener('DOMContentLoaded', () => {
     const authModal = document.getElementById('authModal');
     const openAuthBtn = document.getElementById('openAuthBtn');
     const closeAuthBtn = document.getElementById('closeAuthBtn');
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
 
-    // 1. Проверка авторизации при загрузке
+    // Проверка авторизации при загрузке
     const savedUser = JSON.parse(localStorage.getItem('userAccount'));
     if (savedUser) {
         updateNavWithUser(savedUser.username);
     }
 
-    // 2. Открытие/Закрытие модалки
+    // Открытие/Закрытие модалки
     if (openAuthBtn) {
         openAuthBtn.onclick = (e) => {
             e.preventDefault();
@@ -31,13 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // 3. Универсальная функция запроса к серверу
+    // Обработка Входа и Регистрации
     async function handleAuth(e, endpoint) {
         e.preventDefault();
         const form = e.target;
         const submitBtn = form.querySelector('button');
         
-        // Находим нужные поля внутри текущей формы
         const usernameInput = form.querySelector('input[placeholder*="логин"]');
         const passwordInput = form.querySelector('input[type="password"]');
         const emailInput = form.querySelector('input[type="email"]');
@@ -65,13 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                // Сохраняем объект пользователя для profile.html
                 const userObj = data.user || { username: data.username || formData.username };
                 localStorage.setItem('userAccount', JSON.stringify(userObj));
                 
                 showNotification(`Успешно! Идем в профиль...`);
-                
-                // Редирект в личный кабинет через 1.2 сек
                 setTimeout(() => {
                     window.location.href = 'profile.html';
                 }, 1200);
@@ -87,11 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Привязываем события (signup вместо register)
     if (loginForm) loginForm.onsubmit = (e) => handleAuth(e, 'login');
     if (signupForm) signupForm.onsubmit = (e) => handleAuth(e, 'signup');
 
-    // 4. Функции интерфейса
     function updateNavWithUser(username) {
         const authSection = document.getElementById('auth-section');
         if (authSection) {
@@ -105,32 +120,15 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
     }
-
-    window.logout = () => {
-        localStorage.removeItem('userAccount');
-        location.reload();
-    };
-
-    function showNotification(msg) {
-        let container = document.querySelector('.notification-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.className = 'notification-container';
-            document.body.appendChild(container);
-        }
-        const toast = document.createElement('div');
-        toast.className = 'custom-toast';
-        toast.innerText = msg;
-        container.appendChild(toast);
-        setTimeout(() => toast.classList.add('show'), 100);
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 500);
-        }, 3000);
-    }
 });
 
-// Глобальные функции (вне DOMContentLoaded)
+// 4. ГЛОБАЛЬНЫЕ ФУНКЦИИ (доступны для кнопок из HTML)
+
+window.logout = () => {
+    localStorage.removeItem('userAccount');
+    window.location.href = 'index.html';
+};
+
 function switchForm(type, element) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
@@ -153,9 +151,10 @@ function togglePassword(inputId, icon) {
     }
 }
 
-// Функция смены никнейма
+// Функции для страницы настроек
 async function updateNickname() {
-    const newUsername = document.getElementById('new-username').value;
+    const newUsernameInput = document.getElementById('new-username');
+    const newUsername = newUsernameInput.value;
     const user = JSON.parse(localStorage.getItem('userAccount'));
 
     if (!newUsername || newUsername === user.username) {
@@ -176,11 +175,8 @@ async function updateNickname() {
         const data = await response.json();
 
         if (response.ok) {
-            // Обновляем данные в браузере
             user.username = newUsername;
             localStorage.setItem('userAccount', JSON.stringify(user));
-            
-            // Обновляем текст на странице
             document.getElementById('sidebar-name').innerText = newUsername;
             showNotification("Никнейм успешно изменен!");
         } else {
@@ -191,7 +187,6 @@ async function updateNickname() {
     }
 }
 
-// Функция смены пароля
 async function updatePassword() {
     const oldPassword = document.getElementById('old-password').value;
     const newPassword = document.getElementById('update-password').value;
@@ -227,7 +222,6 @@ async function updatePassword() {
     }
 }
 
-// Заглушка для сброса по почте
 function resetPasswordEmail() {
     showNotification("Функция в разработке. Скоро добавим!");
 }
