@@ -1,7 +1,7 @@
-// 1. ГЛОБАЛЬНЫЕ НАСТРОЙКИ (вынесены в начало, чтобы все функции их видели)
+// 1. ГЛОБАЛЬНЫЕ НАСТРОЙКИ
 const API_URL = 'https://krasdeko.onrender.com'; 
 
-// 2. ФУНКЦИЯ УВЕДОМЛЕНИЙ (теперь доступна везде)
+// 2. ФУНКЦИЯ УВЕДОМЛЕНИЙ (Монохромный стиль)
 function showNotification(msg) {
     let container = document.querySelector('.notification-container');
     if (!container) {
@@ -13,6 +13,7 @@ function showNotification(msg) {
     toast.className = 'custom-toast';
     toast.innerText = msg;
     container.appendChild(toast);
+    
     setTimeout(() => toast.classList.add('show'), 100);
     setTimeout(() => {
         toast.classList.remove('show');
@@ -20,7 +21,7 @@ function showNotification(msg) {
     }, 3000);
 }
 
-// 3. ОСНОВНАЯ ЛОГИКА СТРАНИЦЫ
+// 3. ОСНОВНАЯ ЛОГИКА
 document.addEventListener('DOMContentLoaded', () => {
     const authModal = document.getElementById('authModal');
     const openAuthBtn = document.getElementById('openAuthBtn');
@@ -28,17 +29,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
 
-    // Проверка авторизации при загрузке
+    // Проверка авторизации при загрузке страницы
     const savedUser = JSON.parse(localStorage.getItem('userAccount'));
     if (savedUser) {
         updateNavWithUser(savedUser.username);
     }
 
-    // Открытие/Закрытие модалки
+    // Модальное окно (Вход/Регистрация)
     if (openAuthBtn) {
         openAuthBtn.onclick = (e) => {
             e.preventDefault();
-            authModal.style.display = 'flex';
             authModal.classList.add('active');
             document.body.style.overflow = 'hidden';
         };
@@ -46,21 +46,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (closeAuthBtn) {
         closeAuthBtn.onclick = () => {
-            authModal.style.display = 'none';
             authModal.classList.remove('active');
             document.body.style.overflow = 'auto';
         };
     }
 
-    // Обработка Входа и Регистрации
+    // Обработка AUTH (Вход и Регистрация)
     async function handleAuth(e, endpoint) {
         e.preventDefault();
         const form = e.target;
         const submitBtn = form.querySelector('button');
         
-        const usernameInput = form.querySelector('input[placeholder*="логин"]');
-        const passwordInput = form.querySelector('input[type="password"]');
-        const emailInput = form.querySelector('input[type="email"]');
+        const usernameInput = form.querySelector('input[name="username"]');
+        const passwordInput = form.querySelector('input[name="password"]');
+        const emailInput = form.querySelector('input[name="email"]');
 
         const formData = {
             username: usernameInput.value,
@@ -73,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         submitBtn.disabled = true;
         const originalBtnText = submitBtn.innerText;
-        submitBtn.innerText = 'ЗАГРУЗКА...';
+        submitBtn.innerText = 'ОБРАБОТКА...';
 
         try {
             const response = await fetch(`${API_URL}/api/${endpoint}`, {
@@ -88,73 +87,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 const userObj = data.user || { username: data.username || formData.username };
                 localStorage.setItem('userAccount', JSON.stringify(userObj));
                 
-                showNotification(`Успешно! Идем в профиль...`);
-                setTimeout(() => {
-                    window.location.href = 'profile.html';
-                }, 1200);
+                showNotification(`Добро пожаловать, ${userObj.username}!`);
+                
+                // Закрываем модалку и обновляем UI без перезагрузки
+                authModal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+                updateNavWithUser(userObj.username);
             } else {
-                showNotification(data.message || 'Ошибка');
+                showNotification(data.message || 'Ошибка доступа');
                 submitBtn.disabled = false;
                 submitBtn.innerText = originalBtnText;
             }
         } catch (error) {
-            showNotification('Сервер не отвечает. Проверьте Render.');
+            showNotification('Ошибка связи с сервером');
             submitBtn.disabled = false;
-            submitBtn.innerText = 'ОШИБКА';
+            submitBtn.innerText = originalBtnText;
         }
     }
 
     if (loginForm) loginForm.onsubmit = (e) => handleAuth(e, 'login');
     if (signupForm) signupForm.onsubmit = (e) => handleAuth(e, 'signup');
-
-    function updateNavWithUser(username) {
-        const authSection = document.getElementById('auth-section');
-        if (authSection) {
-            authSection.innerHTML = `
-                <div class="user-profile-nav" style="display: flex; flex-direction: column; border-left: 1px solid #c5a059; padding-left: 15px;">
-                    <a href="profile.html" class="user-name-display" style="color:#fff; font-weight:bold; text-decoration:none; font-size:12px; letter-spacing:1px;">
-                       <i class="fa-regular fa-circle-user"></i> ${username.toUpperCase()}
-                    </a>
-                    <button onclick="logout()" style="background:none; border:none; color:#ff5e5e; font-size:9px; cursor:pointer; text-align:left; padding:0; text-decoration:underline; margin-top:3px;">ВЫХОД</button>
-                </div>
-            `;
-        }
-    }
 });
 
-// 4. ГЛОБАЛЬНЫЕ ФУНКЦИИ (доступны для кнопок из HTML)
+// 4. УПРАВЛЕНИЕ UI И САЙДБАРОМ
+
+function updateNavWithUser(username) {
+    const authSection = document.getElementById('auth-section');
+    if (authSection) {
+        authSection.innerHTML = `
+            <a href="#" onclick="toggleSidebar()" class="user-trigger">
+                <i class="fa-regular fa-circle-user"></i> ${username.toUpperCase()}
+            </a>
+        `;
+    }
+}
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('user-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+}
+
+// 5. ГЛОБАЛЬНЫЕ ФУНКЦИИ ПРОФИЛЯ (Сайдбар)
 
 window.logout = () => {
     localStorage.removeItem('userAccount');
-    window.location.href = 'index.html';
+    window.location.reload(); // Полная перезагрузка для сброса состояния
 };
 
-function switchForm(type, element) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-    element.classList.add('active');
-    document.getElementById(type + '-form').classList.add('active');
-    const underline = document.querySelector('.underline');
-    if(underline) underline.style.left = element.offsetLeft + 'px';
-}
-
-function togglePassword(inputId, icon) {
-    const passwordInput = document.getElementById(inputId);
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-    } else {
-        passwordInput.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-    }
-}
-
-// Функции для страницы настроек
-async function updateNickname() {
-    const newUsernameInput = document.getElementById('new-username');
-    const newUsername = newUsernameInput.value;
+window.updateUsername = async () => {
+    const newUsername = document.getElementById('new-username').value;
     const user = JSON.parse(localStorage.getItem('userAccount'));
 
     if (!newUsername || newUsername === user.username) {
@@ -166,34 +149,28 @@ async function updateNickname() {
         const response = await fetch(`${API_URL}/api/update-username`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                oldUsername: user.username, 
-                newUsername: newUsername 
-            })
+            body: JSON.stringify({ oldUsername: user.username, newUsername: newUsername })
         });
-
-        const data = await response.json();
 
         if (response.ok) {
             user.username = newUsername;
             localStorage.setItem('userAccount', JSON.stringify(user));
-            document.getElementById('sidebar-name').innerText = newUsername;
-            showNotification("Никнейм успешно изменен!");
+            updateNavWithUser(newUsername);
+            showNotification("Имя изменено");
         } else {
+            const data = await response.json();
             showNotification(data.message);
         }
-    } catch (error) {
-        showNotification("Ошибка сервера");
-    }
-}
+    } catch (e) { showNotification("Ошибка сервера"); }
+};
 
-async function updatePassword() {
-    const oldPassword = document.getElementById('old-password').value;
-    const newPassword = document.getElementById('update-password').value;
+window.updatePassword = async () => {
+    const oldPass = document.getElementById('old-password').value;
+    const newPass = document.getElementById('new-password').value;
     const user = JSON.parse(localStorage.getItem('userAccount'));
 
-    if (!oldPassword || !newPassword) {
-        showNotification("Заполните оба поля пароля");
+    if (!oldPass || !newPass) {
+        showNotification("Заполните все поля");
         return;
     }
 
@@ -201,27 +178,45 @@ async function updatePassword() {
         const response = await fetch(`${API_URL}/api/update-password`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                username: user.username, 
-                oldPassword, 
-                newPassword 
-            })
+            body: JSON.stringify({ username: user.username, oldPassword: oldPass, newPassword: newPass })
         });
 
-        const data = await response.json();
-
         if (response.ok) {
-            showNotification("Пароль успешно обновлен!");
+            showNotification("Пароль обновлен");
             document.getElementById('old-password').value = '';
-            document.getElementById('update-password').value = '';
+            document.getElementById('new-password').value = '';
         } else {
+            const data = await response.json();
             showNotification(data.message);
         }
-    } catch (error) {
-        showNotification("Ошибка сервера");
-    }
-}
+    } catch (e) { showNotification("Ошибка сервера"); }
+};
 
-function resetPasswordEmail() {
-    showNotification("Функция в разработке. Скоро добавим!");
-}
+// Переключение табов в модалке
+window.switchForm = (type, element) => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    element.classList.add('active');
+    document.getElementById(type + '-form').classList.add('active');
+    
+    const underline = document.querySelector('.underline');
+    if (underline) {
+        underline.style.width = element.offsetWidth + 'px';
+        underline.style.left = element.offsetLeft + 'px';
+    }
+};
+
+window.togglePassword = (inputId, icon) => {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+};
+
+window.handleForgotPassword = () => {
+    showNotification("Ссылка для восстановления отправлена на почту");
+};
