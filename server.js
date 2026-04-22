@@ -1,61 +1,74 @@
 const express = require('express');
-const fs = require('fs');
+const mongoose = require('mongoose');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Настройка для работы с данными в формате JSON
-app.use(express.json());
-// Указываем, что все твои файлы (html, css, js) лежат в корне
-app.use(express.static(path.join(__dirname, '/')));
+// Твоя ссылка для подключения (ЗАМЕНИ ТВОЙ_ПАРОЛЬ НА СВОЙ)
+const mongoURI = 'mongodb+srv://JustGreenFicus:ТВОЙ_ПАРОЛЬ@krasdecobase.axx0rgf.mongodb.net/krasdeco?retryWrites=true&w=majority&appName=KrasDecoBase';
 
-const USERS_FILE = './users.json';
+// Подключение к облачной базе данных
+mongoose.connect(mongoURI)
+    .then(() => console.log('Успешное подключение к MongoDB Atlas'))
+    .catch(err => console.error('Ошибка подключения к базе:', err));
 
-// Функция для чтения базы данных из файла
-const getUsers = () => {
-    if (!fs.existsSync(USERS_FILE)) return [];
-    try {
-        const data = fs.readFileSync(USERS_FILE);
-        return JSON.parse(data);
-    } catch (e) {
-        return [];
-    }
-};
-
-// МАРШРУТ: РЕГИСТРАЦИЯ
-app.post('/api/signup', async (req, res) => {
-    const { username, email, password } = req.body;
-    const users = getUsers();
-
-    if (users.find(u => u.username === username)) {
-        return res.status(400).json({ message: 'Этот логин уже занят' });
-    }
-
-    // Шифруем пароль (чтобы даже ты его не видел в файле)
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = { username, email, password: hashedPassword };
-
-    users.push(newUser);
-    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
-
-    res.json({ message: 'Регистрация прошла успешно!' });
+// Описание того, как выглядит "Пользователь" в базе данных
+const userSchema = new mongoose.Schema({
+    username: { type: String, required: true, unique: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true }
 });
 
-// МАРШРУТ: ВХОД
-app.post('/api/login', async (req, res) => {
-    const { username, password } = req.body;
-    const users = getUsers();
-    const user = users.find(u => u.username === username);
+const User = mongoose.model('User', userSchema);
 
-    if (user && await bcrypt.compare(password, user.password)) {
-        res.json({ message: 'Вход выполнен!', user: { username: user.username } });
-    } else {
-        res.status(400).json({ message: 'Неверный логин или пароль' });
+app.use(express.json());
+app.use(express.static(path.join(__dirname, '/')));
+
+// --- ЭНДПОИНТ РЕГИСТРАЦИИ ---
+app.post('/api/signup', async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+        
+        // Шифруем пароль перед сохранением
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
+        const newUser = new User({ 
+            username, 
+            email, 
+            password: hashedPassword 
+        });
+
+        await newUser.save();
+        res.json({ message: 'Аккаунт успешно создан и сохранен в облаке!' });
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({ message: 'Ошибка: такой логин уже существует' });
+    }
+});
+
+// --- ЭНДПОИНТ ВХОДА ---
+app.post('/api/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        
+        // Ищем пользователя в базе по имени
+        const user = await User.findOne({ username });
+        
+        if (user && await bcrypt.compare(password, user.password)) {
+            res.json({ 
+                message: 'Вход выполнен успешно!', 
+                user: { username: user.username } 
+            });
+        } else {
+            res.status(400).json({ message: 'Неверное имя пользователя или пароль' });
+        }
+    } catch (err) {
+        res.status(500).json({ message: 'Ошибка сервера при входе' });
     }
 });
 
 // Запуск сервера
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Сервер запущен на порту ${PORT}`);
+    console.log(`Сервер Kras Deco запущен на порту ${PORT}`);
 });
