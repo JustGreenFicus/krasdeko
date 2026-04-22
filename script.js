@@ -158,12 +158,33 @@ let logoClicks = 0;
 const logo = document.querySelector('.logo');
 
 if (logo) {
-    logo.onclick = () => {
+    // Используем 'pointerdown', он лучше всего работает и для мышки, и для пальца
+    logo.addEventListener('pointerdown', (e) => {
         logoClicks++;
+        
+        // Маленькая визуальная подсказка, что клик засчитан (логотип чуть мигнет)
+        logo.style.opacity = '0.5';
+        setTimeout(() => logo.style.opacity = '1', 100);
+
         if (logoClicks === 3) {
+            e.preventDefault(); // Чтобы не уйти на главную при секретном нажатии
             const user = localStorage.getItem('username');
-            showNotification(user ? `Вошли как: ${user}` : "Никто не вошел");
-            logoClicks = 0; // сброс
+            
+            // Если showNotification не сработает, выведем обычный alert для страховки
+            const statusText = user ? `В системе: ${user}` : "Вход не выполнен";
+            
+            if (typeof showNotification === "function") {
+                showNotification(statusText);
+            } else {
+                alert(statusText);
+            }
+            
+            logoClicks = 0;
         }
-    };
+    });
+
+    // Сбрасываем счетчик через 2 секунды, если не успел нажать 3 раза
+    setInterval(() => {
+        if (logoClicks > 0) logoClicks = 0;
+    }, 2000);
 }
