@@ -113,3 +113,72 @@ body { background: #fff; color: #333; overflow-x: hidden; }
 .toggle-password:hover {
     color: #c5a059;
 }
+
+.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 20px;
+}
+
+.profile-card {
+    background: #1a1f35;
+    width: 100%;
+    max-width: 500px;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    border: 1px solid rgba(197, 160, 89, 0.2); /* Твой золотистый цвет */
+}
+
+.user-avatar {
+    width: 80px;
+    height: 80px;
+    background: #c5a059;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 20px;
+    font-size: 40px;
+    color: #000;
+}
+
+.profile-header h1 {
+    color: #fff;
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.user-status {
+    color: #c5a059;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.profile-info {
+    margin-top: 40px;
+    text-align: left;
+}
+
+.info-item {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.info-item label {
+    display: block;
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 5px;
+}
+
+.info-item span {
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+}
