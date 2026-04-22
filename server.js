@@ -4,8 +4,8 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const app = express();
 
-// --- ССЫЛКА НА ТВОЮ БАЗУ ДАННЫХ (ЗАМЕНИ ТВОЙ_ПАРОЛЬ) ---
-const mongoURI = 'mongodb+srv://JustGreenFicus:OvEr8888888@@krasdecobase.axx0rgf.mongodb.net/krasdeco?retryWrites=true&w=majority&appName=KrasDecoBase';
+// Ссылка с закодированным паролем (символ @ заменен на %40)
+const mongoURI = 'mongodb+srv://JustGreenFicus:OvEr8888888%40@krasdecobase.axx0rgf.mongodb.net/krasdeco?retryWrites=true&w=majority&appName=KrasDecoBase';
 
 // Подключение к MongoDB Atlas
 mongoose.connect(mongoURI)
@@ -28,16 +28,13 @@ app.use(express.static(path.join(__dirname, '/')));
 app.post('/api/signup', async (req, res) => {
     try {
         const { username, email, password } = req.body;
-        
         const existingUser = await User.findOne({ username });
         if (existingUser) {
             return res.status(400).json({ message: 'Этот логин уже занят' });
         }
-
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({ username, email, password: hashedPassword });
         await newUser.save();
-        
         res.json({ message: 'Аккаунт успешно создан в облаке!' });
     } catch (err) {
         res.status(500).json({ message: 'Ошибка сервера при регистрации' });
@@ -49,12 +46,8 @@ app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body;
         const user = await User.findOne({ username });
-        
         if (user && await bcrypt.compare(password, user.password)) {
-            res.json({ 
-                message: 'Вход выполнен успешно!', 
-                user: { username: user.username } 
-            });
+            res.json({ message: 'Вход выполнен успешно!', user: { username: user.username } });
         } else {
             res.status(400).json({ message: 'Неверное имя пользователя или пароль' });
         }
@@ -63,8 +56,5 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// Запуск сервера
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Сервер запущен на порту ${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Сервер запущен на порту ${PORT}`));
