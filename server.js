@@ -4,8 +4,8 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const app = express();
 
-// Ссылка с закодированным паролем (символ @ заменен на %40)
-const mongoURI = 'mongodb+srv://JustGreenFicus:OvEr8888888%40@krasdecobase.axx0rgf.mongodb.net/krasdeco?retryWrites=true&w=majority&appName=KrasDecoBase';
+// Ссылка с закодированным паролем
+const mongoURI = 'mongodb+srv://JustGreenFicus:OvEr88888888@krasdecobase.axx0rgf.mongodb.net/krasdeco?retryWrites=true&w=majority&appName=KrasDecoBase';
 
 // Подключение к MongoDB Atlas
 mongoose.connect(mongoURI)
