@@ -1,35 +1,33 @@
-/* Сохрани все свои старые стили для hero, footer и т.д. */
-/* И добавь в конец вот это для блока пользователя: */
+/* ТВОИ ОРИГИНАЛЬНЫЕ СТИЛИ (Hero, Footer, Navbar и т.д. должны быть здесь) */
 
+/* Блок профиля (добавляется только когда пользователь залогинен) */
 .user-profile-nod {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 5px 10px;
-    border-left: 1px solid #444;
-    margin-left: 15px;
+    padding: 0 15px;
+    border-left: 1px solid rgba(255,255,255,0.2);
 }
 
 .user-name {
     color: #fff;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: bold;
     letter-spacing: 1px;
-    margin-bottom: 4px;
+    text-transform: uppercase;
 }
 
 .user-controls {
     display: flex;
-    gap: 10px;
+    gap: 8px;
 }
 
 .settings-btn, .logout-btn {
     background: none;
     border: none;
-    color: #888;
+    color: rgba(255,255,255,0.6);
     cursor: pointer;
-    font-size: 10px;
+    font-size: 9px;
     text-transform: uppercase;
     padding: 0;
     text-decoration: underline;
@@ -38,12 +36,11 @@
 .logout-btn { color: #ff5555; }
 .settings-btn:hover { color: #fff; }
 
-/* Чтобы в мобильном меню профиль не ломался */
 @media screen and (max-width: 768px) {
     .user-profile-nod {
-        margin: 20px 0;
         border-left: none;
-        border-top: 1px solid #444;
-        padding-top: 15px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding: 15px 0;
+        margin-top: 10px;
     }
 }
