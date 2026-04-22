@@ -59,3 +59,44 @@ body { background: #fff; color: #333; overflow-x: hidden; }
     }
     .nav-links.active { display: flex; }
 }
+/* Контейнер для уведомлений в нижнем правом углу */
+.notification-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 100000; /* Выше модалки */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.custom-toast {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.05); /* Почти полная прозрачность */
+    backdrop-filter: blur(8px); /* Эффект матового стекла */
+    -webkit-backdrop-filter: blur(8px);
+    color: #ffffff; /* Белые буквы */
+    padding: 15px 25px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Тонкая светлая граница */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    transform: translateX(120%); /* Вылетает справа */
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.custom-toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Белая иконка в кружочке */
+.custom-toast i {
+    font-size: 18px;
+    color: #ffffff;
+    opacity: 0.9;
+}
