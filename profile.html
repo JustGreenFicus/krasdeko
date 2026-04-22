@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Мой профиль | Kras Deco</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">KRAS<br><span>DECO</span></div>
+        <a href="index.html" class="btn-auth-submit" style="width: auto; padding: 5px 15px;">НА ГЛАВНУЮ</a>
+    </nav>
+
+    <div class="profile-container" style="max-width: 600px; margin: 50px auto; padding: 20px; background: #1e1e1e; border: 1px solid #333;">
+        <h2 style="border-bottom: 1px solid #444; padding-bottom: 10px;">ЛИЧНЫЙ КАБИНЕТ</h2>
+        <div class="profile-info" style="margin-top: 20px;">
+            <p><strong>ЛОГИН:</strong> <span id="prof-username">---</span></p>
+            <p><strong>СТАТУС:</strong> Клиент Kras Deco</p>
+        </div>
+        
+        <div class="profile-actions" style="margin-top: 30px; display: flex; gap: 10px;">
+            <button class="btn-auth-submit" onclick="alert('История заказов пуста')">ИСТОРИЯ ЗАКАЗОВ</button>
+            <button class="btn-auth-submit" style="background: #444;" onclick="logout()">ВЫЙТИ</button>
+        </div>
+    </div>
+
+    <script>
+        // Скрипт прямо на странице для быстрой подгрузки данных
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = localStorage.getItem('username');
+            if (!user) {
+                window.location.href = 'index.html'; // Если не залогинен — выкидываем
+            }
+            document.getElementById('prof-username').innerText = user.toUpperCase();
+        });
+        
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
