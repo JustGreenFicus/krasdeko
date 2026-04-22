@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // ССЫЛКА НА ТВОЙ БЭКЕНД (вставь свою из Render)
-    const API_URL = 'https://твой-проект.onrender.com'; 
+    const API_URL = 'https://krasdeko.onrender.com'; 
 
     const authModal = document.getElementById('authModal');
     const openAuthBtn = document.getElementById('openAuthBtn');
