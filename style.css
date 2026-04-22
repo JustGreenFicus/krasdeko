@@ -1,4 +1,3 @@
-
 /* ОБЩИЕ */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', Arial, sans-serif; }
 body { background: #fff; color: #333; overflow-x: hidden; }
@@ -6,8 +5,7 @@ body { background: #fff; color: #333; overflow-x: hidden; }
 /* НАВИГАЦИЯ */
 .navbar {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 30px 5%; width: 100%; position: absolute; top: 0; 
-    z-index: 2000;
+    padding: 30px 5%; width: 100%; position: absolute; top: 0; z-index: 2000;
 }
 .logo { color: white; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
 .logo span { font-weight: 300; }
@@ -15,45 +13,10 @@ body { background: #fff; color: #333; overflow-x: hidden; }
 .nav-links a { color: white; text-decoration: none; font-size: 0.9rem; text-transform: uppercase; transition: 0.3s; }
 .nav-links a:hover { color: #c5a059; }
 
-/* ИКОНКА ВОЙТИ / ЧЕЛОВЕЧЕК (Серебристый цвет) */
-.nav-links a i {
-    color: #b0b0b0; /* Тот самый серебристый/серый */
-    margin-right: 5px;
-    transition: 0.3s;
+/* ИКОНКИ И ТЕКСТ (СЕРЕБРИСТЫЙ) */
+.nav-links a i, .social-minimal a i, .customer-service p, .newsletter-minimal p {
+    color: #b0b0b0 !important;
 }
-.nav-links a:hover i {
-    color: #fff;
-}
-
-/* БЛОК ПОЛЬЗОВАТЕЛЯ (после входа) */
-.user-profile-nav {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding-left: 20px;
-    border-left: 1px solid rgba(255, 255, 255, 0.2);
-}
-.user-name-display {
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
-.logout-link {
-    background: none;
-    border: none;
-    color: #ff5e5e;
-    font-size: 10px;
-    text-transform: uppercase;
-    cursor: pointer;
-    padding: 0;
-    text-decoration: underline;
-    margin-top: 2px;
-}
-
-/* БУРГЕР */
-.menu-toggle { display: none; flex-direction: column; cursor: pointer; z-index: 10001; }
-.bar { width: 25px; height: 3px; background: white; margin: 4px 0; transition: 0.4s; }
 
 /* ГЛАВНАЯ */
 .hero {
@@ -67,36 +30,11 @@ body { background: #fff; color: #333; overflow-x: hidden; }
     color: #000; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 20px;
 }
 
-/* ФУТЕР (Минималистичный с серыми текстами и иконками) */
-.footer-minimal {
-    padding: 60px 5%;
-    background: #fff;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
-    border-top: 1px solid #eee;
-}
-.customer-service p, .newsletter-minimal p {
-    color: #b0b0b0; /* Серебристо-серый текст */
-    font-size: 0.9rem;
-}
-.social-minimal a i {
-    color: #b0b0b0; /* Серебристо-серые иконки соцсетей */
-    font-size: 1.2rem;
-    margin-right: 15px;
-    transition: 0.3s;
-}
-.social-minimal a:hover i {
-    color: #000;
-}
-
-/* МОДАЛЬНОЕ ОКНО АВТОРИЗАЦИИ */
+/* МОДАЛЬНОЕ ОКНО */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
-    display: none; 
-    justify-content: center; align-items: center; 
-    z-index: 99999;
+    display: none; justify-content: center; align-items: center; z-index: 99999;
 }
 .modal-overlay.active { display: flex !important; }
 
@@ -108,32 +46,29 @@ body { background: #fff; color: #333; overflow-x: hidden; }
 
 @keyframes modalShow { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 
-.close-modal { position: absolute; right: 15px; top: 15px; color: rgba(255,255,255,0.3); font-size: 30px; cursor: pointer; transition: 0.3s; z-index: 10; }
-.close-modal:hover { color: #fff; }
-
+.close-modal { position: absolute; right: 15px; top: 15px; color: rgba(255,255,255,0.3); font-size: 30px; cursor: pointer; }
 .tab-group { display: flex; margin-bottom: 35px; position: relative; border-bottom: 1px solid rgba(255,255,255,0.1); }
 .tab { cursor: pointer; padding-bottom: 15px; margin-right: 30px; font-weight: bold; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; font-size: 13px; }
 .tab.active { color: #fff; }
-.underline { position: absolute; bottom: -1px; left: 0; height: 2px; width: 55px; background: #c5a059; transition: all 0.3s ease; }
+.underline { position: absolute; bottom: -1px; left: 0; height: 2px; width: 55px; background: #c5a059; transition: 0.3s; }
 
 .auth-form { display: none; flex-direction: column; }
-.auth-form.active { display: flex; animation: fadeIn 0.4s ease; }
-
+.auth-form.active { display: flex; }
 .input-group { margin-bottom: 20px; }
 .input-group label { display: block; font-size: 10px; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px; }
 .input-group input { width: 100%; padding: 14px 16px; border: none; border-radius: 6px; background: rgba(255, 255, 255, 0.08); color: #fff; outline: none; }
-.btn-auth-submit { background: #c5a059; color: #000; border: none; padding: 16px; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; }
+.btn-auth-submit { background: #c5a059; color: #000; border: none; padding: 16px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
 
-/* МОБИЛЬНАЯ АДАПТАЦИЯ */
-@media (max-width: 768px) {
-    .menu-toggle { display: flex; z-index: 10002; }
-    .nav-links {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-        background: #111; flex-direction: column; justify-content: center; align-items: center; 
-        z-index: 10001;
-    }
-    .nav-links.active { display: flex !important; }
-    .hero-content h1 { font-size: 2.2rem; }
-    .footer-minimal { grid-template-columns: 1fr; text-align: center; }
-    .user-profile-nav { border-left: none; padding-left: 0; margin-top: 15px; align-items: center; }
+/* УВЕДОМЛЕНИЯ В УГЛУ */
+.notification-container { position: fixed; bottom: 20px; right: 20px; z-index: 100000; display: flex; flex-direction: column; gap: 10px; }
+.custom-toast {
+    background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); color: white;
+    padding: 12px 24px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2);
+    transform: translateX(120%); transition: 0.5s;
 }
+.custom-toast.show { transform: translateX(0); }
+
+/* ПРОФИЛЬ В МЕНЮ */
+.user-profile-nav { display: flex; flex-direction: column; align-items: flex-start; padding-left: 15px; border-left: 1px solid #444; }
+.user-name-display { color: #fff; font-size: 12px; font-weight: bold; text-decoration: none; }
+.logout-link { background: none; border: none; color: #ff5e5e; font-size: 10px; cursor: pointer; text-decoration: underline; }
