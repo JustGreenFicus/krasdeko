@@ -4,15 +4,15 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const app = express();
 
-// Твоя ссылка для подключения (ЗАМЕНИ ТВОЙ_ПАРОЛЬ НА СВОЙ)
-const mongoURI = 'mongodb+srv://JustGreenFicus:ТВОЙ_ПАРОЛЬ@krasdecobase.axx0rgf.mongodb.net/krasdeco?retryWrites=true&w=majority&appName=KrasDecoBase';
+// --- ССЫЛКА НА ТВОЮ БАЗУ ДАННЫХ (ЗАМЕНИ ТВОЙ_ПАРОЛЬ) ---
+const mongoURI = 'mongodb+srv://JustGreenFicus:OvEr8888888@@krasdecobase.axx0rgf.mongodb.net/krasdeco?retryWrites=true&w=majority&appName=KrasDecoBase';
 
-// Подключение к облачной базе данных
+// Подключение к MongoDB Atlas
 mongoose.connect(mongoURI)
-    .then(() => console.log('Успешное подключение к MongoDB Atlas'))
-    .catch(err => console.error('Ошибка подключения к базе:', err));
+    .then(() => console.log('✅ Успешное подключение к MongoDB Atlas'))
+    .catch(err => console.error('❌ Ошибка подключения к базе:', err));
 
-// Описание того, как выглядит "Пользователь" в базе данных
+// Схема данных пользователя
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true },
@@ -24,34 +24,30 @@ const User = mongoose.model('User', userSchema);
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '/')));
 
-// --- ЭНДПОИНТ РЕГИСТРАЦИИ ---
+// API: Регистрация
 app.post('/api/signup', async (req, res) => {
     try {
         const { username, email, password } = req.body;
         
-        // Шифруем пароль перед сохранением
-        const hashedPassword = await bcrypt.hash(password, 10);
-        
-        const newUser = new User({ 
-            username, 
-            email, 
-            password: hashedPassword 
-        });
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Этот логин уже занят' });
+        }
 
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ username, email, password: hashedPassword });
         await newUser.save();
-        res.json({ message: 'Аккаунт успешно создан и сохранен в облаке!' });
+        
+        res.json({ message: 'Аккаунт успешно создан в облаке!' });
     } catch (err) {
-        console.error(err);
-        res.status(400).json({ message: 'Ошибка: такой логин уже существует' });
+        res.status(500).json({ message: 'Ошибка сервера при регистрации' });
     }
 });
 
-// --- ЭНДПОИНТ ВХОДА ---
+// API: Вход
 app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-        
-        // Ищем пользователя в базе по имени
         const user = await User.findOne({ username });
         
         if (user && await bcrypt.compare(password, user.password)) {
@@ -70,32 +66,5 @@ app.post('/api/login', async (req, res) => {
 // Запуск сервера
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Сервер Kras Deco запущен на порту ${PORT}`);
+    console.log(`🚀 Сервер запущен на порту ${PORT}`);
 });
-
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://JustGreenFicus:<OvEr8888888@>@krasdecobase.axx0rgf.mongodb.net/?appName=KrasDecoBase";
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
-
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
-
