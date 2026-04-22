@@ -154,3 +154,16 @@ function switchForm(type, element) {
         underline.style.left = element.offsetLeft + 'px';
     }
 }
+let logoClicks = 0;
+const logo = document.querySelector('.logo');
+
+if (logo) {
+    logo.onclick = () => {
+        logoClicks++;
+        if (logoClicks === 3) {
+            const user = localStorage.getItem('username');
+            showNotification(user ? `Вошли как: ${user}` : "Никто не вошел");
+            logoClicks = 0; // сброс
+        }
+    };
+}
