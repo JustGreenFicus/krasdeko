@@ -1,74 +1,171 @@
-/* ОБЩИЕ */
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', Arial, sans-serif; }
-body { background: #fff; color: #333; overflow-x: hidden; }
-
-/* НАВИГАЦИЯ */
-.navbar {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 30px 5%; width: 100%; position: absolute; top: 0; z-index: 2000;
+/* ОБЩИЕ СТИЛИ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
-.logo { color: white; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
-.logo span { font-weight: 300; }
-.nav-links { display: flex; list-style: none; gap: 30px; align-items: center; }
-.nav-links a { color: white; text-decoration: none; font-size: 0.9rem; text-transform: uppercase; transition: 0.3s; }
-.nav-links a:hover { color: #c5a059; }
 
-/* ИКОНКИ И ТЕКСТ (СЕРЕБРИСТЫЙ) */
-.nav-links a i, .social-minimal a i, .customer-service p, .newsletter-minimal p {
+body {
+    background: #0f121d; /* Глубокий темный фон */
+    color: #fff;
+    overflow-x: hidden;
+}
+
+/* ИСПРАВЛЕНИЕ НАВИГАЦИИ */
+.navbar {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 20px 5%; 
+    width: 100%; 
+    position: absolute; 
+    top: 0; 
+    z-index: 1000; /* Чтобы не перекрывать модалку */
+}
+
+/* МОДАЛЬНОЕ ОКНО (ФОН) */
+.modal-overlay {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85); 
+    backdrop-filter: blur(10px);
+    display: none; /* Управляется через JS */
+    justify-content: center; 
+    align-items: center; 
+    z-index: 99999; /* Поверх всего */
+}
+
+/* КОНТЕЙНЕР ФОРМЫ */
+.auth-container {
+    background: #1a1f35;
+    width: 90%;
+    max-width: 400px;
+    padding: 40px;
+    border-radius: 20px;
+    position: relative;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ТАБЫ (ВХОД / РЕГИСТРАЦИЯ) */
+.auth-tabs {
+    display: flex;
+    position: relative;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #333;
+}
+
+.tab {
+    flex: 1;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 600;
+    color: #888;
+    transition: 0.3s;
+}
+
+.tab.active {
+    color: #fff;
+}
+
+.underline {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 50%;
+    height: 3px;
+    background: #c5a059; /* Цвет Kras Deco */
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ПОЛЯ ВВОДА */
+.auth-form {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.auth-form.active {
+    display: flex;
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+input {
+    width: 100%;
+    padding: 12px 15px;
+    background: #252b45;
+    border: 1px solid #3d4465;
+    border-radius: 8px;
+    color: white;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: #c5a059;
+}
+
+/* КНОПКА */
+.auth-btn {
+    background: #c5a059;
+    color: #1a1f35;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    text-transform: uppercase;
+}
+
+.auth-btn:hover {
+    background: #d4b475;
+    transform: translateY(-2px);
+}
+
+.auth-btn:disabled {
+    background: #555;
+    cursor: not-allowed;
+}
+
+/* УВЕДОМЛЕНИЯ (ТОТ САМЫЙ БЛОК) */
+.notification-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.custom-toast {
+    background: #252b45;
+    color: #fff;
+    padding: 15px 25px;
+    border-radius: 10px;
+    border-left: 5px solid #c5a059;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    min-width: 250px;
+    transform: translateX(150%);
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.custom-toast.show {
+    transform: translateX(0);
+}
+
+/* ЦВЕТА KRAS DECO ДЛЯ ФУТЕРА И ИКОНОК */
+.footer-info, .social-icon, .user-name-display {
     color: #b0b0b0 !important;
 }
-
-/* ГЛАВНАЯ */
-.hero {
-    height: 100vh; width: 100%;
-    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('img/main-bg.jpg') center/cover;
-    display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white;
-}
-.hero-content h1 { font-size: 3.5rem; margin-bottom: 20px; line-height: 1.2; }
-.btn-catalog-main { 
-    display: inline-block; padding: 18px 40px; background: #c5a059; 
-    color: #000; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 20px;
-}
-
-/* МОДАЛЬНОЕ ОКНО */
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
-    display: none; justify-content: center; align-items: center; z-index: 99999;
-}
-.modal-overlay.active { display: flex !important; }
-
-.auth-container {
-    background: #2b324d; width: 100%; max-width: 380px; padding: 40px; border-radius: 12px;
-    position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-    animation: modalShow 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-}
-
-@keyframes modalShow { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-
-.close-modal { position: absolute; right: 15px; top: 15px; color: rgba(255,255,255,0.3); font-size: 30px; cursor: pointer; }
-.tab-group { display: flex; margin-bottom: 35px; position: relative; border-bottom: 1px solid rgba(255,255,255,0.1); }
-.tab { cursor: pointer; padding-bottom: 15px; margin-right: 30px; font-weight: bold; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; font-size: 13px; }
-.tab.active { color: #fff; }
-.underline { position: absolute; bottom: -1px; left: 0; height: 2px; width: 55px; background: #c5a059; transition: 0.3s; }
-
-.auth-form { display: none; flex-direction: column; }
-.auth-form.active { display: flex; }
-.input-group { margin-bottom: 20px; }
-.input-group label { display: block; font-size: 10px; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px; }
-.input-group input { width: 100%; padding: 14px 16px; border: none; border-radius: 6px; background: rgba(255, 255, 255, 0.08); color: #fff; outline: none; }
-.btn-auth-submit { background: #c5a059; color: #000; border: none; padding: 16px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
-
-/* УВЕДОМЛЕНИЯ В УГЛУ */
-.notification-container { position: fixed; bottom: 20px; right: 20px; z-index: 100000; display: flex; flex-direction: column; gap: 10px; }
-.custom-toast {
-    background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); color: white;
-    padding: 12px 24px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2);
-    transform: translateX(120%); transition: 0.5s;
-}
-.custom-toast.show { transform: translateX(0); }
-
-/* ПРОФИЛЬ В МЕНЮ */
-.user-profile-nav { display: flex; flex-direction: column; align-items: flex-start; padding-left: 15px; border-left: 1px solid #444; }
-.user-name-display { color: #fff; font-size: 12px; font-weight: bold; text-decoration: none; }
-.logout-link { background: none; border: none; color: #ff5e5e; font-size: 10px; cursor: pointer; text-decoration: underline; }
