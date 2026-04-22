@@ -23,9 +23,7 @@
                 <li><a href="tables.html">Столы</a></li>
                 <li><a href="chairs.html">Стулья</a></li>
                 <li><a href="contacts.html">Контакты</a></li>
-                <li id="auth-section">
-                    <a href="#" id="openAuthBtn"><i class="fa-regular fa-user"></i> ВОЙТИ</a>
-                </li>
+                <li><a href="#" id="openAuthBtn"><i class="fa-regular fa-user"></i> ВОЙТИ</a></li>
             </ul>
         </nav>
 
@@ -77,7 +75,12 @@
                     <label>PASSWORD</label>
                     <input type="password" placeholder="Введите пароль" required>
                 </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="keep-signed">
+                    <label for="keep-signed">ЗАПОМНИТЬ МЕНЯ</label>
+                </div>
                 <button type="submit" class="btn-auth-submit">SIGN IN</button>
+                <a href="#" class="forgot-pass">Забыли пароль?</a>
             </form>
 
             <form id="signup-form" class="auth-form">
@@ -87,17 +90,3 @@
                 </div>
                 <div class="input-group">
                     <label>EMAIL ADDRESS</label>
-                    <input type="email" placeholder="Ваша почта" required>
-                </div>
-                <div class="input-group">
-                    <label>PASSWORD</label>
-                    <input type="password" placeholder="Придумайте пароль" required>
-                </div>
-                <button type="submit" class="btn-auth-submit">SIGN UP</button>
-            </form>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
