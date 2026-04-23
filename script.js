@@ -1,24 +1,32 @@
 // 1. ГЛОБАЛЬНЫЕ НАСТРОЙКИ
 const API_URL = 'https://krasdeko.onrender.com'; 
 
-// 2. ФУНКЦИЯ УВЕДОМЛЕНИЙ (Монохромный стиль)
+// 2. ФУНКЦИЯ УВЕДОМЛЕНИЙ (Исправлено для стабильности верстки)
 function showNotification(msg) {
-    let container = document.querySelector('.notification-container');
+    let container = document.getElementById('toast-container');
+    
+    // Если контейнера нет, создаем его программно с правильным ID
     if (!container) {
         container = document.createElement('div');
-        container.className = 'notification-container';
+        container.id = 'toast-container';
+        container.className = 'toast-container';
         document.body.appendChild(container);
     }
+
     const toast = document.createElement('div');
-    toast.className = 'custom-toast';
+    toast.className = 'toast';
     toast.innerText = msg;
+    
     container.appendChild(toast);
     
-    setTimeout(() => toast.classList.add('show'), 100);
+    // Плавное появление (минимальная задержка для срабатывания CSS transition)
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    // Удаление через 4 секунды
     setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 500);
-    }, 3000);
+    }, 4000);
 }
 
 // 3. ОСНОВНАЯ ЛОГИКА
@@ -41,6 +49,16 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             authModal.classList.add('active');
             document.body.style.overflow = 'hidden';
+            
+            // Корректно отрисовываем линию подчеркивания при открытии
+            const activeTab = document.querySelector('.tab.active');
+            if (activeTab) {
+                setTimeout(() => {
+                    // Определяем тип формы по тексту таба
+                    const type = activeTab.innerText.toLowerCase().includes('in') ? 'login' : 'signup';
+                    window.switchForm(type, activeTab);
+                }, 50);
+            }
         };
     }
 
@@ -66,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             password: passwordInput.value
         };
         
-        if (endpoint === 'signup') {
+        if (endpoint === 'signup' && emailInput) {
             formData.email = emailInput.value;
         }
 
@@ -89,7 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 showNotification(`Добро пожаловать, ${userObj.username}!`);
                 
-                // Закрываем модалку и обновляем UI без перезагрузки
                 authModal.classList.remove('active');
                 document.body.style.overflow = 'auto';
                 updateNavWithUser(userObj.username);
@@ -110,7 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // 4. УПРАВЛЕНИЕ UI И САЙДБАРОМ
-
 function updateNavWithUser(username) {
     const authSection = document.getElementById('auth-section');
     if (authSection) {
@@ -122,18 +138,19 @@ function updateNavWithUser(username) {
     }
 }
 
-function toggleSidebar() {
+window.toggleSidebar = () => {
     const sidebar = document.getElementById('user-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
-    sidebar.classList.toggle('active');
-    overlay.classList.toggle('active');
-}
+    if (sidebar && overlay) {
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
+};
 
-// 5. ГЛОБАЛЬНЫЕ ФУНКЦИИ ПРОФИЛЯ (Сайдбар)
-
+// 5. ГЛОБАЛЬНЫЕ ФУНКЦИИ ПРОФИЛЯ
 window.logout = () => {
     localStorage.removeItem('userAccount');
-    window.location.reload(); // Полная перезагрузка для сброса состояния
+    window.location.reload();
 };
 
 window.updateUsername = async () => {
@@ -156,7 +173,7 @@ window.updateUsername = async () => {
             user.username = newUsername;
             localStorage.setItem('userAccount', JSON.stringify(user));
             updateNavWithUser(newUsername);
-            showNotification("Имя изменено");
+            showNotification("Имя успешно изменено");
         } else {
             const data = await response.json();
             showNotification(data.message);
@@ -182,7 +199,7 @@ window.updatePassword = async () => {
         });
 
         if (response.ok) {
-            showNotification("Пароль обновлен");
+            showNotification("Пароль успешно обновлен");
             document.getElementById('old-password').value = '';
             document.getElementById('new-password').value = '';
         } else {
@@ -192,12 +209,13 @@ window.updatePassword = async () => {
     } catch (e) { showNotification("Ошибка сервера"); }
 };
 
-// Переключение табов в модалке
 window.switchForm = (type, element) => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
     element.classList.add('active');
-    document.getElementById(type + '-form').classList.add('active');
+    
+    const form = document.getElementById(type + '-form');
+    if (form) form.classList.add('active');
     
     const underline = document.querySelector('.underline');
     if (underline) {
