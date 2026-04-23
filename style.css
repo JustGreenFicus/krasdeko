@@ -1,40 +1,58 @@
 /* ОБЩИЕ НАСТРОЙКИ */
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', Arial, sans-serif; }
-body { background: #fff; color: #1a1a1a; overflow-x: hidden; width: 100%; }
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'Helvetica Neue', Arial, sans-serif; 
+}
+html, body { 
+    background: #fff; 
+    color: #1a1a1a; 
+    overflow-x: hidden; /* Запрещает горизонтальный скролл */
+    width: 100%;
+}
 
-/* --- ВСПЛЫВАЮЩИЕ УВЕДОМЛЕНИЯ (НОВОЕ) --- */
+/* --- ВСПЛЫВАЮЩИЕ УВЕДОМЛЕНИЯ (ИСПРАВЛЕНО) --- */
 .toast-container {
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 10000;
+    z-index: 10001; /* Выше всех */
     display: flex;
     flex-direction: column;
     gap: 10px;
+    pointer-events: none; /* Чтобы контейнер не мешал кликам */
+    max-width: 300px;
 }
 
 .toast {
-    background: #ff4444; /* Цвет ошибки */
+    background: #ff4444; 
     color: white;
-    padding: 15px 25px;
+    padding: 15px 20px;
     border-radius: 4px;
     font-size: 0.8rem;
     letter-spacing: 1px;
     text-transform: uppercase;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    transform: translateX(120%);
+    transform: translateX(120%); /* Спрятан за край */
     transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    border-left: 4px solid #b30000;
+    pointer-events: auto; /* Сами уведомления кликабельны */
 }
 
 .toast.show {
-    transform: translateX(0);
+    transform: translateX(0); /* Выезжает ровно к краю */
 }
 
 /* НАВИГАЦИЯ */
 .navbar {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 30px 5%; width: 100%; position: absolute; top: 0; z-index: 1000;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 30px 5%; 
+    width: 100%; 
+    position: absolute; 
+    top: 0; 
+    z-index: 1000;
 }
 .logo { color: white; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; font-size: 1.5rem; }
 .logo span { font-weight: 300; opacity: 0.8; }
@@ -48,15 +66,21 @@ body { background: #fff; color: #1a1a1a; overflow-x: hidden; width: 100%; }
 
 /* ГЛАВНАЯ СТРАНИЦА */
 .hero {
-    height: 100vh; width: 100%;
-    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('img/main-bg.jpg') center/cover;
-    display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white;
+    height: 100vh; 
+    width: 100%;
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('img/main-bg.jpg') center/cover no-repeat;
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    text-align: center; 
+    color: white;
 }
 .hero-content h1 { 
     font-size: 4.5rem; font-weight: 300; letter-spacing: 5px; margin-bottom: 20px; 
 }
 
-/* КНОПКА КАТАЛОГА */
+/* КНОПКА */
 .btn-catalog-main { 
     display: inline-block; padding: 18px 45px; border: 1px solid #fff; 
     color: #fff; text-decoration: none; font-size: 1rem; letter-spacing: 2px;
@@ -96,15 +120,8 @@ body { background: #fff; color: #1a1a1a; overflow-x: hidden; width: 100%; }
 }
 
 /* ТАБЫ */
-.tab-group { 
-    display: flex; gap: 35px; margin-bottom: 40px; 
-    position: relative; border-bottom: 1px solid #222; 
-}
-.tab { 
-    cursor: pointer; padding-bottom: 15px; font-size: 0.9rem; 
-    letter-spacing: 2px; color: #555; font-weight: bold; 
-    text-transform: uppercase; transition: 0.3s;
-}
+.tab-group { display: flex; gap: 35px; margin-bottom: 40px; position: relative; border-bottom: 1px solid #222; }
+.tab { cursor: pointer; padding-bottom: 15px; font-size: 0.9rem; letter-spacing: 2px; color: #555; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
 .tab.active { color: #fff; }
 .underline { position: absolute; bottom: -1px; height: 2px; background: #fff; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 
@@ -118,9 +135,8 @@ body { background: #fff; color: #1a1a1a; overflow-x: hidden; width: 100%; }
     width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid #222; 
     background: transparent; color: #fff; outline: none; transition: 0.3s; font-size: 1rem;
 }
-.input-group input:focus { border-bottom-color: #fff; }
 
-/* --- ССЫЛКА "ЗАБЫЛИ ПАРОЛЬ" (БЕЛЫЙ ЦВЕТ И РАМКА) --- */
+/* ССЫЛКА "ЗАБЫЛИ ПАРОЛЬ" */
 .forgot-password, 
 .forgot-password:visited {
     align-self: flex-end;
@@ -135,14 +151,8 @@ body { background: #fff; color: #1a1a1a; overflow-x: hidden; width: 100%; }
     border: 1px solid #ffffff;
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.05);
-    display: inline-block;
 }
-
-.forgot-password:hover { 
-    color: #000000 !important;
-    background: #ffffff;
-    border-color: #ffffff;
-}
+.forgot-password:hover { color: #000; background: #fff; }
 
 .btn-auth-submit { 
     background: #fff; color: #000; border: none; padding: 16px; width: 100%;
@@ -158,6 +168,12 @@ body { background: #fff; color: #1a1a1a; overflow-x: hidden; width: 100%; }
 @media (max-width: 768px) {
     .navbar { padding: 20px 5%; }
     .hero-content h1 { font-size: 2.8rem; }
+    .nav-links { gap: 15px; }
     .auth-container { padding: 30px 20px; max-width: 95%; }
     .sidebar { width: 85%; padding: 40px 20px; }
+}
+
+@media (max-width: 480px) {
+    .logo { font-size: 1.1rem; }
+    .hero-content h1 { font-size: 2.2rem; }
 }
