@@ -113,25 +113,28 @@ body { background: #fff; color: #1a1a1a; overflow-x: hidden; width: 100%; }
 }
 .input-group input:focus { border-bottom-color: #fff; }
 
-/* ССЫЛКА "ЗАБЫЛИ ПАРОЛЬ" (ЦВЕТ + РАМКА) */
-.forgot-password {
+/* ИСПРАВЛЕННАЯ ССЫЛКА "ЗАБЫЛИ ПАРОЛЬ" */
+.forgot-password, 
+.forgot-password:visited {
     align-self: flex-end;
     font-size: 0.75rem;
-    color: #b0b0b0; /* Серебристый оттенок */
+    color: #ffffff !important; /* Строго белый цвет */
     text-decoration: none;
     letter-spacing: 1px;
     transition: 0.3s;
     margin-bottom: 25px;
     margin-top: 10px;
     padding: 8px 15px;
-    border: 1px solid #333; /* Тонкая рамка */
+    border: 1px solid #ffffff; /* Белая рамка */
     border-radius: 4px;
-    background: rgba(255, 255, 255, 0.03);
-}
-.forgot-password:hover { 
-    color: #fff; 
-    border-color: #555;
     background: rgba(255, 255, 255, 0.05);
+    display: inline-block;
+}
+
+.forgot-password:hover { 
+    color: #000000 !important; /* Черный текст при наведении */
+    background: #ffffff; /* Белый фон при наведении */
+    border-color: #ffffff;
 }
 
 .btn-auth-submit { 
