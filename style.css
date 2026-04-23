@@ -29,7 +29,7 @@ body { background: #fff; color: #1a1a1a; overflow-x: hidden; width: 100%; }
     font-weight: 300; letter-spacing: 5px; margin-bottom: 20px; 
 }
 
-/* ПРАВИЛЬНАЯ ВИЗУАЛИЗАЦИЯ КНОПКИ (ИЗ ТВОЕГО КОДА) */
+/* ПРАВИЛЬНАЯ ВИЗУАЛИЗАЦИЯ КНОПКИ */
 .btn-catalog-main { 
     display: inline-block; padding: 18px 45px; border: 1px solid #fff; 
     color: #fff; text-decoration: none; font-size: 1rem; letter-spacing: 2px;
@@ -104,7 +104,7 @@ body { background: #fff; color: #1a1a1a; overflow-x: hidden; width: 100%; }
 .input-group { 
     display: flex; 
     flex-direction: column; 
-    margin-bottom: 15px;
+    margin-bottom: 5px; /* Уменьшен отступ для линка пароля */
 }
 .input-group label { font-size: 0.8rem; color: #555; margin-bottom: 8px; letter-spacing: 1px; }
 .input-group input { 
@@ -113,9 +113,22 @@ body { background: #fff; color: #1a1a1a; overflow-x: hidden; width: 100%; }
 }
 .input-group input:focus { border-bottom-color: #fff; }
 
+/* КРАСИВАЯ ССЫЛКА "ЗАБЫЛИ ПАРОЛЬ" */
+.forgot-password {
+    align-self: flex-end;
+    font-size: 0.75rem;
+    color: #555;
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: 0.3s;
+    margin-bottom: 20px;
+    margin-top: 5px;
+}
+.forgot-password:hover { color: #fff; }
+
 .btn-auth-submit { 
     background: #fff; color: #000; border: none; padding: 16px; width: 100%;
-    font-size: 1rem; font-weight: bold; letter-spacing: 1px; cursor: pointer; margin-top: 10px;
+    font-size: 1rem; font-weight: bold; letter-spacing: 1px; cursor: pointer; margin-top: 5px;
 }
 
 /* ФУТЕР */
