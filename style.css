@@ -1,4 +1,3 @@
-/* ОБЩИЕ НАСТРОЙКИ */
 * {
     margin: 0;
     padding: 0;
@@ -13,7 +12,6 @@ html, body {
     width: 100%;
 }
 
-/* ВСПЛЫВАЮЩИЕ УВЕДОМЛЕНИЯ */
 .toast-container {
     position: fixed;
     top: 20px;
@@ -44,7 +42,6 @@ html, body {
     transform: translateX(0);
 }
 
-/* НАВИГАЦИЯ */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -84,6 +81,7 @@ html, body {
     letter-spacing: 1px;
     transition: 0.3s;
     opacity: 0.8;
+    cursor: pointer;
 }
 
 .nav-links a:hover {
@@ -91,7 +89,6 @@ html, body {
     color: #fff;
 }
 
-/* ГЛАВНАЯ СТРАНИЦА */
 .hero {
     height: 100vh;
     width: 100%;
@@ -111,7 +108,6 @@ html, body {
     margin-bottom: 20px;
 }
 
-/* КНОПКА */
 .btn-catalog-main {
     display: inline-block;
     padding: 18px 45px;
@@ -129,7 +125,6 @@ html, body {
     color: #000;
 }
 
-/* САЙДБАР */
 .sidebar {
     position: fixed;
     top: 0;
@@ -166,7 +161,6 @@ html, body {
     display: block;
 }
 
-/* МОДАЛЬНОЕ ОКНО */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -196,7 +190,6 @@ html, body {
     color: #fff;
 }
 
-/* ТАБЫ */
 .tab-group {
     display: flex;
     gap: 35px;
@@ -228,7 +221,6 @@ html, body {
     transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ФОРМЫ */
 .auth-form {
     display: none;
     flex-direction: column;
@@ -268,7 +260,6 @@ html, body {
     border-bottom-color: #fff;
 }
 
-/* ЗАБЫЛИ ПАРОЛЬ */
 .forgot-password,
 .forgot-password:visited {
     align-self: flex-end;
@@ -303,7 +294,6 @@ html, body {
     margin-top: 5px;
 }
 
-/* ФУТЕР */
 .footer-minimal {
     padding: 80px 5%;
     background: #f9f9f9;
@@ -324,7 +314,6 @@ html, body {
     line-height: 1.6;
 }
 
-/* АДАПТАЦИЯ */
 @media (max-width: 768px) {
     .navbar { padding: 20px 5%; }
     .hero-content h1 { font-size: 2.8rem; }
