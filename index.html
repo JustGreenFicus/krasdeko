@@ -9,6 +9,8 @@
 </head>
 <body>
 
+    <div class="toast-container" id="toast-container"></div>
+
     <header class="hero">
         <nav class="navbar">
             <div class="logo">KRAS<br><span>DECO</span></div>
@@ -48,16 +50,13 @@
                 <input type="text" id="new-username" placeholder="Новый никнейм">
                 <button onclick="updateUsername()" class="sidebar-main-btn">ИЗМЕНИТЬ</button>
             </div>
-
             <div class="sidebar-divider"></div>
-
             <div class="settings-group">
                 <label>БЕЗОПАСНОСТЬ</label>
                 <input type="password" id="old-password" placeholder="Текущий пароль">
                 <input type="password" id="new-password" placeholder="Новый пароль">
                 <button onclick="updatePassword()" class="sidebar-main-btn">ОБНОВИТЬ ПАРОЛЬ</button>
             </div>
-
             <button onclick="logout()" class="logout-link">ВЫЙТИ ИЗ СИСТЕМЫ</button>
         </div>
     </div>
@@ -69,15 +68,13 @@
             <p class="strong">Call 8 (918) 008 15 46</p>
             <p>Пн-Пт: 8:00 - 17:00</p>
         </div>
-
         <div class="social-minimal">
             <a href="https://m.vk.com/kakoy_to_kirill" target="_blank"><i class="fa-brands fa-vk"></i></a>
             <a href="https://t.me/JustGreenFicus" target="_blank"><i class="fa-brands fa-telegram"></i></a>
         </div>
-
         <div class="newsletter-minimal">
             <h2>BRIGHTEN UP YOUR INBOX</h2>
-            <p>Присоединяйтесь к нам, чтобы получать новости о новинках и скидку 10% на заказ.</p>
+            <p>Присоединяйтесь к нам, чтобы получать новости о новинках.</p>
             <form class="subscribe-form">
                 <input type="email" placeholder="Enter your email address" required>
                 <button type="submit">SIGN UP</button>
@@ -110,7 +107,7 @@
                     <label for="keep-signed" style="margin: 0; font-size: 10px; color: rgba(255,255,255,0.5);">ЗАПОМНИТЬ МЕНЯ</label>
                 </div>
                 <button type="submit" class="btn-auth-submit">SIGN IN</button>
-                <a href="#" onclick="handleForgotPassword()" class="forgot-pass">Забыли пароль?</a>
+                <a href="#" onclick="handleForgotPassword()" class="forgot-password">Забыли пароль?</a>
             </form>
 
             <form id="signup-form" class="auth-form">
