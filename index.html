@@ -41,7 +41,7 @@
     <div id="user-sidebar" class="sidebar">
         <div class="sidebar-header">
             <div class="user-info-top">
-                <span id="display-username">Username</span>
+                <span id="display-username">Загрузка...</span>
                 <button onclick="editField('username')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
             </div>
             <button onclick="toggleSidebar()" class="close-sidebar-btn">&times;</button>
@@ -59,7 +59,7 @@
             <div class="settings-group">
                 <label>НОМЕР ТЕЛЕФОНА</label>
                 <div class="field-row">
-                    <span id="display-phone">+7...</span>
+                    <span id="display-phone">+7</span>
                     <button onclick="editField('phone')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
                 </div>
             </div>
@@ -92,7 +92,7 @@
             <form id="login-form" class="auth-form active">
                 <div class="input-group">
                     <label>USERNAME OR PHONE</label>
-                    <input type="text" name="username" placeholder="Логин или +7..." required>
+                    <input type="text" name="username" placeholder="Логин или номер" required autocomplete="off">
                 </div>
                 <div class="input-group">
                     <label>PASSWORD</label>
@@ -108,15 +108,15 @@
             <form id="signup-form" class="auth-form">
                 <div class="input-group">
                     <label>USERNAME</label>
-                    <input type="text" name="username" placeholder="Придумайте логин" required>
+                    <input type="text" name="username" placeholder="Придумайте логин" required autocomplete="off">
                 </div>
                 <div class="input-group">
                     <label>EMAIL ADDRESS</label>
-                    <input type="email" name="email" placeholder="Ваша почта" required>
+                    <input type="email" name="email" placeholder="Ваша почта" required autocomplete="off">
                 </div>
                 <div class="input-group">
                     <label>PHONE NUMBER</label>
-                    <input type="tel" name="phone" value="+7" maxlength="13" placeholder="+7" required>
+                    <input type="tel" name="phone" value="+7" placeholder="+7" required autocomplete="off">
                 </div>
                 <div class="input-group">
                     <label>PASSWORD</label>
