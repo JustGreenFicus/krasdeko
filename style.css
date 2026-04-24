@@ -294,14 +294,18 @@ html, body {
     margin-top: 5px;
 }
 
+
 .footer-minimal {
     padding: 80px 5%;
     background: #f9f9f9;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 40px;
 }
 
+.footer-minimal > div {
+    flex: 1 1 250px;
+}
 .footer-minimal h2 {
     font-size: 1.2rem;
     letter-spacing: 2px;
