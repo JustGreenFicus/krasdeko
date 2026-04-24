@@ -1,157 +1,157 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kras Deco — Мебель для жизни</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kras Deco — Мебель для жизни</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <div class="toast-container" id="toast-container"></div>
+    <div class="toast-container" id="toast-container"></div>
 
-    <header class="hero">
-        <nav class="navbar">
-            <div class="logo">KRAS<span>DECO</span></div>
-            
-            <div class="menu-toggle" id="mobile-menu">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
+    <header class="hero">
+        <nav class="navbar">
+            <div class="logo">KRAS<span>DECO</span></div>
+            
+            <div class="menu-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
 
-            <ul class="nav-links">
-                <li><a href="tables.html">Столы</a></li>
-                <li><a href="chairs.html">Стулья</a></li>
-                <li><a href="contacts.html">Контакты</a></li>
-                <li id="auth-section">
-                    <a href="#" id="openAuthBtn"><i class="fa-regular fa-circle-user"></i> ВОЙТИ</a>
-                </li>
-            </ul>
-        </nav>
+            <ul class="nav-links">
+                <li><a href="tables.html">Столы</a></li>
+                <li><a href="chairs.html">Стулья</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+                <li id="auth-section">
+                    <a href="#" id="openAuthBtn"><i class="fa-regular fa-circle-user"></i> ВОЙТИ</a>
+                </li>
+            </ul>
+        </nav>
 
-        <div class="hero-content">
-            <h1>СОЗДАЙТЕ УЮТ<br>В ВАШЕМ ДОМЕ</h1>
-            <p>Стильная мебель для жизни</p>
-            <a href="tables.html" class="btn-catalog-main">ПЕРЕЙТИ В КАТАЛОГ ↗</a>
-        </div>
-    </header>
+        <div class="hero-content">
+            <h1>СОЗДАЙТЕ УЮТ<br>В ВАШЕМ ДОМЕ</h1>
+            <p>Стильная мебель для жизни</p>
+            <a href="tables.html" class="btn-catalog-main">ПЕРЕЙТИ В КАТАЛОГ ↗</a>
+        </div>
+    </header>
 
-    <div id="user-sidebar" class="sidebar">
-        <div class="sidebar-header">
-            <div class="user-info-top user-trigger">
-                <i class="fa-regular fa-circle-user"></i>
-                <span id="display-username">Загрузка...</span>
-                <button onclick="editField('username')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
-            </div>
-            <button onclick="toggleSidebar()" class="close-sidebar-btn">&times;</button>
-        </div>
-        
-        <div class="sidebar-content">
-            <div class="settings-group">
-                <label>ЭЛЕКТРОННАЯ ПОЧТА</label>
-                <div class="field-row">
-                    <span id="display-email">example@mail.com</span>
-                    <button onclick="editField('email')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
-                </div>
-            </div>
+    <div id="user-sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="user-info-top user-trigger">
+                <i class="fa-regular fa-circle-user"></i>
+                <span id="display-username">Загрузка...</span>
+                <button onclick="editField('username')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
+            </div>
+            <button onclick="toggleSidebar()" class="close-sidebar-btn">&times;</button>
+        </div>
+        
+        <div class="sidebar-content">
+            <div class="settings-group">
+                <label>ЭЛЕКТРОННАЯ ПОЧТА</label>
+                <div class="field-row">
+                    <span id="display-email">example@mail.com</span>
+                    <button onclick="editField('email')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
+                </div>
+            </div>
 
-            <div class="settings-group">
-                <label>НОМЕР ТЕЛЕФОНА</label>
-                <div class="field-row">
-                    <span id="display-phone">+7</span>
-                    <button onclick="editField('phone')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
-                </div>
-            </div>
+            <div class="settings-group">
+                <label>НОМЕР ТЕЛЕФОНА</label>
+                <div class="field-row">
+                    <span id="display-phone">+7</span>
+                    <button onclick="editField('phone')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
+                </div>
+            </div>
 
-            <div class="sidebar-divider"></div>
+            <div class="sidebar-divider"></div>
 
-            <div class="settings-group">
-                <label>БЕЗОПАСНОСТЬ</label>
-                <div class="field-row">
-                    <span>••••••••</span>
-                    <button onclick="editField('password')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
-                </div>
-            </div>
+            <div class="settings-group">
+                <label>БЕЗОПАСНОСТЬ</label>
+                <div class="field-row">
+                    <span>••••••••</span>
+                    <button onclick="editField('password')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
+                </div>
+            </div>
 
-            <button onclick="logout()" class="logout-link">ВЫЙТИ ИЗ СИСТЕМЫ</button>
-        </div>
-    </div>
-    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+            <button onclick="logout()" class="logout-link">ВЫЙТИ ИЗ СИСТЕМЫ</button>
+        </div>
+    </div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <div class="modal-overlay" id="authModal">
-        <div class="auth-container">
-            <span class="close-modal" id="closeAuthBtn">&times;</span>
-            
-            <div class="tab-group">
-                <div class="tab active" onclick="switchForm('login', this)">SIGN IN</div>
-                <div class="tab" onclick="switchForm('signup', this)">SIGN UP</div>
-                <div class="underline"></div>
-            </div>
+    <div class="modal-overlay" id="authModal">
+        <div class="auth-container">
+            <span class="close-modal" id="closeAuthBtn">&times;</span>
+            
+            <div class="tab-group">
+                <div class="tab active" onclick="switchForm('login', this)">SIGN IN</div>
+                <div class="tab" onclick="switchForm('signup', this)">SIGN UP</div>
+                <div class="underline"></div>
+            </div>
 
-            <form id="login-form" class="auth-form active">
-                <div class="input-group">
-                    <label>USERNAME OR PHONE</label>
-                    <input type="text" name="username" placeholder="Логин или номер" required autocomplete="off">
-                </div>
-                <div class="input-group">
-                    <label>PASSWORD</label>
-                    <div class="password-container">
-                        <input type="password" id="login-password" name="password" placeholder="Введите пароль" required>
-                        <i class="fa-regular fa-eye toggle-password" onclick="togglePassword('login-password', this)"></i>
-                    </div>
-                </div>
-                <button type="submit" class="btn-auth-submit">SIGN IN</button>
-                <a href="#" class="forgot-password">Забыли пароль?</a>
-            </form>
+            <form id="login-form" class="auth-form active">
+                <div class="input-group">
+                    <label>USERNAME OR PHONE</label>
+                    <input type="text" name="username" placeholder="Логин или номер" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>PASSWORD</label>
+                    <div class="password-container">
+                        <input type="password" id="login-password" name="password" placeholder="Введите пароль" required>
+                        <i class="fa-regular fa-eye toggle-password" onclick="togglePassword('login-password', this)"></i>
+                    </div>
+                </div>
+                <button type="submit" class="btn-auth-submit">SIGN IN</button>
+                <a href="#" class="forgot-password">Забыли пароль?</a>
+            </form>
 
-            <form id="signup-form" class="auth-form">
-                <div class="input-group">
-                    <label>USERNAME</label>
-                    <input type="text" name="username" placeholder="Придумайте логин" required autocomplete="off">
-                </div>
-                <div class="input-group">
-                    <label>EMAIL ADDRESS</label>
-                    <input type="email" name="email" placeholder="Ваша почта" required autocomplete="off">
-                </div>
-                <div class="input-group">
-                    <label>PHONE NUMBER</label>
-                    <input type="tel" name="phone" placeholder="+7" inputmode="tel" required autocomplete="off">
-                </div>
-                <div class="input-group">
-                    <label>PASSWORD</label>
-                    <div class="password-container">
-                        <input type="password" id="signup-password" name="password" placeholder="Придумайте пароль" required>
-                        <i class="fa-regular fa-eye toggle-password" onclick="togglePassword('signup-password', this)"></i>
-                    </div>
-                </div>
-                <button type="submit" class="btn-auth-submit">SIGN UP</button> 
-            </form>
-        </div>
-    </div>
+            <form id="signup-form" class="auth-form">
+                <div class="input-group">
+                    <label>USERNAME</label>
+                    <input type="text" name="username" placeholder="Придумайте логин" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>EMAIL ADDRESS</label>
+                    <input type="email" name="email" placeholder="Ваша почта" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>PHONE NUMBER</label>
+                    <input type="tel" name="phone" placeholder="+7" inputmode="tel" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>PASSWORD</label>
+                    <div class="password-container">
+                        <input type="password" id="signup-password" name="password" placeholder="Придумайте пароль" required>
+                        <i class="fa-regular fa-eye toggle-password" onclick="togglePassword('signup-password', this)"></i>
+                    </div>
+                </div>
+                <button type="submit" class="btn-auth-submit">SIGN UP</button> 
+            </form>
+        </div>
+    </div>
 
-    <section class="footer-minimal">
-        <div class="customer-service">
-            <h2>CUSTOMER SERVICE</h2>
-            <p>Wanna chat with customer service?</p>
-            <p><strong>Call 8 (918) 008 15 46</strong></p>
-            <p>Пн-Пт: 8:00 - 17:00</p>
-        </div>
-        <div class="social-minimal">
-            <a href="https://m.vk.com/kakoy_to_kirill" target="_blank"><i class="fa-brands fa-vk"></i></a>
-            <a href="https://t.me/JustGreenFicus" target="_blank"><i class="fa-brands fa-telegram"></i></a>
-        </div>
-        <div class="newsletter-minimal">
-            <h2>BRIGHTEN UP YOUR INBOX</h2>
-            <p>Присоединяйтесь к нам, чтобы получать новости о новинках.</p>
-            <form class="subscribe-form">
-                <input type="email" placeholder="Enter your email address" required>
-                <button type="submit">SIGN UP</button>
-            </form>
-        </div>
-    </section>
+    <section class="footer-minimal">
+        <div class="customer-service">
+            <h2>CUSTOMER SERVICE</h2>
+            <p>Wanna chat with customer service?</p>
+            <p><strong>Call 8 (918) 008 15 46</strong></p>
+            <p>Пн-Пт: 8:00 - 17:00</p>
+        </div>
+        <div class="social-minimal">
+            <a href="https://m.vk.com/kakoy_to_kirill" target="_blank"><i class="fa-brands fa-vk"></i></a>
+            <a href="https://t.me/JustGreenFicus" target="_blank"><i class="fa-brands fa-telegram"></i></a>
+        </div>
+        <div class="newsletter-minimal">
+            <h2>BRIGHTEN UP YOUR INBOX</h2>
+            <p>Присоединяйтесь к нам, чтобы получать новости о новинках.</p>
+            <form class="subscribe-form">
+                <input type="email" placeholder="Enter your email address" required>
+                <button type="submit">SIGN UP</button>
+            </form>
+        </div>
+    </section>
 
-    <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
