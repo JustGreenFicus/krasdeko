@@ -22,7 +22,7 @@ function showNotification(msg) {
     }, 4000);
 }
 
-// 3. УЛУЧШЕННАЯ МАСКА ТЕЛЕФОНА (ЖЕСТКАЯ ФИКСАЦИЯ)
+// 3. УЛУЧШЕННАЯ МАСКА ТЕЛЕФОНА (БЕТОННАЯ ФИКСАЦИЯ)
 function applyPhoneMask(input) {
     const prefix = '+7 ';
 
@@ -40,10 +40,15 @@ function applyPhoneMask(input) {
         return res;
     };
 
+    // Функция для удержания курсора в нужной позиции
+    const fixCursor = () => {
+        if (input.selectionStart < 3) {
+            input.setSelectionRange(input.value.length, input.value.length);
+        }
+    };
+
     input.addEventListener('input', (e) => {
         let val = e.target.value;
-        
-        // Запрещаем стирать префикс
         if (!val.startsWith(prefix)) {
             e.target.value = prefix;
             return;
@@ -60,18 +65,15 @@ function applyPhoneMask(input) {
     });
 
     input.addEventListener('keydown', (e) => {
-        // Блокируем Backspace на границе префикса
         if (e.key === 'Backspace' && input.selectionStart <= 3) {
             e.preventDefault();
         }
     });
 
-    input.addEventListener('click', () => {
-        // Не даем ставить курсор в самое начало
-        if (input.selectionStart < 3) {
-            input.setSelectionRange(input.value.length, input.value.length);
-        }
-    });
+    // Фикс для кликов и фокуса на мобилках (планшетах)
+    input.addEventListener('click', fixCursor);
+    input.addEventListener('focus', fixCursor);
+    input.addEventListener('mouseup', (e) => setTimeout(fixCursor, 10));
 }
 
 // 4. ОСНОВНАЯ ЛОГИКА ПРИ ЗАГРУЗКЕ
@@ -151,15 +153,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (signupForm) signupForm.onsubmit = (e) => handleAuth(e, 'signup');
 });
 
-// 5. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА (БЕЗ ТРОЕТОЧИЙ)
+// 5. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА (ФИКС ИСЧЕЗНОВЕНИЯ НИКА)
 function updateUI(user) {
     const authSection = document.getElementById('auth-section');
+    const sidebarTitle = document.querySelector('#user-sidebar .user-trigger');
+
+    const formattedName = user.username ? user.username.toUpperCase() : 'ПРОФИЛЬ';
+
+    // Обновляем кнопку входа
     if (authSection) {
         authSection.innerHTML = `
             <a href="#" onclick="toggleSidebar()" class="user-trigger">
-                <i class="fa-regular fa-circle-user"></i> ${user.username.toUpperCase()}
+                <i class="fa-regular fa-circle-user"></i> ${formattedName}
             </a>
         `;
+    }
+
+    // Обновляем ник внутри сайдбара (чтобы не пропадал)
+    if (sidebarTitle) {
+        sidebarTitle.innerHTML = `<i class="fa-regular fa-circle-user"></i> ${formattedName}`;
     }
     
     if (document.getElementById('display-username')) {
@@ -167,7 +179,6 @@ function updateUI(user) {
         document.getElementById('display-email').innerText = user.email || 'Не указана';
         
         const p = user.phone || '';
-        // Красивое отображение: если номер 11 цифр — маска, иначе просто +7
         if (p.replace(/\D/g, '').length >= 10) {
             const d = p.replace(/\D/g, '');
             const clean = d.startsWith('7') ? d.substring(1) : d;
@@ -185,7 +196,8 @@ window.editField = (type) => {
 
     const currentValue = displayElem.innerText;
     displayElem.style.display = 'none';
-    displayElem.nextElementSibling.style.display = 'none'; 
+    const nextBtn = displayElem.nextElementSibling;
+    if (nextBtn) nextBtn.style.display = 'none'; 
 
     const editHTML = `
         <div class="edit-mode-container" style="width: 100%; display: flex; gap: 5px; margin-top: 5px;">
@@ -240,9 +252,10 @@ window.saveEdit = async (type) => {
         const data = await response.json();
 
         if (response.ok) {
-            user[type] = newValue;
-            localStorage.setItem('userAccount', JSON.stringify(user));
-            updateUI(user);
+            // Создаем новый объект, чтобы ничего не потерять
+            const updatedUser = { ...user, [type]: newValue };
+            localStorage.setItem('userAccount', JSON.stringify(updatedUser));
+            updateUI(updatedUser);
             showNotification("Обновлено");
             cancelEdit();
         } else {
@@ -269,8 +282,10 @@ window.switchForm = (type, element) => {
     element.classList.add('active');
     document.getElementById(type + '-form').classList.add('active');
     const underline = document.querySelector('.underline');
-    underline.style.width = element.offsetWidth + 'px';
-    underline.style.left = element.offsetLeft + 'px';
+    if (underline) {
+        underline.style.width = element.offsetWidth + 'px';
+        underline.style.left = element.offsetLeft + 'px';
+    }
 };
 
 window.togglePassword = (inputId, icon) => {
