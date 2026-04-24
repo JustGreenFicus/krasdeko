@@ -22,7 +22,7 @@ function showNotification(msg) {
     }, 4000);
 }
 
-// 3. ЖЕСТКАЯ МАСКА ТЕЛЕФОНА (ЗАЩИТА ПРЕФИКСА +7)
+// 3. ЖЕСТКАЯ МАСКА ТЕЛЕФОНА
 function applyPhoneMask(input) {
     if (!input) return;
     const prefix = '+7 ';
@@ -64,7 +64,6 @@ function applyPhoneMask(input) {
 
     input.addEventListener('click', restrictCursor);
     input.addEventListener('focus', restrictCursor);
-    input.addEventListener('keyup', restrictCursor);
 }
 
 // 4. ОСНОВНАЯ ЛОГИКА ПРИ ЗАГРУЗКЕ
@@ -73,6 +72,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const openAuthBtn = document.getElementById('openAuthBtn');
     const closeAuthBtn = document.getElementById('closeAuthBtn');
     const overlay = document.getElementById('sidebar-overlay');
+
+    // Инициализация подчеркивания вкладок
+    const activeTab = document.querySelector('.tab.active');
+    if (activeTab) {
+        moveUnderline(activeTab);
+    }
 
     document.querySelectorAll('input[name="phone"]').forEach(applyPhoneMask);
 
@@ -86,6 +91,11 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             authModal.classList.add('active');
             document.body.style.overflow = 'hidden';
+            // Сбрасываем полоску при открытии
+            setTimeout(() => {
+                const tab = document.querySelector('.tab.active');
+                if (tab) moveUnderline(tab);
+            }, 10);
         };
     }
 
@@ -112,6 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         submitBtn.disabled = true;
+        const originalText = submitBtn.innerText;
         submitBtn.innerText = 'ОБРАБОТКА...';
 
         try {
@@ -134,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showNotification('Ошибка сервера');
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerText = endpoint === 'login' ? 'SIGN IN' : 'SIGN UP';
+            submitBtn.innerText = originalText;
         }
     }
 
@@ -142,14 +153,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (signupForm) signupForm.onsubmit = (e) => handleAuth(e, 'signup');
 });
 
-// 5. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА (ИСПРАВЛЕНО)
+// 5. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
 function updateUI(user) {
     if (!user) return;
     const authSection = document.getElementById('auth-section');
     const sidebarUsername = document.getElementById('display-username');
     const nameToShow = user.username || 'ПРОФИЛЬ';
 
-    // Обновляем шапку
     if (authSection) {
         authSection.innerHTML = `
             <a href="#" onclick="toggleSidebar(); return false;" class="user-trigger">
@@ -158,16 +168,11 @@ function updateUI(user) {
         `;
     }
 
-    // Обновляем имя в сайдбаре
-    if (sidebarUsername) {
-        sidebarUsername.innerText = nameToShow;
-    }
+    if (sidebarUsername) sidebarUsername.innerText = nameToShow;
 
-    // Обновляем email
     const emailElem = document.getElementById('display-email');
     if (emailElem) emailElem.innerText = user.email || 'Не указана';
     
-    // Обновляем телефон
     const phoneElem = document.getElementById('display-phone');
     if (phoneElem) {
         const p = user.phone || '';
@@ -221,7 +226,7 @@ window.cancelEdit = () => {
     document.querySelectorAll('.field-row').forEach(el => el.style.display = 'flex');
 };
 
-// 8. СОХРАНЕНИЕ (ИСПРАВЛЕН БАГ С ИСЧЕЗНОВЕНИЕМ НИКА)
+// 8. СОХРАНЕНИЕ
 window.saveEdit = async (type) => {
     const input = document.getElementById(`edit-input-${type}`);
     let val = input.value.trim();
@@ -245,18 +250,11 @@ window.saveEdit = async (type) => {
         const data = await response.json();
 
         if (response.ok) {
-            // МЕРДЖ: Сохраняем старый объект, обновляем только одно поле
             const updatedUser = { ...oldUser, ...data.user };
-            // Если сервер не вернул поле, которое мы меняли, принудительно ставим его
             if (type !== 'password') updatedUser[type] = sendVal;
-
             localStorage.setItem('userAccount', JSON.stringify(updatedUser));
-            
-            // Сначала возвращаем видимость строк
             cancelEdit();
-            // Потом обновляем интерфейс
             updateUI(updatedUser);
-            
             showNotification("Данные обновлены");
         } else {
             showNotification(data.message || "Ошибка");
@@ -266,6 +264,7 @@ window.saveEdit = async (type) => {
     }
 };
 
+// 9. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
 window.logout = () => {
     localStorage.removeItem('userAccount');
     window.location.reload();
@@ -274,9 +273,19 @@ window.logout = () => {
 window.switchForm = (type, element) => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    
     element.classList.add('active');
     document.getElementById(type + '-form').classList.add('active');
+    moveUnderline(element);
 };
+
+function moveUnderline(element) {
+    const underline = document.querySelector('.underline');
+    if (underline) {
+        underline.style.width = element.offsetWidth + 'px';
+        underline.style.left = element.offsetLeft + 'px';
+    }
+}
 
 window.togglePassword = (inputId, icon) => {
     const input = document.getElementById(inputId);
