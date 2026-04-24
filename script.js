@@ -1,35 +1,27 @@
 // 1. ГЛОБАЛЬНЫЕ НАСТРОЙКИ
 const API_URL = 'https://krasdeko.onrender.com'; 
 
-// 2. ФУНКЦИЯ УВЕДОМЛЕНИЙ (Исправлено для стабильности верстки)
+// 2. ФУНКЦИЯ УВЕДОМЛЕНИЙ
 function showNotification(msg) {
     let container = document.getElementById('toast-container');
-    
-    // Если контейнера нет, создаем его программно с правильным ID
     if (!container) {
         container = document.createElement('div');
         container.id = 'toast-container';
         container.className = 'toast-container';
         document.body.appendChild(container);
     }
-
     const toast = document.createElement('div');
     toast.className = 'toast';
     toast.innerText = msg;
-    
     container.appendChild(toast);
-    
-    // Плавное появление (минимальная задержка для срабатывания CSS transition)
     setTimeout(() => toast.classList.add('show'), 10);
-    
-    // Удаление через 4 секунды
     setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 500);
     }, 4000);
 }
 
-// 3. ОСНОВНАЯ ЛОГИКА
+// 3. ОСНОВНАЯ ЛОГИКА ПРИ ЗАГРУЗКЕ
 document.addEventListener('DOMContentLoaded', () => {
     const authModal = document.getElementById('authModal');
     const openAuthBtn = document.getElementById('openAuthBtn');
@@ -37,28 +29,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
 
-    // Проверка авторизации при загрузке страницы
+    // Проверка авторизации
     const savedUser = JSON.parse(localStorage.getItem('userAccount'));
     if (savedUser) {
-        updateNavWithUser(savedUser.username);
+        updateUI(savedUser);
     }
 
-    // Модальное окно (Вход/Регистрация)
+    // Модальное окно
     if (openAuthBtn) {
         openAuthBtn.onclick = (e) => {
             e.preventDefault();
             authModal.classList.add('active');
             document.body.style.overflow = 'hidden';
-            
-            // Корректно отрисовываем линию подчеркивания при открытии
-            const activeTab = document.querySelector('.tab.active');
-            if (activeTab) {
-                setTimeout(() => {
-                    // Определяем тип формы по тексту таба
-                    const type = activeTab.innerText.toLowerCase().includes('in') ? 'login' : 'signup';
-                    window.switchForm(type, activeTab);
-                }, 50);
-            }
         };
     }
 
@@ -69,27 +51,18 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Обработка AUTH (Вход и Регистрация)
+    // Обработка входа и регистрации
     async function handleAuth(e, endpoint) {
         e.preventDefault();
         const form = e.target;
         const submitBtn = form.querySelector('button');
+        const formData = {};
         
-        const usernameInput = form.querySelector('input[name="username"]');
-        const passwordInput = form.querySelector('input[name="password"]');
-        const emailInput = form.querySelector('input[name="email"]');
-
-        const formData = {
-            username: usernameInput.value,
-            password: passwordInput.value
-        };
-        
-        if (endpoint === 'signup' && emailInput) {
-            formData.email = emailInput.value;
-        }
+        new FormData(form).forEach((value, key) => {
+            formData[key] = value;
+        });
 
         submitBtn.disabled = true;
-        const originalBtnText = submitBtn.innerText;
         submitBtn.innerText = 'ОБРАБОТКА...';
 
         try {
@@ -102,23 +75,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                const userObj = data.user || { username: data.username || formData.username };
+                const userObj = data.user || formData;
                 localStorage.setItem('userAccount', JSON.stringify(userObj));
-                
                 showNotification(`Добро пожаловать, ${userObj.username}!`);
-                
                 authModal.classList.remove('active');
                 document.body.style.overflow = 'auto';
-                updateNavWithUser(userObj.username);
+                updateUI(userObj);
             } else {
-                showNotification(data.message || 'Ошибка доступа');
-                submitBtn.disabled = false;
-                submitBtn.innerText = originalBtnText;
+                showNotification(data.message || 'Ошибка данных');
             }
         } catch (error) {
             showNotification('Ошибка связи с сервером');
+        } finally {
             submitBtn.disabled = false;
-            submitBtn.innerText = originalBtnText;
+            submitBtn.innerText = endpoint === 'login' ? 'SIGN IN' : 'SIGN UP';
         }
     }
 
@@ -126,115 +96,120 @@ document.addEventListener('DOMContentLoaded', () => {
     if (signupForm) signupForm.onsubmit = (e) => handleAuth(e, 'signup');
 });
 
-// 4. УПРАВЛЕНИЕ UI И САЙДБАРОМ
-function updateNavWithUser(username) {
+// 4. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
+function updateUI(user) {
     const authSection = document.getElementById('auth-section');
     if (authSection) {
         authSection.innerHTML = `
             <a href="#" onclick="toggleSidebar()" class="user-trigger">
-                <i class="fa-regular fa-circle-user"></i> ${username.toUpperCase()}
+                <i class="fa-regular fa-circle-user"></i> ${user.username.toUpperCase()}
             </a>
         `;
     }
+    
+    // Заполняем данные в сайдбаре
+    if (document.getElementById('display-username')) {
+        document.getElementById('display-username').innerText = user.username;
+        document.getElementById('display-email').innerText = user.email || 'Не указана';
+        document.getElementById('display-phone').innerText = user.phone || 'Не указан';
+    }
 }
 
+// 5. ЛОГИКА РЕДАКТИРОВАНИЯ (КАРАНДАШИК)
+window.editField = (type) => {
+    const displayElem = document.getElementById(`display-${type}`);
+    if (!displayElem && type !== 'password') return;
+
+    const currentValue = type === 'password' ? '' : displayElem.innerText;
+    const parent = type === 'password' ? document.querySelector('.sidebar-divider').previousElementSibling : displayElem.parentElement;
+
+    // Создаем мини-форму для редактирования
+    const editHTML = `
+        <div class="edit-mode-container" style="width: 100%; display: flex; gap: 5px; margin-top: 5px;">
+            <input type="text" id="edit-input-${type}" value="${currentValue}" placeholder="Новое значение" 
+                   style="flex: 1; background: #111; border: 1px solid #333; color: #fff; padding: 5px;">
+            <button onclick="saveEdit('${type}')" style="background: #fff; color: #000; border: none; padding: 5px 10px; cursor: pointer;"><i class="fa-solid fa-check"></i></button>
+            <button onclick="cancelEdit()" style="background: #333; color: #fff; border: none; padding: 5px 10px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+    `;
+
+    // Временно скрываем текущую строку и вставляем форму
+    if (type !== 'password') {
+        displayElem.style.display = 'none';
+        displayElem.nextElementSibling.style.display = 'none'; // Скрываем карандаш
+        displayElem.insertAdjacentHTML('afterend', editHTML);
+    } else {
+        showNotification("Для смены пароля введите данные в поля безопасности");
+    }
+};
+
+window.cancelEdit = () => {
+    document.querySelectorAll('.edit-mode-container').forEach(el => el.remove());
+    document.querySelectorAll('.field-row span, .edit-icon-btn').forEach(el => el.style.display = 'block');
+};
+
+window.saveEdit = async (type) => {
+    const newValue = document.getElementById(`edit-input-${type}`).value;
+    const user = JSON.parse(localStorage.getItem('userAccount'));
+
+    if (!newValue) {
+        showNotification("Поле не может быть пустым");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/api/update-profile`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                username: user.username, 
+                field: type, 
+                value: newValue 
+            })
+        });
+
+        if (response.ok) {
+            user[type] = newValue;
+            localStorage.setItem('userAccount', JSON.stringify(user));
+            updateUI(user);
+            showNotification("Данные обновлены");
+            cancelEdit();
+        } else {
+            showNotification("Ошибка при обновлении");
+        }
+    } catch (e) {
+        showNotification("Ошибка сервера");
+    }
+};
+
+// СТАНДАРТНЫЕ ФУНКЦИИ
 window.toggleSidebar = () => {
     const sidebar = document.getElementById('user-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
-    if (sidebar && overlay) {
-        sidebar.classList.toggle('active');
-        overlay.classList.toggle('active');
-    }
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
 };
 
-// 5. ГЛОБАЛЬНЫЕ ФУНКЦИИ ПРОФИЛЯ
 window.logout = () => {
     localStorage.removeItem('userAccount');
     window.location.reload();
-};
-
-window.updateUsername = async () => {
-    const newUsername = document.getElementById('new-username').value;
-    const user = JSON.parse(localStorage.getItem('userAccount'));
-
-    if (!newUsername || newUsername === user.username) {
-        showNotification("Введите новое имя");
-        return;
-    }
-
-    try {
-        const response = await fetch(`${API_URL}/api/update-username`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ oldUsername: user.username, newUsername: newUsername })
-        });
-
-        if (response.ok) {
-            user.username = newUsername;
-            localStorage.setItem('userAccount', JSON.stringify(user));
-            updateNavWithUser(newUsername);
-            showNotification("Имя успешно изменено");
-        } else {
-            const data = await response.json();
-            showNotification(data.message);
-        }
-    } catch (e) { showNotification("Ошибка сервера"); }
-};
-
-window.updatePassword = async () => {
-    const oldPass = document.getElementById('old-password').value;
-    const newPass = document.getElementById('new-password').value;
-    const user = JSON.parse(localStorage.getItem('userAccount'));
-
-    if (!oldPass || !newPass) {
-        showNotification("Заполните все поля");
-        return;
-    }
-
-    try {
-        const response = await fetch(`${API_URL}/api/update-password`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: user.username, oldPassword: oldPass, newPassword: newPass })
-        });
-
-        if (response.ok) {
-            showNotification("Пароль успешно обновлен");
-            document.getElementById('old-password').value = '';
-            document.getElementById('new-password').value = '';
-        } else {
-            const data = await response.json();
-            showNotification(data.message);
-        }
-    } catch (e) { showNotification("Ошибка сервера"); }
 };
 
 window.switchForm = (type, element) => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
     element.classList.add('active');
-    
-    const form = document.getElementById(type + '-form');
-    if (form) form.classList.add('active');
+    document.getElementById(type + '-form').classList.add('active');
     
     const underline = document.querySelector('.underline');
-    if (underline) {
-        underline.style.width = element.offsetWidth + 'px';
-        underline.style.left = element.offsetLeft + 'px';
-    }
+    underline.style.width = element.offsetWidth + 'px';
+    underline.style.left = element.offsetLeft + 'px';
 };
 
 window.togglePassword = (inputId, icon) => {
     const input = document.getElementById(inputId);
-    if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.replace('fa-eye', 'fa-eye-slash');
-    } else {
-        input.type = 'password';
-        icon.classList.replace('fa-eye-slash', 'fa-eye');
-    }
-};
-
-window.handleForgotPassword = () => {
-    showNotification("Ссылка для восстановления отправлена на почту");
+    const isPass = input.type === 'password';
+    input.type = isPass ? 'text' : 'password';
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
 };
