@@ -24,39 +24,49 @@ function showNotification(msg) {
 
 // 3. УЛУЧШЕННАЯ МАСКА ТЕЛЕФОНА (СТЕНА + ТИРЕ)
 function applyPhoneMask(input) {
-    const mask = (value) => {
-        if (!value.startsWith('+7')) value = '+7' + value.replace(/\D/g, '');
+    const formatValue = (val) => {
+        // Очищаем от всего, кроме цифр
+        let d = val.replace(/\D/g, '');
         
-        let digits = value.substring(2).replace(/\D/g, '');
-        if (digits.length > 10) digits = digits.substring(0, 10);
+        // Если пользователь начал вводить с 7 или 8, отсекаем их, чтобы не было +7 7...
+        if (d.startsWith('7') || d.startsWith('8')) d = d.substring(1);
+        
+        // Ограничиваем 10 цифрами (после +7)
+        d = d.substring(0, 10);
 
+        // Формируем: +7 999-000-00-00
         let res = '+7';
-        if (digits.length > 0) res += ' ' + digits.substring(0, 3);
-        if (digits.length >= 4) res += '-' + digits.substring(3, 6);
-        if (digits.length >= 7) res += '-' + digits.substring(6, 8);
-        if (digits.length >= 9) res += '-' + digits.substring(8, 10);
+        if (d.length > 0) res += ' ' + d.substring(0, 3);
+        if (d.length >= 4) res += '-' + d.substring(3, 6);
+        if (d.length >= 7) res += '-' + d.substring(6, 8);
+        if (d.length >= 9) res += '-' + d.substring(8, 10);
         
         return res;
     };
 
     input.addEventListener('input', (e) => {
-        const cursor = e.target.selectionStart;
-        const oldVal = e.target.value;
-        e.target.value = mask(e.target.value);
+        let cursor = e.target.selectionStart;
+        const oldLen = e.target.value.length;
         
-        // Не даем курсору прыгать назад за +7
-        if (cursor <= 2) e.target.setSelectionRange(3, 3);
+        e.target.value = formatValue(e.target.value);
+
+        // Чтобы курсор не прыгал в конец при вводе в середине
+        const newLen = e.target.value.length;
+        cursor = cursor + (newLen - oldLen);
+        
+        // "Стена": курсор не может быть раньше 4-й позиции (после "+7 ")
+        if (cursor <= 3) cursor = 3;
+        e.target.setSelectionRange(cursor, cursor);
     });
 
     input.addEventListener('keydown', (e) => {
-        // Блокируем Backspace, если курсор на границе +7
+        // Блокируем удаление префикса
         if (e.key === 'Backspace' && input.selectionStart <= 3) {
             e.preventDefault();
         }
     });
 
     input.addEventListener('click', () => {
-        // При клике в начало — прыгаем за префикс
         if (input.selectionStart < 3) {
             input.setSelectionRange(input.value.length, input.value.length);
         }
@@ -98,8 +108,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = {};
         
         new FormData(form).forEach((value, key) => {
-            formData[key] = (key === 'username' && endpoint === 'login') ? value : value;
-            if (endpoint === 'login' && key === 'username') formData['identifier'] = value;
+            // Очищаем телефон от маски перед отправкой (регистрация)
+            if (key === 'phone') {
+                formData[key] = value.replace(/\D/g, '');
+            } else if (endpoint === 'login' && key === 'username') {
+                formData['identifier'] = value;
+            } else {
+                formData[key] = value;
+            }
         });
 
         submitBtn.disabled = true;
@@ -149,7 +165,12 @@ function updateUI(user) {
     if (document.getElementById('display-username')) {
         document.getElementById('display-username').innerText = user.username;
         document.getElementById('display-email').innerText = user.email || 'Не указана';
-        document.getElementById('display-phone').innerText = user.phone || '+7...';
+        
+        // Красивое отображение телефона в профиле (если в базе он без тире)
+        const p = user.phone || '';
+        document.getElementById('display-phone').innerText = p.length === 11 
+            ? `+7 ${p.substring(1,4)}-${p.substring(4,7)}-${p.substring(7,9)}-${p.substring(9,11)}`
+            : (p || '+7...');
     }
 }
 
@@ -166,8 +187,8 @@ window.editField = (type) => {
         <div class="edit-mode-container" style="width: 100%; display: flex; gap: 5px; margin-top: 5px;">
             <input type="${type === 'email' ? 'email' : 'text'}" id="edit-input-${type}" value="${currentValue}" 
                    style="flex: 1; background: #111; border: 1px solid #333; color: #fff; padding: 5px; outline: none;">
-            <button onclick="saveEdit('${type}')" style="background: #fff; color: #000; border: none; padding: 5px 10px; cursor: pointer;"><i class="fa-solid fa-check"></i></button>
-            <button onclick="cancelEdit()" style="background: #222; color: #fff; border: 1px solid #444; padding: 5px 10px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+            <button onclick="saveEdit('${type}')" class="btn-save-mini"><i class="fa-solid fa-check"></i></button>
+            <button onclick="cancelEdit()" class="btn-cancel-mini"><i class="fa-solid fa-xmark"></i></button>
         </div>
     `;
 
@@ -185,7 +206,7 @@ window.cancelEdit = () => {
 
 window.saveEdit = async (type) => {
     const input = document.getElementById(`edit-input-${type}`);
-    const newValue = input.value;
+    let newValue = input.value;
     const user = JSON.parse(localStorage.getItem('userAccount'));
 
     if (!newValue) {
@@ -193,15 +214,21 @@ window.saveEdit = async (type) => {
         return;
     }
 
-    // Ищем ID в разных возможных полях (id или _id)
-    const userId = user._id || user.id;
+    // Очистка для сервера
+    if (type === 'phone') {
+        newValue = newValue.replace(/\D/g, ''); 
+        if (newValue.length < 11) {
+            showNotification("Номер слишком короткий");
+            return;
+        }
+    }
 
     try {
         const response = await fetch(`${API_URL}/api/update-profile`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                userId: userId, 
+                userId: user._id || user.id, 
                 field: type, 
                 value: newValue 
             })
@@ -213,7 +240,7 @@ window.saveEdit = async (type) => {
             user[type] = newValue;
             localStorage.setItem('userAccount', JSON.stringify(user));
             updateUI(user);
-            showNotification("Данные обновлены");
+            showNotification("Обновлено");
             cancelEdit();
         } else {
             showNotification(data.message || "Ошибка обновления");
