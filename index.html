@@ -40,47 +40,44 @@
 
     <div id="user-sidebar" class="sidebar">
         <div class="sidebar-header">
-            <h3>ПРОФИЛЬ</h3>
+            <div class="user-info-top">
+                <span id="display-username">Username</span>
+                <button onclick="editField('username')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
+            </div>
             <button onclick="toggleSidebar()" class="close-sidebar-btn">&times;</button>
         </div>
         
         <div class="sidebar-content">
             <div class="settings-group">
-                <label>ИМЯ ПОЛЬЗОВАТЕЛЯ</label>
-                <input type="text" id="new-username" placeholder="Новый никнейм">
-                <button onclick="updateUsername()" class="sidebar-main-btn">ИЗМЕНИТЬ</button>
+                <label>ЭЛЕКТРОННАЯ ПОЧТА</label>
+                <div class="field-row">
+                    <span id="display-email">example@mail.com</span>
+                    <button onclick="editField('email')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
+                </div>
             </div>
+
+            <div class="settings-group">
+                <label>НОМЕР ТЕЛЕФОНА</label>
+                <div class="field-row">
+                    <span id="display-phone">+7 (___) ___ __ __</span>
+                    <button onclick="editField('phone')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
+                </div>
+            </div>
+
             <div class="sidebar-divider"></div>
+
             <div class="settings-group">
                 <label>БЕЗОПАСНОСТЬ</label>
-                <input type="password" id="old-password" placeholder="Текущий пароль">
-                <input type="password" id="new-password" placeholder="Новый пароль">
-                <button onclick="updatePassword()" class="sidebar-main-btn">ОБНОВИТЬ ПАРОЛЬ</button>
+                <div class="field-row">
+                    <span>••••••••</span>
+                    <button onclick="editField('password')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
+                </div>
             </div>
+
             <button onclick="logout()" class="logout-link">ВЫЙТИ ИЗ СИСТЕМЫ</button>
         </div>
     </div>
     <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-
-    <section class="footer-minimal">
-        <div class="customer-service">
-            <p>Wanna chat with customer service?</p>
-            <p class="strong">Call 8 (918) 008 15 46</p>
-            <p>Пн-Пт: 8:00 - 17:00</p>
-        </div>
-        <div class="social-minimal">
-            <a href="https://m.vk.com/kakoy_to_kirill" target="_blank"><i class="fa-brands fa-vk"></i></a>
-            <a href="https://t.me/JustGreenFicus" target="_blank"><i class="fa-brands fa-telegram"></i></a>
-        </div>
-        <div class="newsletter-minimal">
-            <h2>BRIGHTEN UP YOUR INBOX</h2>
-            <p>Присоединяйтесь к нам, чтобы получать новости о новинках.</p>
-            <form class="subscribe-form">
-                <input type="email" placeholder="Enter your email address" required>
-                <button type="submit">SIGN UP</button>
-            </form>
-        </div>
-    </section>
 
     <div class="modal-overlay" id="authModal">
         <div class="auth-container">
@@ -102,10 +99,6 @@
                     <input type="password" id="login-password" name="password" placeholder="Введите пароль" required>
                     <i class="fa-regular fa-eye toggle-password" onclick="togglePassword('login-password', this)"></i>
                 </div>
-                <div class="checkbox-group" style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-                    <input type="checkbox" id="keep-signed" style="width: auto;">
-                    <label for="keep-signed" style="margin: 0; font-size: 10px; color: rgba(255,255,255,0.5);">ЗАПОМНИТЬ МЕНЯ</label>
-                </div>
                 <button type="submit" class="btn-auth-submit">SIGN IN</button>
                 <a href="#" onclick="handleForgotPassword()" class="forgot-password">Забыли пароль?</a>
             </form>
@@ -119,6 +112,10 @@
                     <label>EMAIL ADDRESS</label>
                     <input type="email" name="email" placeholder="Ваша почта" required>
                 </div>
+                <div class="input-group">
+                    <label>PHONE NUMBER</label>
+                    <input type="tel" name="phone" placeholder="+7 (999) 000-00-00" required>
+                </div>
                 <div class="input-group password-container">
                     <label>PASSWORD</label>
                     <input type="password" id="signup-password" name="password" placeholder="Придумайте пароль" required>
@@ -128,6 +125,26 @@
             </form>
         </div>
     </div>
+
+    <section class="footer-minimal">
+        <div class="customer-service">
+            <p>Wanna chat with customer service?</p>
+            <p class="strong">Call 8 (918) 008 15 46</p>
+            <p>Пн-Пт: 8:00 - 17:00</p>
+        </div>
+        <div class="social-minimal">
+            <a href="https://m.vk.com/kakoy_to_kirill" target="_blank"><i class="fa-brands fa-vk"></i></a>
+            <a href="https://t.me/JustGreenFicus" target="_blank"><i class="fa-brands fa-telegram"></i></a>
+        </div>
+        <div class="newsletter-minimal">
+            <h2>BRIGHTEN UP YOUR INBOX</h2>
+            <p>Присоединяйтесь к нам, чтобы получать новости о новинках.</p>
+            <form class="subscribe-form">
+                <input type="email" placeholder="Enter your email address" required>
+                <button type="submit">SIGN UP</button>
+            </form>
+        </div>
+    </section>
 
     <script src="script.js"></script>
 </body>
