@@ -1,7 +1,7 @@
 // 1. ГЛОБАЛЬНЫЕ НАСТРОЙКИ
 const API_URL = 'https://krasdeko.onrender.com'; 
 
-// 2. ФУНКЦИЯ УВЕДОМЛЕНИЙ (МИНИМАЛИЗМ)
+// 2. ФУНКЦИЯ УВЕДОМЛЕНИЙ
 function showNotification(msg) {
     let container = document.getElementById('toast-container');
     if (!container) {
@@ -22,21 +22,17 @@ function showNotification(msg) {
     }, 4000);
 }
 
-// 3. УЛУЧШЕННАЯ МАСКА ТЕЛЕФОНА (СТЕНА + ТИРЕ)
+// 3. УЛУЧШЕННАЯ МАСКА ТЕЛЕФОНА (ЖЕСТКАЯ ФИКСАЦИЯ)
 function applyPhoneMask(input) {
+    const prefix = '+7 ';
+
     const formatValue = (val) => {
-        // Очищаем от всего, кроме цифр
         let d = val.replace(/\D/g, '');
-        
-        // Если пользователь начал вводить с 7 или 8, отсекаем их, чтобы не было +7 7...
         if (d.startsWith('7') || d.startsWith('8')) d = d.substring(1);
-        
-        // Ограничиваем 10 цифрами (после +7)
         d = d.substring(0, 10);
 
-        // Формируем: +7 999-000-00-00
-        let res = '+7';
-        if (d.length > 0) res += ' ' + d.substring(0, 3);
+        let res = prefix;
+        if (d.length > 0) res += d.substring(0, 3);
         if (d.length >= 4) res += '-' + d.substring(3, 6);
         if (d.length >= 7) res += '-' + d.substring(6, 8);
         if (d.length >= 9) res += '-' + d.substring(8, 10);
@@ -45,28 +41,33 @@ function applyPhoneMask(input) {
     };
 
     input.addEventListener('input', (e) => {
-        let cursor = e.target.selectionStart;
-        const oldLen = e.target.value.length;
+        let val = e.target.value;
         
-        e.target.value = formatValue(e.target.value);
+        // Запрещаем стирать префикс
+        if (!val.startsWith(prefix)) {
+            e.target.value = prefix;
+            return;
+        }
 
-        // Чтобы курсор не прыгал в конец при вводе в середине
+        let cursor = e.target.selectionStart;
+        const oldLen = val.length;
+        e.target.value = formatValue(val);
         const newLen = e.target.value.length;
+
         cursor = cursor + (newLen - oldLen);
-        
-        // "Стена": курсор не может быть раньше 4-й позиции (после "+7 ")
         if (cursor <= 3) cursor = 3;
         e.target.setSelectionRange(cursor, cursor);
     });
 
     input.addEventListener('keydown', (e) => {
-        // Блокируем удаление префикса
+        // Блокируем Backspace на границе префикса
         if (e.key === 'Backspace' && input.selectionStart <= 3) {
             e.preventDefault();
         }
     });
 
     input.addEventListener('click', () => {
+        // Не даем ставить курсор в самое начало
         if (input.selectionStart < 3) {
             input.setSelectionRange(input.value.length, input.value.length);
         }
@@ -108,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = {};
         
         new FormData(form).forEach((value, key) => {
-            // Очищаем телефон от маски перед отправкой (регистрация)
             if (key === 'phone') {
                 formData[key] = value.replace(/\D/g, '');
             } else if (endpoint === 'login' && key === 'username') {
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (signupForm) signupForm.onsubmit = (e) => handleAuth(e, 'signup');
 });
 
-// 5. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
+// 5. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА (БЕЗ ТРОЕТОЧИЙ)
 function updateUI(user) {
     const authSection = document.getElementById('auth-section');
     if (authSection) {
@@ -166,11 +166,15 @@ function updateUI(user) {
         document.getElementById('display-username').innerText = user.username;
         document.getElementById('display-email').innerText = user.email || 'Не указана';
         
-        // Красивое отображение телефона в профиле (если в базе он без тире)
         const p = user.phone || '';
-        document.getElementById('display-phone').innerText = p.length === 11 
-            ? `+7 ${p.substring(1,4)}-${p.substring(4,7)}-${p.substring(7,9)}-${p.substring(9,11)}`
-            : (p || '+7...');
+        // Красивое отображение: если номер 11 цифр — маска, иначе просто +7
+        if (p.replace(/\D/g, '').length >= 10) {
+            const d = p.replace(/\D/g, '');
+            const clean = d.startsWith('7') ? d.substring(1) : d;
+            document.getElementById('display-phone').innerText = `+7 ${clean.substring(0,3)}-${clean.substring(3,6)}-${clean.substring(6,8)}-${clean.substring(8,10)}`;
+        } else {
+            document.getElementById('display-phone').innerText = '+7';
+        }
     }
 }
 
@@ -209,12 +213,11 @@ window.saveEdit = async (type) => {
     let newValue = input.value;
     const user = JSON.parse(localStorage.getItem('userAccount'));
 
-    if (!newValue) {
+    if (!newValue || newValue === '+7 ') {
         showNotification("Заполните поле");
         return;
     }
 
-    // Очистка для сервера
     if (type === 'phone') {
         newValue = newValue.replace(/\D/g, ''); 
         if (newValue.length < 11) {
