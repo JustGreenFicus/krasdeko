@@ -7,13 +7,13 @@
 }
 
 body {
-    background-color: #000; /* Черный фон для контента под героем */
+    background-color: #000;
     color: #fff;
     line-height: 1.6;
     overflow-x: hidden;
 }
 
-/* 2. ГЕРОЙ-СЕКЦИЯ (ФОН И ЦЕНТРИРОВАНИЕ) */
+/* 2. ГЕРОЙ-СЕКЦИЯ */
 .hero {
     position: relative;
     height: 100vh;
@@ -26,7 +26,7 @@ body {
     text-align: center;
 }
 
-/* 3. ШАПКА И МЕНЮ (ВОЗВРАЩАЕМ СТИЛЬ) */
+/* 3. ШАПКА И МЕНЮ */
 .navbar {
     position: absolute;
     top: 0;
@@ -68,19 +68,16 @@ body {
     transition: opacity 0.3s ease;
 }
 
-.nav-links li a:hover {
-    opacity: 0.6;
-}
+.nav-links li a:hover { opacity: 0.6; }
 
-/* Иконка пользователя в меню */
 .nav-links i {
     margin-right: 8px;
     font-size: 1rem;
 }
 
-/* 4. КОНТЕНТ В ЦЕНТРЕ */
+/* 4. КОНТЕНТ ГЕРОЯ */
 .hero-content h1 {
-    font-size: clamp(2rem, 8vw, 4.5rem); /* Адаптивный размер */
+    font-size: clamp(2rem, 8vw, 4.5rem);
     font-weight: 300;
     letter-spacing: 12px;
     text-transform: uppercase;
@@ -96,7 +93,6 @@ body {
     opacity: 0.9;
 }
 
-/* КНОПКА (ТОТ САМЫЙ ДИЗАЙН) */
 .btn-catalog-main {
     display: inline-block;
     padding: 16px 45px;
@@ -114,59 +110,7 @@ body {
     color: #000;
 }
 
-/* 5. ФУТЕР (МИНИМАЛИЗМ) */
-.footer-minimal {
-    padding: 80px 5%;
-    background: #000;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 50px;
-    border-top: 1px solid #1a1a1a;
-}
-
-.footer-minimal h2 {
-    font-size: 0.8rem;
-    letter-spacing: 3px;
-    margin-bottom: 20px;
-    color: #666;
-}
-
-.footer-minimal p {
-    font-size: 0.85rem;
-    color: #999;
-}
-
-.social-minimal {
-    display: flex;
-    gap: 25px;
-    font-size: 1.2rem;
-}
-
-.social-minimal a {
-    color: #fff;
-    transition: 0.3s;
-}
-
-.social-minimal a:hover {
-    opacity: 0.5;
-}
-
-/* 6. МОБИЛЬНАЯ АДАПТАЦИЯ */
-@media (max-width: 768px) {
-    .nav-links {
-        display: none; /* Скрываем основное меню, если не настроен бургер */
-    }
-    
-    .navbar {
-        padding: 20px 5%;
-    }
-
-    .hero-content h1 {
-        letter-spacing: 6px;
-    }
-}
-
-/* СТИЛИ ДЛЯ САЙДБАРА И МОДАЛОК (ОСТАВЛЯЕМ ТВОИ ИЗ ПРЕДЫДУЩЕГО ШАГА) */
+/* 5. ОБНОВЛЕННЫЙ САЙДБАР */
 .sidebar {
     position: fixed;
     top: 0;
@@ -178,16 +122,139 @@ body {
     padding: 40px;
     transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     border-left: 1px solid #222;
+    display: flex;
+    flex-direction: column;
 }
+
 .sidebar.active { right: 0; }
+
+/* Оверлей (затемнение фона) */
+#sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 2998;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+#sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Шапка сайдбара */
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.user-info-top {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #fff;
+}
+
+#display-username {
+    font-size: 1.1rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* Крестик закрытия */
+.close-sidebar-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2.5rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: 0.3s;
+}
+
+.close-sidebar-btn:hover { opacity: 0.5; }
+
+/* Поля данных */
+.settings-group { margin-bottom: 25px; }
+
+.settings-group label {
+    display: block;
+    font-size: 0.65rem;
+    color: #555;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.field-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+.field-row span {
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.edit-icon-btn {
+    background: none;
+    border: none;
+    color: #444;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.edit-icon-btn:hover { color: #fff; }
+
+.logout-link {
+    margin-top: auto;
+    background: none;
+    border: 1px solid #222;
+    color: #ff4444;
+    padding: 15px;
+    text-align: center;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.logout-link:hover {
+    background: #ff4444;
+    color: #fff;
+}
+
+/* 6. МОДАЛКА АВТОРИЗАЦИИ */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9);
+    background: rgba(0,0,0,0.95);
     backdrop-filter: blur(10px);
     display: none;
     z-index: 9999;
     justify-content: center;
     align-items: center;
 }
+
 .modal-overlay.active { display: flex; }
+
+/* 7. АДАПТИВНОСТЬ */
+@media (max-width: 768px) {
+    .nav-links { display: none; }
+    .navbar { padding: 20px 5%; }
+    .hero-content h1 { letter-spacing: 6px; }
+    .sidebar { width: 100%; }
+}
