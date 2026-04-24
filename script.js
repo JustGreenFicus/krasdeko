@@ -73,11 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeAuthBtn = document.getElementById('closeAuthBtn');
     const overlay = document.getElementById('sidebar-overlay');
 
-    // Инициализация подчеркивания вкладок
     const activeTab = document.querySelector('.tab.active');
-    if (activeTab) {
-        moveUnderline(activeTab);
-    }
+    if (activeTab) moveUnderline(activeTab);
 
     document.querySelectorAll('input[name="phone"]').forEach(applyPhoneMask);
 
@@ -91,7 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             authModal.classList.add('active');
             document.body.style.overflow = 'hidden';
-            // Сбрасываем полоску при открытии
             setTimeout(() => {
                 const tab = document.querySelector('.tab.active');
                 if (tab) moveUnderline(tab);
@@ -186,24 +182,35 @@ function updateUI(user) {
     }
 }
 
-// 6. УПРАВЛЕНИЕ САЙДБАРОМ
+// 6. УПРАВЛЕНИЕ САЙДБАРОМ (ИСПРАВЛЕНО)
 window.toggleSidebar = () => {
     const sidebar = document.getElementById('user-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
+    
+    if (!sidebar) return;
+
     sidebar.classList.toggle('active');
     if (overlay) overlay.classList.toggle('active');
-    document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : 'auto';
-    if (!sidebar.classList.contains('active')) cancelEdit();
+    
+    const isActive = sidebar.classList.contains('active');
+    document.body.style.overflow = isActive ? 'hidden' : 'auto';
+
+    // При закрытии восстанавливаем видимость полей и обновляем данные из памяти
+    if (!isActive) {
+        cancelEdit();
+        const currentUser = JSON.parse(localStorage.getItem('userAccount'));
+        if (currentUser) updateUI(currentUser);
+    }
 };
 
-// 7. ЛОГИКА РЕДАКТИРОВАНИЯ
+// 7. ЛОГИКА РЕДАКТИРОВАНИЯ (ИСПРАВЛЕНО)
 window.editField = (type) => {
     cancelEdit();
     const displayElem = document.getElementById(`display-${type}`);
     if (!displayElem) return;
 
-    const parentRow = displayElem.parentElement;
-    let currentValue = displayElem.innerText;
+    const parentRow = displayElem.closest('.field-row') || displayElem.parentElement;
+    const currentValue = displayElem.innerText;
     parentRow.style.display = 'none';
 
     const editHTML = `
@@ -223,12 +230,17 @@ window.editField = (type) => {
 
 window.cancelEdit = () => {
     document.querySelectorAll('.edit-mode-container').forEach(el => el.remove());
-    document.querySelectorAll('.field-row').forEach(el => el.style.display = 'flex');
+    // Возвращаем видимость всем скрытым строкам
+    document.querySelectorAll('.field-row, .user-info-top').forEach(el => {
+        if (!el.classList.contains('nav-links')) el.style.display = 'flex';
+    });
 };
 
 // 8. СОХРАНЕНИЕ
 window.saveEdit = async (type) => {
     const input = document.getElementById(`edit-input-${type}`);
+    if (!input) return;
+
     let val = input.value.trim();
     let oldUser = JSON.parse(localStorage.getItem('userAccount'));
 
@@ -253,6 +265,7 @@ window.saveEdit = async (type) => {
             const updatedUser = { ...oldUser, ...data.user };
             if (type !== 'password') updatedUser[type] = sendVal;
             localStorage.setItem('userAccount', JSON.stringify(updatedUser));
+            
             cancelEdit();
             updateUI(updatedUser);
             showNotification("Данные обновлены");
