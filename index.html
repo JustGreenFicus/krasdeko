@@ -1,269 +1,157 @@
-// 1. ГЛОБАЛЬНЫЕ НАСТРОЙКИ
-const API_URL = 'https://krasdeko.onrender.com'; 
+Держи код <!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kras Deco — Мебель для жизни</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
 
-// 2. УВЕДОМЛЕНИЯ
-function showNotification(msg) {
-    let container = document.getElementById('toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'toast-container';
-        container.className = 'toast-container';
-        document.body.appendChild(container);
-    }
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.innerText = msg;
-    container.appendChild(toast);
-    setTimeout(() => toast.classList.add('show'), 10);
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 500);
-    }, 4000);
-}
+    <div class="toast-container" id="toast-container"></div>
 
-// 3. БЕТОННАЯ МАСКА ТЕЛЕФОНА (ФИКС КУРСОР)
-function applyPhoneMask(input) {
-    if (!input) return;
-    const prefix = '+7 ';
+    <header class="hero">
+        <nav class="navbar">
+            <div class="logo">KRAS<span>DECO</span></div>
+            
+            <div class="menu-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
 
-    const formatValue = (val) => {
-        let d = val.replace(/\D/g, '');
-        if (d.startsWith('7') || d.startsWith('8')) d = d.substring(1);
-        d = d.substring(0, 10);
-        let res = prefix;
-        if (d.length > 0) res += '(' + d.substring(0, 3);
-        if (d.length >= 4) res += ') ' + d.substring(3, 6);
-        if (d.length >= 7) res += '-' + d.substring(6, 8);
-        if (d.length >= 9) res += '-' + d.substring(8, 10);
-        return res;
-    };
+            <ul class="nav-links">
+                <li><a href="tables.html">Столы</a></li>
+                <li><a href="chairs.html">Стулья</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+                <li id="auth-section">
+                    <a href="#" id="openAuthBtn"><i class="fa-regular fa-circle-user"></i> ВОЙТИ</a>
+                </li>
+            </ul>
+        </nav>
 
-    const fixCursor = () => {
-        // Задержка позволяет браузеру завершить отрисовку фокуса перед перемещением курсора
-        setTimeout(() => {
-            const len = input.value.length;
-            input.setSelectionRange(len, len);
-        }, 10);
-    };
+        <div class="hero-content">
+            <h1>СОЗДАЙТЕ УЮТ<br>В ВАШЕМ ДОМЕ</h1>
+            <p>Стильная мебель для жизни</p>
+            <a href="tables.html" class="btn-catalog-main">ПЕРЕЙТИ В КАТАЛОГ ↗</a>
+        </div>
+    </header>
 
-    input.addEventListener('input', (e) => {
-        if (!e.target.value.startsWith(prefix)) e.target.value = prefix;
-        const oldLen = e.target.value.length;
-        e.target.value = formatValue(e.target.value);
-        if (e.target.selectionStart <= 3) fixCursor();
-    });
+    <div id="user-sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="user-info-top user-trigger">
+                <i class="fa-regular fa-circle-user"></i>
+                <span id="display-username">Загрузка...</span>
+                <button onclick="editField('username')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
+            </div>
+            <button onclick="toggleSidebar()" class="close-sidebar-btn">&times;</button>
+        </div>
+        
+        <div class="sidebar-content">
+            <div class="settings-group">
+                <label>ЭЛЕКТРОННАЯ ПОЧТА</label>
+                <div class="field-row">
+                    <span id="display-email">example@mail.com</span>
+                    <button onclick="editField('email')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
+                </div>
+            </div>
 
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && input.selectionStart <= 3) e.preventDefault();
-    });
+            <div class="settings-group">
+                <label>НОМЕР ТЕЛЕФОНА</label>
+                <div class="field-row">
+                    <span id="display-phone">+7</span>
+                    <button onclick="editField('phone')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
+                </div>
+            </div>
 
-    // Фикс для мобилок и кликов мышкой
-    input.addEventListener('click', fixCursor);
-    input.addEventListener('focus', fixCursor);
-    input.addEventListener('touchend', fixCursor);
-}
+            <div class="sidebar-divider"></div>
 
-// 4. ЗАГРУЗКА И ОБРАБОТКА ФОРМ
-document.addEventListener('DOMContentLoaded', () => {
-    const authModal = document.getElementById('authModal');
-    const openAuthBtn = document.getElementById('openAuthBtn');
-    const closeAuthBtn = document.getElementById('closeAuthBtn');
-    const loginForm = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
+            <div class="settings-group">
+                <label>БЕЗОПАСНОСТЬ</label>
+                <div class="field-row">
+                    <span>••••••••</span>
+                    <button onclick="editField('password')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
+                </div>
+            </div>
 
-    document.querySelectorAll('input[name="phone"]').forEach(applyPhoneMask);
+            <button onclick="logout()" class="logout-link">ВЫЙТИ ИЗ СИСТЕМЫ</button>
+        </div>
+    </div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    const savedUser = JSON.parse(localStorage.getItem('userAccount'));
-    if (savedUser) updateUI(savedUser);
+    <div class="modal-overlay" id="authModal">
+        <div class="auth-container">
+            <span class="close-modal" id="closeAuthBtn">&times;</span>
+            
+            <div class="tab-group">
+                <div class="tab active" onclick="switchForm('login', this)">SIGN IN</div>
+                <div class="tab" onclick="switchForm('signup', this)">SIGN UP</div>
+                <div class="underline"></div>
+            </div>
 
-    if (openAuthBtn) {
-        openAuthBtn.onclick = (e) => {
-            e.preventDefault();
-            authModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        };
-    }
+            <form id="login-form" class="auth-form active">
+                <div class="input-group">
+                    <label>USERNAME OR PHONE</label>
+                    <input type="text" name="username" placeholder="Логин или номер" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>PASSWORD</label>
+                    <div class="password-container">
+                        <input type="password" id="login-password" name="password" placeholder="Введите пароль" required>
+                        <i class="fa-regular fa-eye toggle-password" onclick="togglePassword('login-password', this)"></i>
+                    </div>
+                </div>
+                <button type="submit" class="btn-auth-submit">SIGN IN</button>
+                <a href="#" class="forgot-password">Забыли пароль?</a>
+            </form>
 
-    if (closeAuthBtn) {
-        closeAuthBtn.onclick = () => {
-            authModal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        };
-    }
+            <form id="signup-form" class="auth-form">
+                <div class="input-group">
+                    <label>USERNAME</label>
+                    <input type="text" name="username" placeholder="Придумайте логин" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>EMAIL ADDRESS</label>
+                    <input type="email" name="email" placeholder="Ваша почта" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>PHONE NUMBER</label>
+                    <input type="tel" name="phone" placeholder="+7" inputmode="tel" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>PASSWORD</label>
+                    <div class="password-container">
+                        <input type="password" id="signup-password" name="password" placeholder="Придумайте пароль" required>
+                        <i class="fa-regular fa-eye toggle-password" onclick="togglePassword('signup-password', this)"></i>
+                    </div>
+                </div>
+                <button type="submit" class="btn-auth-submit">SIGN UP</button> 
+            </form>
+        </div>
+    </div>
 
-    async function handleAuth(e, endpoint) {
-        e.preventDefault();
-        const form = e.target;
-        const submitBtn = form.querySelector('button');
-        const formData = {};
-        new FormData(form).forEach((value, key) => {
-            if (key === 'phone') formData[key] = value.replace(/\D/g, '');
-            else if (endpoint === 'login' && key === 'username') formData['identifier'] = value;
-            else formData[key] = value;
-        });
+    <section class="footer-minimal">
+        <div class="customer-service">
+            <h2>CUSTOMER SERVICE</h2>
+            <p>Wanna chat with customer service?</p>
+            <p><strong>Call 8 (918) 008 15 46</strong></p>
+            <p>Пн-Пт: 8:00 - 17:00</p>
+        </div>
+        <div class="social-minimal">
+            <a href="https://m.vk.com/kakoy_to_kirill" target="_blank"><i class="fa-brands fa-vk"></i></a>
+            <a href="https://t.me/JustGreenFicus" target="_blank"><i class="fa-brands fa-telegram"></i></a>
+        </div>
+        <div class="newsletter-minimal">
+            <h2>BRIGHTEN UP YOUR INBOX</h2>
+            <p>Присоединяйтесь к нам, чтобы получать новости о новинках.</p>
+            <form class="subscribe-form">
+                <input type="email" placeholder="Enter your email address" required>
+                <button type="submit">SIGN UP</button>
+            </form>
+        </div>
+    </section>
 
-        submitBtn.disabled = true;
-        submitBtn.innerText = 'ОБРАБОТКА...';
-
-        try {
-            const response = await fetch(`${API_URL}/api/${endpoint}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-            const data = await response.json();
-            if (response.ok) {
-                localStorage.setItem('userAccount', JSON.stringify(data.user));
-                updateUI(data.user);
-                showNotification(`Добро пожаловать!`);
-                authModal.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            } else {
-                showNotification(data.message || 'Ошибка');
-            }
-        } catch (error) {
-            showNotification('Ошибка сервера');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerText = endpoint === 'login' ? 'SIGN IN' : 'SIGN UP';
-        }
-    }
-
-    if (loginForm) loginForm.onsubmit = (e) => handleAuth(e, 'login');
-    if (signupForm) signupForm.onsubmit = (e) => handleAuth(e, 'signup');
-});
-
-// 5. ОБНОВЛЕНИЕ UI (ФИКС НИКА И ПОЧТЫ)
-function updateUI(user) {
-    if (!user) return;
-
-    // Ник в шапке
-    const authSection = document.getElementById('auth-section');
-    if (authSection) {
-        authSection.innerHTML = `
-            <a href="#" onclick="toggleSidebar()" class="user-trigger">
-                <i class="fa-regular fa-circle-user"></i> ${user.username.toUpperCase()}
-            </a>
-        `;
-    }
-
-    // Ник в сайдбаре
-    const dispName = document.getElementById('display-username');
-    if (dispName) dispName.innerText = user.username;
-
-    // Почта
-    const dispEmail = document.getElementById('display-email');
-    if (dispEmail) dispEmail.innerText = user.email || 'Не указана';
-
-    // Телефон (Красивое форматирование)
-    const dispPhone = document.getElementById('display-phone');
-    if (dispPhone) {
-        let p = (user.phone || '').replace(/\D/g, '');
-        if (p.length >= 10) {
-            let clean = p.startsWith('7') || p.startsWith('8') ? p.substring(1) : p;
-            dispPhone.innerText = `+7 (${clean.substring(0,3)}) ${clean.substring(3,6)}-${clean.substring(6,8)}-${clean.substring(8,10)}`;
-        } else {
-            dispPhone.innerText = '+7';
-        }
-    }
-}
-
-// 6. РЕДАКТИРОВАНИЕ (БЕЗ ПОТЕРИ ДАННЫХ)
-window.editField = (type) => {
-    // Находим нужный спан
-    const displayElem = document.getElementById(`display-${type}`);
-    if (!displayElem) return;
-
-    const parentRow = displayElem.closest('.field-row') || displayElem.parentElement;
-    const originalContent = parentRow.innerHTML; // Сохраняем, чтобы вернуть карандашик потом
-    const currentValue = displayElem.innerText;
-
-    // Скрываем текущую строку
-    parentRow.style.display = 'none';
-
-    // Создаем контейнер редактирования
-    const editContainer = document.createElement('div');
-    editContainer.className = 'edit-mode-container';
-    editContainer.innerHTML = `
-        <input type="${type === 'password' ? 'password' : 'text'}" id="edit-input-${type}" value="${type === 'password' ? '' : currentValue}">
-        <button onclick="saveEdit('${type}')" class="btn-save-mini"><i class="fa-solid fa-check"></i></button>
-        <button onclick="cancelEdit()" class="btn-cancel-mini"><i class="fa-solid fa-xmark"></i></button>
-    `;
-
-    parentRow.after(editContainer);
-    const input = document.getElementById(`edit-input-${type}`);
-    if (type === 'phone') applyPhoneMask(input);
-    input.focus();
-};
-
-window.cancelEdit = () => {
-    document.querySelectorAll('.edit-mode-container').forEach(el => el.remove());
-    document.querySelectorAll('.field-row, .user-info-top').forEach(el => el.style.display = 'flex');
-};
-
-window.saveEdit = async (type) => {
-    const input = document.getElementById(`edit-input-${type}`);
-    let val = input.value.trim();
-    const user = JSON.parse(localStorage.getItem('userAccount'));
-
-    if (!val && type !== 'password') return showNotification("Поле пустое");
-
-    let sendVal = val;
-    if (type === 'phone') {
-        sendVal = val.replace(/\D/g, '');
-        if (sendVal.length < 11) return showNotification("Неверный формат");
-    }
-
-    try {
-        const response = await fetch(`${API_URL}/api/update-profile`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: user._id || user.id, field: type, value: sendVal })
-        });
-        const data = await response.json();
-
-        if (response.ok) {
-            // МЕРДЖ: Объединяем старые данные с теми, что пришли (или просто обновляем поле)
-            const updatedUser = { ...user, ...data.user };
-            if (type !== 'password') updatedUser[type] = sendVal;
-
-            localStorage.setItem('userAccount', JSON.stringify(updatedUser));
-            updateUI(updatedUser);
-            showNotification("Данные обновлены");
-            cancelEdit();
-        } else {
-            showNotification(data.message || "Ошибка сервера");
-        }
-    } catch (e) {
-        showNotification("Ошибка сети");
-    }
-};
-
-window.toggleSidebar = () => {
-    document.getElementById('user-sidebar').classList.toggle('active');
-    document.getElementById('sidebar-overlay').classList.toggle('active');
-};
-
-window.logout = () => {
-    localStorage.removeItem('userAccount');
-    window.location.reload();
-};
-
-window.switchForm = (type, element) => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-    element.classList.add('active');
-    document.getElementById(type + '-form').classList.add('active');
-    const underline = document.querySelector('.underline');
-    if (underline) {
-        underline.style.width = element.offsetWidth + 'px';
-        underline.style.left = element.offsetLeft + 'px';
-    }
-};
-
-window.togglePassword = (inputId, icon) => {
-    const input = document.getElementById(inputId);
-    input.type = input.type === 'password' ? 'text' : 'password';
-    icon.classList.toggle('fa-eye');
-    icon.classList.toggle('fa-eye-slash');
-};
+    <script src="script.js"></script>
+</body>
+</html>
