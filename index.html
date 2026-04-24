@@ -13,7 +13,7 @@
 
     <header class="hero">
         <nav class="navbar">
-            <div class="logo">KRAS<br><span>DECO</span></div>
+            <div class="logo">KRAS<span>DECO</span></div>
             
             <div class="menu-toggle" id="mobile-menu">
                 <span class="bar"></span>
@@ -26,7 +26,7 @@
                 <li><a href="chairs.html">Стулья</a></li>
                 <li><a href="contacts.html">Контакты</a></li>
                 <li id="auth-section">
-                    <a href="#" id="openAuthBtn"><i class="fa-regular fa-user"></i> ВОЙТИ</a>
+                    <a href="#" id="openAuthBtn"><i class="fa-regular fa-circle-user"></i> ВОЙТИ</a>
                 </li>
             </ul>
         </nav>
@@ -94,13 +94,17 @@
                     <label>USERNAME</label>
                     <input type="text" name="username" placeholder="Введите логин" required>
                 </div>
-                <div class="input-group password-container">
+                <div class="input-group">
                     <label>PASSWORD</label>
-                    <input type="password" id="login-password" name="password" placeholder="Введите пароль" required>
-                    <i class="fa-regular fa-eye toggle-password" onclick="togglePassword('login-password', this)"></i>
+                    <div class="password-wrapper">
+                        <input type="password" id="login-password" name="password" placeholder="Введите пароль" required>
+                        <i class="fa-regular fa-eye" onclick="togglePassword('login-password', this)"></i>
+                    </div>
                 </div>
                 <button type="submit" class="btn-auth-submit">SIGN IN</button>
-                <a href="#" onclick="handleForgotPassword()" class="forgot-password">Забыли пароль?</a>
+                <div class="form-footer">
+                    <a href="#" onclick="handleForgotPassword()" class="forgot-password">Забыли пароль?</a>
+                </div>
             </form>
 
             <form id="signup-form" class="auth-form">
@@ -116,10 +120,12 @@
                     <label>PHONE NUMBER</label>
                     <input type="tel" name="phone" placeholder="+7 (999) 000-00-00" required>
                 </div>
-                <div class="input-group password-container">
+                <div class="input-group">
                     <label>PASSWORD</label>
-                    <input type="password" id="signup-password" name="password" placeholder="Придумайте пароль" required>
-                    <i class="fa-regular fa-eye toggle-password" onclick="togglePassword('signup-password', this)"></i>
+                    <div class="password-wrapper">
+                        <input type="password" id="signup-password" name="password" placeholder="Придумайте пароль" required>
+                        <i class="fa-regular fa-eye" onclick="togglePassword('signup-password', this)"></i>
+                    </div>
                 </div>
                 <button type="submit" class="btn-auth-submit">SIGN UP</button> 
             </form>
@@ -128,8 +134,9 @@
 
     <section class="footer-minimal">
         <div class="customer-service">
+            <h2>CUSTOMER SERVICE</h2>
             <p>Wanna chat with customer service?</p>
-            <p class="strong">Call 8 (918) 008 15 46</p>
+            <p><strong>Call 8 (918) 008 15 46</strong></p>
             <p>Пн-Пт: 8:00 - 17:00</p>
         </div>
         <div class="social-minimal">
