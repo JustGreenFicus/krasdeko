@@ -1,7 +1,7 @@
 // 1. ГЛОБАЛЬНЫЕ НАСТРОЙКИ
 const API_URL = 'https://krasdeko.onrender.com'; 
 
-// 2. ФУНКЦИЯ УВЕДОМЛЕНИЙ
+// 2. ФУНКЦИЯ УВЕДОМЛЕНИЙ (МИНИМАЛИЗМ: ЧЕРНЫЙ С РАМКОЙ)
 function showNotification(msg) {
     let container = document.getElementById('toast-container');
     if (!container) {
@@ -14,6 +14,7 @@ function showNotification(msg) {
     toast.className = 'toast';
     toast.innerText = msg;
     container.appendChild(toast);
+    
     setTimeout(() => toast.classList.add('show'), 10);
     setTimeout(() => {
         toast.classList.remove('show');
@@ -21,7 +22,36 @@ function showNotification(msg) {
     }, 4000);
 }
 
-// 3. ОСНОВНАЯ ЛОГИКА ПРИ ЗАГРУЗКЕ
+// 3. МАСКА ТЕЛЕФОНА (+7 + 10 цифр)
+function applyPhoneMask(input) {
+    input.addEventListener('input', (e) => {
+        let value = e.target.value;
+        
+        // Если пусто или стерли всё, возвращаем +7
+        if (!value.startsWith('+7')) {
+            value = '+7';
+        }
+
+        // Берем только цифры после +7
+        let digits = value.substring(2).replace(/\D/g, '');
+        
+        // Ограничиваем 10 цифрами
+        if (digits.length > 10) {
+            digits = digits.substring(0, 10);
+        }
+        
+        e.target.value = '+7' + digits;
+    });
+
+    // Запрещаем удалять +7 через Backspace в начале
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && input.value.length <= 2) {
+            e.preventDefault();
+        }
+    });
+}
+
+// 4. ОСНОВНАЯ ЛОГИКА ПРИ ЗАГРУЗКЕ
 document.addEventListener('DOMContentLoaded', () => {
     const authModal = document.getElementById('authModal');
     const openAuthBtn = document.getElementById('openAuthBtn');
@@ -29,13 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
 
+    // Применяем маску ко всем полям телефона
+    document.querySelectorAll('input[name="phone"]').forEach(applyPhoneMask);
+
     // Проверка авторизации
     const savedUser = JSON.parse(localStorage.getItem('userAccount'));
-    if (savedUser) {
-        updateUI(savedUser);
-    }
+    if (savedUser) updateUI(savedUser);
 
-    // Модальное окно
+    // Управление модальным окном
     if (openAuthBtn) {
         openAuthBtn.onclick = (e) => {
             e.preventDefault();
@@ -51,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Обработка входа и регистрации
+    // Универсальная функция авторизации
     async function handleAuth(e, endpoint) {
         e.preventDefault();
         const form = e.target;
@@ -59,10 +90,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = {};
         
         new FormData(form).forEach((value, key) => {
-            formData[key] = value;
+            // Если это вход, называем поле identifier (логин или телефон)
+            if (endpoint === 'login' && key === 'username') {
+                formData['identifier'] = value;
+            } else {
+                formData[key] = value;
+            }
         });
 
         submitBtn.disabled = true;
+        const originalText = submitBtn.innerText;
         submitBtn.innerText = 'ОБРАБОТКА...';
 
         try {
@@ -75,20 +112,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                const userObj = data.user || formData;
+                const userObj = data.user;
                 localStorage.setItem('userAccount', JSON.stringify(userObj));
                 showNotification(`Добро пожаловать, ${userObj.username}!`);
                 authModal.classList.remove('active');
                 document.body.style.overflow = 'auto';
                 updateUI(userObj);
             } else {
-                showNotification(data.message || 'Ошибка данных');
+                showNotification(data.message || 'Ошибка доступа');
             }
         } catch (error) {
             showNotification('Ошибка связи с сервером');
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerText = endpoint === 'login' ? 'SIGN IN' : 'SIGN UP';
+            submitBtn.innerText = originalText;
         }
     }
 
@@ -96,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (signupForm) signupForm.onsubmit = (e) => handleAuth(e, 'signup');
 });
 
-// 4. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
+// 5. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
 function updateUI(user) {
     const authSection = document.getElementById('auth-section');
     if (authSection) {
@@ -107,39 +144,36 @@ function updateUI(user) {
         `;
     }
     
-    // Заполняем данные в сайдбаре
     if (document.getElementById('display-username')) {
         document.getElementById('display-username').innerText = user.username;
-        document.getElementById('display-email').innerText = user.email || 'Не указана';
-        document.getElementById('display-phone').innerText = user.phone || 'Не указан';
+        document.getElementById('display-email').innerText = user.email || 'example@mail.com';
+        document.getElementById('display-phone').innerText = user.phone || '+7...';
     }
 }
 
-// 5. ЛОГИКА РЕДАКТИРОВАНИЯ (КАРАНДАШИК)
+// 6. ЛОГИКА РЕДАКТИРОВАНИЯ
 window.editField = (type) => {
     const displayElem = document.getElementById(`display-${type}`);
-    if (!displayElem && type !== 'password') return;
+    if (!displayElem) return;
 
-    const currentValue = type === 'password' ? '' : displayElem.innerText;
-    const parent = type === 'password' ? document.querySelector('.sidebar-divider').previousElementSibling : displayElem.parentElement;
+    const currentValue = displayElem.innerText;
+    displayElem.style.display = 'none';
+    displayElem.nextElementSibling.style.display = 'none'; // Скрываем иконку пера
 
-    // Создаем мини-форму для редактирования
     const editHTML = `
         <div class="edit-mode-container" style="width: 100%; display: flex; gap: 5px; margin-top: 5px;">
-            <input type="text" id="edit-input-${type}" value="${currentValue}" placeholder="Новое значение" 
-                   style="flex: 1; background: #111; border: 1px solid #333; color: #fff; padding: 5px;">
+            <input type="${type === 'email' ? 'email' : 'text'}" id="edit-input-${type}" value="${currentValue}" 
+                   style="flex: 1; background: #111; border: 1px solid #333; color: #fff; padding: 5px; outline: none;">
             <button onclick="saveEdit('${type}')" style="background: #fff; color: #000; border: none; padding: 5px 10px; cursor: pointer;"><i class="fa-solid fa-check"></i></button>
-            <button onclick="cancelEdit()" style="background: #333; color: #fff; border: none; padding: 5px 10px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+            <button onclick="cancelEdit()" style="background: #222; color: #fff; border: 1px solid #444; padding: 5px 10px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
         </div>
     `;
 
-    // Временно скрываем текущую строку и вставляем форму
-    if (type !== 'password') {
-        displayElem.style.display = 'none';
-        displayElem.nextElementSibling.style.display = 'none'; // Скрываем карандаш
-        displayElem.insertAdjacentHTML('afterend', editHTML);
-    } else {
-        showNotification("Для смены пароля введите данные в поля безопасности");
+    displayElem.insertAdjacentHTML('afterend', editHTML);
+
+    // Если редактируем телефон, сразу вешаем маску на новое поле
+    if (type === 'phone') {
+        applyPhoneMask(document.getElementById('edit-input-phone'));
     }
 };
 
@@ -149,11 +183,12 @@ window.cancelEdit = () => {
 };
 
 window.saveEdit = async (type) => {
-    const newValue = document.getElementById(`edit-input-${type}`).value;
+    const input = document.getElementById(`edit-input-${type}`);
+    const newValue = input.value;
     const user = JSON.parse(localStorage.getItem('userAccount'));
 
-    if (!newValue) {
-        showNotification("Поле не может быть пустым");
+    if (!newValue || (type === 'phone' && newValue.length < 12)) {
+        showNotification("Введите корректные данные");
         return;
     }
 
@@ -162,7 +197,7 @@ window.saveEdit = async (type) => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                username: user.username, 
+                userId: user.id || user._id, 
                 field: type, 
                 value: newValue 
             })
@@ -172,22 +207,20 @@ window.saveEdit = async (type) => {
             user[type] = newValue;
             localStorage.setItem('userAccount', JSON.stringify(user));
             updateUI(user);
-            showNotification("Данные обновлены");
+            showNotification("Обновлено");
             cancelEdit();
         } else {
-            showNotification("Ошибка при обновлении");
+            showNotification("Ошибка обновления");
         }
     } catch (e) {
         showNotification("Ошибка сервера");
     }
 };
 
-// СТАНДАРТНЫЕ ФУНКЦИИ
+// СИСТЕМНЫЕ ФУНКЦИИ
 window.toggleSidebar = () => {
-    const sidebar = document.getElementById('user-sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    sidebar.classList.toggle('active');
-    overlay.classList.toggle('active');
+    document.getElementById('user-sidebar').classList.toggle('active');
+    document.getElementById('sidebar-overlay').classList.toggle('active');
 };
 
 window.logout = () => {
@@ -208,8 +241,7 @@ window.switchForm = (type, element) => {
 
 window.togglePassword = (inputId, icon) => {
     const input = document.getElementById(inputId);
-    const isPass = input.type === 'password';
-    input.type = isPass ? 'text' : 'password';
+    input.type = input.type === 'password' ? 'text' : 'password';
     icon.classList.toggle('fa-eye');
     icon.classList.toggle('fa-eye-slash');
 };
