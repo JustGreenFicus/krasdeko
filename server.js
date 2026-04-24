@@ -21,12 +21,12 @@ mongoose.connect(mongoURI)
     .then(() => console.log('✅ Connected to MongoDB'))
     .catch(err => console.error('❌ MongoDB error:', err));
 
-// Схема пользователя (Добавлено поле phone)
+// Схема пользователя
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
-    phone: { type: String, default: "" }, // Новое поле
+    phone: { type: String, default: "" }, 
     resetToken: String,
     resetTokenExpiry: Date
 });
@@ -38,7 +38,7 @@ const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'babushkin.kirill2014@gmail.com',
-        pass: 'abcd efgh ijkl mnop' // ВАЖНО: замени на свой 16-значный "Пароль приложения" из Google
+        pass: 'abcd efgh ijkl mnop' // ВАЖНО: здесь должен быть твой пароль приложения
     }
 });
 
@@ -46,6 +46,8 @@ const transporter = nodemailer.createTransport({
 app.post('/api/signup', async (req, res) => {
     try {
         const { username, email, password, phone } = req.body;
+        
+        // Проверка на существующего пользователя
         const existingUser = await User.findOne({ username });
         if (existingUser) return res.status(400).json({ message: 'Этот логин уже занят' });
         
@@ -57,19 +59,26 @@ app.post('/api/signup', async (req, res) => {
             phone: phone || "" 
         });
         await newUser.save();
-        res.json({ message: 'Аккаунт создан!', user: { id: newUser._id, username, email, phone } });
+        res.json({ message: 'Аккаунт создан!', user: { id: newUser._id, username, email, phone: newUser.phone } });
     } catch (err) {
-        res.status(500).json({ message: 'Ошибка сервера' });
+        res.status(500).json({ message: 'Ошибка сервера при регистрации' });
     }
 });
 
-// --- API: ВХОД (Теперь и по телефону тоже) ---
+// --- API: ВХОД (с поддержкой ника и телефона) ---
 app.post('/api/login', async (req, res) => {
     try {
-        const { identifier, password } = req.body;
-        // Ищем либо по нику, либо по телефону
+        let { identifier, password } = req.body;
+        
+        // Очистка для поиска по телефону (убираем всё кроме цифр и букв)
+        const cleanIdentifier = identifier.replace(/[^\d\w]/g, '');
+
         const user = await User.findOne({ 
-            $or: [{ username: identifier }, { phone: identifier }] 
+            $or: [
+                { username: identifier }, 
+                { phone: identifier }, 
+                { phone: cleanIdentifier } 
+            ] 
         });
 
         if (user && await bcrypt.compare(password, user.password)) {
@@ -83,18 +92,29 @@ app.post('/api/login', async (req, res) => {
                 } 
             });
         } else {
-            res.status(400).json({ message: 'Неверные данные' });
+            res.status(400).json({ message: 'Неверный логин или пароль' });
         }
     } catch (err) {
-        res.status(500).json({ message: 'Ошибка сервера' });
+        res.status(500).json({ message: 'Ошибка сервера при входе' });
     }
 });
 
-// --- API: УНИВЕРСАЛЬНОЕ ОБНОВЛЕНИЕ ПРОФИЛЯ ---
+// --- API: ОБНОВЛЕНИЕ ПРОФИЛЯ (с проверкой уникальности ника) ---
 app.post('/api/update-profile', async (req, res) => {
     try {
         const { userId, field, value } = req.body;
         
+        // КЛЮЧЕВАЯ ПРОВЕРКА: Если меняем ник, проверяем, не занят ли он ДРУГИМ пользователем
+        if (field === 'username') {
+            const busy = await User.findOne({ 
+                username: value, 
+                _id: { $ne: userId } // $ne означает "not equal" (не равен текущему ID)
+            });
+            if (busy) {
+                return res.status(400).json({ message: 'Этот никнейм уже занят' });
+            }
+        }
+
         let updateData = {};
         if (field === 'password') {
             updateData[field] = await bcrypt.hash(value, 10);
@@ -111,7 +131,8 @@ app.post('/api/update-profile', async (req, res) => {
             user: { id: user._id, username: user.username, email: user.email, phone: user.phone } 
         });
     } catch (err) {
-        res.status(500).json({ message: 'Ошибка при обновлении' });
+        console.error(err);
+        res.status(500).json({ message: 'Ошибка при обновлении профиля' });
     }
 });
 
@@ -151,26 +172,25 @@ app.post('/api/reset-password', async (req, res) => {
             resetTokenExpiry: { $gt: Date.now() } 
         });
 
-        if (!user) return res.status(400).json({ message: 'Ссылка недействительна' });
+        if (!user) return res.status(400).json({ message: 'Ссылка недействительна или просрочена' });
 
         user.password = await bcrypt.hash(newPassword, 10);
         user.resetToken = undefined;
         user.resetTokenExpiry = undefined;
         await user.save();
 
-        res.json({ message: 'Пароль изменен!' });
+        res.json({ message: 'Пароль успешно изменен!' });
     } catch (err) {
         res.status(500).json({ message: 'Ошибка сервера' });
     }
 });
 
-// Запуск
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 Server on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
 
-// Пинг
+// Пинг для предотвращения сна сервера
 setInterval(() => {
     https.get('https://krasdeko.onrender.com', (res) => {
         console.log('Self-ping OK');
