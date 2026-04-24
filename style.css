@@ -60,13 +60,16 @@ html, body {
     text-transform: uppercase;
     letter-spacing: 3px;
     font-size: 1.5rem;
-    line-height: 1;
+    line-height: 1.2;
 }
 
+/* Исправлено: "Art" под "Stol" */
 .logo span {
     font-weight: 300;
     opacity: 0.8;
-    display: block; /* Располагаем Art под Stol согласно инструкции */
+    display: block; 
+    font-size: 0.9rem;
+    margin-top: -5px;
 }
 
 .nav-links {
@@ -79,7 +82,7 @@ html, body {
 .nav-links a {
     color: white;
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     transition: 0.3s;
@@ -125,14 +128,14 @@ html, body {
     color: #000;
 }
 
-/* ОБНОВЛЕННАЯ БОКОВАЯ ПАНЕЛЬ (ЧЕРНАЯ ТЕМА) */
+/* БОКОВАЯ ПАНЕЛЬ */
 .sidebar {
     position: fixed;
     top: 0;
     right: -100%;
     width: 400px;
     height: 100vh;
-    background: #000; /* Глубокий черный */
+    background: #000;
     color: #fff;
     z-index: 3000;
     padding: 40px;
@@ -189,10 +192,11 @@ html, body {
 }
 
 .settings-group label {
-    font-size: 0.7rem;
-    color: #555;
+    font-size: 0.65rem;
+    color: #666;
     letter-spacing: 1px;
     font-weight: bold;
+    text-transform: uppercase;
 }
 
 .field-row {
@@ -204,7 +208,7 @@ html, body {
 }
 
 .field-row span {
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: #ccc;
 }
 
@@ -217,10 +221,7 @@ html, body {
     transition: 0.3s;
 }
 
-.edit-icon-btn:hover {
-    opacity: 1;
-    color: #fff;
-}
+.edit-icon-btn:hover { opacity: 1; }
 
 .sidebar-divider {
     height: 1px;
@@ -229,11 +230,11 @@ html, body {
 }
 
 .logout-link {
-    margin-top: 20px;
+    margin-top: auto;
     background: none;
     border: 1px solid #333;
     color: #ff4444;
-    padding: 12px;
+    padding: 15px;
     cursor: pointer;
     text-transform: uppercase;
     font-size: 0.8rem;
@@ -268,12 +269,24 @@ html, body {
     max-width: 400px;
     padding: 50px;
     position: relative;
+    border: 1px solid #222;
+}
+
+.close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    opacity: 0.5;
 }
 
 .tab-group {
     display: flex;
     gap: 30px;
     margin-bottom: 30px;
+    position: relative;
     border-bottom: 1px solid #222;
 }
 
@@ -288,13 +301,32 @@ html, body {
 
 .tab.active { color: #fff; }
 
-.input-group { margin-bottom: 20px; }
+.underline {
+    position: absolute;
+    bottom: -1px;
+    height: 2px;
+    background: #fff;
+    transition: 0.3s ease;
+}
+
+/* КРИТИЧЕСКИ ВАЖНО: Разделение форм */
+.auth-form {
+    display: none; /* Скрыто по умолчанию */
+}
+
+.auth-form.active {
+    display: flex; /* Видна только активная форма */
+    flex-direction: column;
+}
+
+.input-group { margin-bottom: 20px; position: relative; }
 
 .input-group label {
     display: block;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #555;
     margin-bottom: 5px;
+    text-transform: uppercase;
 }
 
 .input-group input {
@@ -305,9 +337,21 @@ html, body {
     padding: 10px 0;
     color: #fff;
     outline: none;
+    font-size: 0.9rem;
 }
 
 .input-group input:focus { border-bottom-color: #fff; }
+
+.password-container { position: relative; }
+
+.toggle-password {
+    position: absolute;
+    right: 0;
+    bottom: 10px;
+    color: #444;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
 
 .btn-auth-submit {
     width: 100%;
@@ -318,21 +362,79 @@ html, body {
     cursor: pointer;
     letter-spacing: 1px;
     margin-top: 10px;
+    transition: 0.3s;
 }
 
-/* ФУТЕР */
+.btn-auth-submit:hover { background: #ccc; }
+
+.forgot-password {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #444;
+    text-decoration: none;
+    font-size: 0.75rem;
+    transition: 0.3s;
+}
+
+.forgot-password:hover { color: #fff; }
+
+/* ФУТЕР (Исправленный синтаксис для валидатора) */
 .footer-minimal {
     padding: 80px 5%;
     background: #f9f9f9;
     display: flex;
     flex-wrap: wrap;
-    gap: 40px;
+    justify-content: space-between;
 }
 
-.footer-minimal > div { flex: 1 1 250px; }
+.footer-minimal > div { 
+    flex: 1; 
+    min-width: 250px; 
+    margin: 20px;
+}
+
+.customer-service h2, .newsletter-minimal h2 {
+    font-size: 1rem;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.customer-service p { font-size: 0.9rem; line-height: 1.6; color: #666; }
+
+.social-minimal {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.social-minimal a { color: #000; font-size: 1.2rem; transition: 0.3s; }
+.social-minimal a:hover { opacity: 0.6; }
+
+.subscribe-form { display: flex; margin-top: 20px; }
+
+.subscribe-form input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+.subscribe-form button {
+    padding: 12px 25px;
+    background: #000;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
 
 /* АДАПТИВНОСТЬ */
 @media (max-width: 768px) {
     .sidebar { width: 100%; }
     .hero-content h1 { font-size: 2.5rem; }
+    .auth-container { padding: 30px; margin: 10px; }
+    .footer-minimal { flex-direction: column; text-align: center; }
+    .social-minimal { order: 3; }
 }
