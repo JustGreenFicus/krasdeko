@@ -1,7 +1,7 @@
 // 1. ГЛОБАЛЬНЫЕ НАСТРОЙКИ
 const API_URL = 'https://krasdeko.onrender.com'; 
 
-// 2. ФУНКЦИЯ УВЕДОМЛЕНИЙ (МИНИМАЛИЗМ: ЧЕРНЫЙ С РАМКОЙ)
+// 2. ФУНКЦИЯ УВЕДОМЛЕНИЙ (МИНИМАЛИЗМ)
 function showNotification(msg) {
     let container = document.getElementById('toast-container');
     if (!container) {
@@ -22,31 +22,43 @@ function showNotification(msg) {
     }, 4000);
 }
 
-// 3. МАСКА ТЕЛЕФОНА (+7 + 10 цифр)
+// 3. УЛУЧШЕННАЯ МАСКА ТЕЛЕФОНА (СТЕНА + ТИРЕ)
 function applyPhoneMask(input) {
-    input.addEventListener('input', (e) => {
-        let value = e.target.value;
+    const mask = (value) => {
+        if (!value.startsWith('+7')) value = '+7' + value.replace(/\D/g, '');
         
-        // Если пусто или стерли всё, возвращаем +7
-        if (!value.startsWith('+7')) {
-            value = '+7';
-        }
-
-        // Берем только цифры после +7
         let digits = value.substring(2).replace(/\D/g, '');
+        if (digits.length > 10) digits = digits.substring(0, 10);
+
+        let res = '+7';
+        if (digits.length > 0) res += ' ' + digits.substring(0, 3);
+        if (digits.length >= 4) res += '-' + digits.substring(3, 6);
+        if (digits.length >= 7) res += '-' + digits.substring(6, 8);
+        if (digits.length >= 9) res += '-' + digits.substring(8, 10);
         
-        // Ограничиваем 10 цифрами
-        if (digits.length > 10) {
-            digits = digits.substring(0, 10);
-        }
+        return res;
+    };
+
+    input.addEventListener('input', (e) => {
+        const cursor = e.target.selectionStart;
+        const oldVal = e.target.value;
+        e.target.value = mask(e.target.value);
         
-        e.target.value = '+7' + digits;
+        // Не даем курсору прыгать назад за +7
+        if (cursor <= 2) e.target.setSelectionRange(3, 3);
     });
 
-    // Запрещаем удалять +7 через Backspace в начале
     input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && input.value.length <= 2) {
+        // Блокируем Backspace, если курсор на границе +7
+        if (e.key === 'Backspace' && input.selectionStart <= 3) {
             e.preventDefault();
+        }
+    });
+
+    input.addEventListener('click', () => {
+        // При клике в начало — прыгаем за префикс
+        if (input.selectionStart < 3) {
+            input.setSelectionRange(input.value.length, input.value.length);
         }
     });
 }
@@ -59,14 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
 
-    // Применяем маску ко всем полям телефона
     document.querySelectorAll('input[name="phone"]').forEach(applyPhoneMask);
 
-    // Проверка авторизации
     const savedUser = JSON.parse(localStorage.getItem('userAccount'));
     if (savedUser) updateUI(savedUser);
 
-    // Управление модальным окном
     if (openAuthBtn) {
         openAuthBtn.onclick = (e) => {
             e.preventDefault();
@@ -82,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Универсальная функция авторизации
     async function handleAuth(e, endpoint) {
         e.preventDefault();
         const form = e.target;
@@ -90,16 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = {};
         
         new FormData(form).forEach((value, key) => {
-            // Если это вход, называем поле identifier (логин или телефон)
-            if (endpoint === 'login' && key === 'username') {
-                formData['identifier'] = value;
-            } else {
-                formData[key] = value;
-            }
+            formData[key] = (key === 'username' && endpoint === 'login') ? value : value;
+            if (endpoint === 'login' && key === 'username') formData['identifier'] = value;
         });
 
         submitBtn.disabled = true;
-        const originalText = submitBtn.innerText;
         submitBtn.innerText = 'ОБРАБОТКА...';
 
         try {
@@ -112,20 +115,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                const userObj = data.user;
-                localStorage.setItem('userAccount', JSON.stringify(userObj));
-                showNotification(`Добро пожаловать, ${userObj.username}!`);
+                localStorage.setItem('userAccount', JSON.stringify(data.user));
+                showNotification(`Добро пожаловать!`);
                 authModal.classList.remove('active');
                 document.body.style.overflow = 'auto';
-                updateUI(userObj);
+                updateUI(data.user);
             } else {
-                showNotification(data.message || 'Ошибка доступа');
+                showNotification(data.message || 'Ошибка');
             }
         } catch (error) {
-            showNotification('Ошибка связи с сервером');
+            showNotification('Ошибка сервера');
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerText = originalText;
+            submitBtn.innerText = endpoint === 'login' ? 'SIGN IN' : 'SIGN UP';
         }
     }
 
@@ -146,7 +148,7 @@ function updateUI(user) {
     
     if (document.getElementById('display-username')) {
         document.getElementById('display-username').innerText = user.username;
-        document.getElementById('display-email').innerText = user.email || 'example@mail.com';
+        document.getElementById('display-email').innerText = user.email || 'Не указана';
         document.getElementById('display-phone').innerText = user.phone || '+7...';
     }
 }
@@ -158,7 +160,7 @@ window.editField = (type) => {
 
     const currentValue = displayElem.innerText;
     displayElem.style.display = 'none';
-    displayElem.nextElementSibling.style.display = 'none'; // Скрываем иконку пера
+    displayElem.nextElementSibling.style.display = 'none'; 
 
     const editHTML = `
         <div class="edit-mode-container" style="width: 100%; display: flex; gap: 5px; margin-top: 5px;">
@@ -171,7 +173,6 @@ window.editField = (type) => {
 
     displayElem.insertAdjacentHTML('afterend', editHTML);
 
-    // Если редактируем телефон, сразу вешаем маску на новое поле
     if (type === 'phone') {
         applyPhoneMask(document.getElementById('edit-input-phone'));
     }
@@ -187,37 +188,41 @@ window.saveEdit = async (type) => {
     const newValue = input.value;
     const user = JSON.parse(localStorage.getItem('userAccount'));
 
-    if (!newValue || (type === 'phone' && newValue.length < 12)) {
-        showNotification("Введите корректные данные");
+    if (!newValue) {
+        showNotification("Заполните поле");
         return;
     }
+
+    // Ищем ID в разных возможных полях (id или _id)
+    const userId = user._id || user.id;
 
     try {
         const response = await fetch(`${API_URL}/api/update-profile`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                userId: user.id || user._id, 
+                userId: userId, 
                 field: type, 
                 value: newValue 
             })
         });
 
+        const data = await response.json();
+
         if (response.ok) {
             user[type] = newValue;
             localStorage.setItem('userAccount', JSON.stringify(user));
             updateUI(user);
-            showNotification("Обновлено");
+            showNotification("Данные обновлены");
             cancelEdit();
         } else {
-            showNotification("Ошибка обновления");
+            showNotification(data.message || "Ошибка обновления");
         }
     } catch (e) {
-        showNotification("Ошибка сервера");
+        showNotification("Ошибка связи с сервером");
     }
 };
 
-// СИСТЕМНЫЕ ФУНКЦИИ
 window.toggleSidebar = () => {
     document.getElementById('user-sidebar').classList.toggle('active');
     document.getElementById('sidebar-overlay').classList.toggle('active');
@@ -233,7 +238,6 @@ window.switchForm = (type, element) => {
     document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
     element.classList.add('active');
     document.getElementById(type + '-form').classList.add('active');
-    
     const underline = document.querySelector('.underline');
     underline.style.width = element.offsetWidth + 'px';
     underline.style.left = element.offsetLeft + 'px';
