@@ -13,7 +13,7 @@ html, body {
     width: 100%;
 }
 
-/* УВЕДОМЛЕНИЯ */
+/* УВЕДОМЛЕНИЯ — ОБНОВЛЕНО: ЧЕРНЫЙ МИНИМАЛИЗМ */
 .toast-container {
     position: fixed;
     top: 20px;
@@ -27,14 +27,15 @@ html, body {
 }
 
 .toast {
-    background: #ff4444;
-    color: white;
-    padding: 15px 20px;
-    border-radius: 4px;
-    font-size: 0.8rem;
+    background: #000; /* Глубокий черный */
+    color: #fff;
+    padding: 12px 25px;
+    border: 1px solid #333; /* Тонкая рамка */
+    border-radius: 2px;
+    font-size: 0.75rem;
     letter-spacing: 1px;
     text-transform: uppercase;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     transform: translateX(120%);
     transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: auto;
@@ -63,7 +64,6 @@ html, body {
     line-height: 1.2;
 }
 
-/* Исправлено: "Art" под "Stol" */
 .logo span {
     font-weight: 300;
     opacity: 0.8;
@@ -179,6 +179,51 @@ html, body {
 
 .close-sidebar-btn:hover { opacity: 1; }
 
+/* СТИЛИ ДЛЯ РЕДАКТИРОВАНИЯ ВНУТРИ САЙДБАРА */
+.edit-mode-container {
+    width: 100%;
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.edit-mode-container input {
+    flex: 1;
+    background: #111 !important;
+    border: 1px solid #333 !important;
+    color: #fff !important;
+    padding: 8px !important;
+    font-size: 0.85rem;
+    outline: none;
+}
+
+.edit-mode-container button {
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-mode-container button:first-of-type {
+    background: #fff;
+    color: #000;
+    border: none;
+}
+
+.edit-mode-container button:last-of-type {
+    background: #222;
+    color: #fff;
+    border: 1px solid #444;
+}
+
 .sidebar-content {
     display: flex;
     flex-direction: column;
@@ -205,6 +250,7 @@ html, body {
     align-items: center;
     padding-bottom: 10px;
     border-bottom: 1px solid #222;
+    min-height: 40px;
 }
 
 .field-row span {
@@ -222,12 +268,6 @@ html, body {
 }
 
 .edit-icon-btn:hover { opacity: 1; }
-
-.sidebar-divider {
-    height: 1px;
-    background: #222;
-    margin: 10px 0;
-}
 
 .logout-link {
     margin-top: auto;
@@ -272,16 +312,6 @@ html, body {
     border: 1px solid #222;
 }
 
-.close-modal {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    color: #fff;
-    font-size: 1.5rem;
-    cursor: pointer;
-    opacity: 0.5;
-}
-
 .tab-group {
     display: flex;
     gap: 30px;
@@ -309,15 +339,8 @@ html, body {
     transition: 0.3s ease;
 }
 
-/* КРИТИЧЕСКИ ВАЖНО: Разделение форм */
-.auth-form {
-    display: none; /* Скрыто по умолчанию */
-}
-
-.auth-form.active {
-    display: flex; /* Видна только активная форма */
-    flex-direction: column;
-}
+.auth-form { display: none; }
+.auth-form.active { display: flex; flex-direction: column; }
 
 .input-group { margin-bottom: 20px; position: relative; }
 
@@ -342,8 +365,6 @@ html, body {
 
 .input-group input:focus { border-bottom-color: #fff; }
 
-.password-container { position: relative; }
-
 .toggle-password {
     position: absolute;
     right: 0;
@@ -367,19 +388,7 @@ html, body {
 
 .btn-auth-submit:hover { background: #ccc; }
 
-.forgot-password {
-    display: block;
-    text-align: center;
-    margin-top: 20px;
-    color: #444;
-    text-decoration: none;
-    font-size: 0.75rem;
-    transition: 0.3s;
-}
-
-.forgot-password:hover { color: #fff; }
-
-/* ФУТЕР (Исправленный синтаксис для валидатора) */
+/* ФУТЕР */
 .footer-minimal {
     padding: 80px 5%;
     background: #f9f9f9;
@@ -394,47 +403,8 @@ html, body {
     margin: 20px;
 }
 
-.customer-service h2, .newsletter-minimal h2 {
-    font-size: 1rem;
-    letter-spacing: 2px;
-    margin-bottom: 15px;
-    text-transform: uppercase;
-}
-
-.customer-service p { font-size: 0.9rem; line-height: 1.6; color: #666; }
-
-.social-minimal {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    align-items: center;
-}
-
-.social-minimal a { color: #000; font-size: 1.2rem; transition: 0.3s; }
-.social-minimal a:hover { opacity: 0.6; }
-
-.subscribe-form { display: flex; margin-top: 20px; }
-
-.subscribe-form input {
-    flex: 1;
-    padding: 12px;
-    border: 1px solid #ddd;
-    outline: none;
-}
-
-.subscribe-form button {
-    padding: 12px 25px;
-    background: #000;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-}
-
 /* АДАПТИВНОСТЬ */
 @media (max-width: 768px) {
     .sidebar { width: 100%; }
     .hero-content h1 { font-size: 2.5rem; }
-    .auth-container { padding: 30px; margin: 10px; }
-    .footer-minimal { flex-direction: column; text-align: center; }
-    .social-minimal { order: 3; }
 }
