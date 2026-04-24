@@ -70,11 +70,6 @@ body {
 
 .nav-links li a:hover { opacity: 0.6; }
 
-.nav-links i {
-    margin-right: 8px;
-    font-size: 1rem;
-}
-
 /* 4. КОНТЕНТ ГЕРОЯ */
 .hero-content h1 {
     font-size: clamp(2rem, 8vw, 4.5rem);
@@ -175,10 +170,7 @@ body {
     font-size: 2.5rem;
     cursor: pointer;
     line-height: 1;
-    transition: 0.3s;
 }
-
-.close-sidebar-btn:hover { opacity: 0.5; }
 
 .settings-group { margin-bottom: 25px; }
 
@@ -197,11 +189,6 @@ body {
     align-items: center;
     padding-bottom: 10px;
     border-bottom: 1px solid #1a1a1a;
-}
-
-.field-row span {
-    font-size: 0.9rem;
-    color: #ccc;
 }
 
 .edit-icon-btn {
@@ -225,7 +212,6 @@ body {
     letter-spacing: 2px;
     text-transform: uppercase;
     cursor: pointer;
-    transition: 0.3s;
 }
 
 .logout-link:hover {
@@ -233,12 +219,12 @@ body {
     color: #fff;
 }
 
-/* 6. МОДАЛКА АВТОРИЗАЦИИ */
+/* 6. МОДАЛКА АВТОРИЗАЦИИ (ИСПРАВЛЕННЫЙ БЛОК) */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.95);
-    backdrop-filter: blur(10px);
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(8px);
     display: none;
     z-index: 9999;
     justify-content: center;
@@ -247,15 +233,115 @@ body {
 
 .modal-overlay.active { display: flex; }
 
-/* 7. АДАПТИВНОСТЬ */
-@media (max-width: 768px) {
-    .nav-links { display: none; }
-    .navbar { padding: 20px 5%; }
-    .hero-content h1 { letter-spacing: 6px; }
-    .sidebar { width: 100%; }
+.auth-container {
+    background: #000;
+    width: 90%;
+    max-width: 400px;
+    padding: 50px 40px;
+    position: relative;
+    border: 1px solid #222;
 }
 
-/* 8. СТИЛИ РЕДАКТИРОВАНИЯ В САЙДБАРЕ */
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+    color: #fff;
+    cursor: pointer;
+}
+
+/* Переключатели */
+.tab-group {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 35px;
+    position: relative;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+.tab {
+    color: #555;
+    font-size: 0.85rem;
+    padding-bottom: 12px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: 0.3s;
+}
+
+.tab.active { color: #fff; }
+
+.underline {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    background: #fff;
+    transition: 0.3s ease;
+}
+
+/* Формы */
+.auth-form {
+    display: none; /* Прячем неактивные */
+    flex-direction: column;
+    gap: 25px;
+}
+
+.auth-form.active { display: flex; }
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-size: 0.7rem;
+    color: #555;
+    letter-spacing: 1px;
+}
+
+.input-group input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #222;
+    padding: 10px 0;
+    color: #fff;
+    outline: none;
+}
+
+.input-group input:focus { border-bottom-color: #fff; }
+
+.password-container { position: relative; }
+
+.toggle-password {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #444;
+    cursor: pointer;
+}
+
+.btn-auth-submit {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 16px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.forgot-password {
+    text-align: center;
+    color: #444;
+    font-size: 0.75rem;
+    text-decoration: none;
+}
+
+/* 7. СТИЛИ РЕДАКТИРОВАНИЯ В САЙДБАРЕ */
 .edit-mode-container {
     display: flex;
     align-items: center;
@@ -267,55 +353,46 @@ body {
 
 .edit-mode-container input {
     flex: 1;
-    background: #0a0a0a; /* Глубокий черный для контраста */
+    background: #0a0a0a;
     border: 1px solid #2a2a2a;
     color: #fff;
     padding: 10px 14px;
     font-size: 0.85rem;
     outline: none;
-    border-radius: 2px; /* Легкое скругление в стиле Stol Art */
-    transition: all 0.3s ease;
 }
 
-.edit-mode-container input:focus {
-    border-color: #555;
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.05);
-}
+.btn-save-mini { color: #fff; background: none; border: none; cursor: pointer; }
+.btn-cancel-mini { color: #fff; opacity: 0.4; background: none; border: none; cursor: pointer; }
 
-.btn-save-mini, 
-.btn-cancel-mini {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.1rem;
-    padding: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-
-/* Кнопка сохранения — всегда белая */
-.btn-save-mini {
-    color: #fff;
-}
-
-/* Кнопка отмены — теперь белая и аккуратная */
-.btn-cancel-mini {
-    color: #fff; 
-    opacity: 0.4; /* В покое почти не видна, чтобы не раздражать */
-}
-
-.btn-save-mini:hover {
-    transform: scale(1.1);
-}
-
-.btn-cancel-mini:hover {
-    opacity: 1; /* При наведении становится четкой белой */
-    transform: scale(1.1);
+/* 8. АДАПТИВНОСТЬ */
+@media (max-width: 768px) {
+    .nav-links { display: none; }
+    .sidebar { width: 100%; }
 }
 
 @keyframes sidebarFadeIn {
     from { opacity: 0; transform: translateY(-8px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* 9. УВЕДОМЛЕНИЯ */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+}
+
+.toast {
+    background: #fff;
+    color: #000;
+    padding: 15px 25px;
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transform: translateX(120%);
+    transition: 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.toast.show { transform: translateX(0); }
