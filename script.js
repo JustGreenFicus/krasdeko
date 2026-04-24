@@ -22,7 +22,7 @@ function showNotification(msg) {
     }, 4000);
 }
 
-// 3. МАСКА ТЕЛЕФОНА (ФИКС КУРСОР)
+// 3. УЛУЧШЕННАЯ МАСКА ТЕЛЕФОНА
 function applyPhoneMask(input) {
     if (!input) return;
     const prefix = '+7 ';
@@ -31,6 +31,7 @@ function applyPhoneMask(input) {
         let d = val.replace(/\D/g, '');
         if (d.startsWith('7') || d.startsWith('8')) d = d.substring(1);
         d = d.substring(0, 10);
+
         let res = prefix;
         if (d.length > 0) res += '(' + d.substring(0, 3);
         if (d.length >= 4) res += ') ' + d.substring(3, 6);
@@ -41,13 +42,20 @@ function applyPhoneMask(input) {
 
     const fixCursor = () => {
         setTimeout(() => {
-            input.setSelectionRange(input.value.length, input.value.length);
-        }, 10);
+            if (input.selectionStart < 3) {
+                input.setSelectionRange(input.value.length, input.value.length);
+            }
+        }, 5);
     };
 
     input.addEventListener('input', (e) => {
         if (!e.target.value.startsWith(prefix)) e.target.value = prefix;
+        let cursor = e.target.selectionStart;
+        const oldLen = e.target.value.length;
         e.target.value = formatValue(e.target.value);
+        const newLen = e.target.value.length;
+        cursor = cursor + (newLen - oldLen);
+        e.target.setSelectionRange(cursor <= 3 ? e.target.value.length : cursor, cursor <= 3 ? e.target.value.length : cursor);
     });
 
     input.addEventListener('keydown', (e) => {
@@ -58,7 +66,7 @@ function applyPhoneMask(input) {
     input.addEventListener('focus', fixCursor);
 }
 
-// 4. ОСНОВНАЯ ЛОГИКА
+// 4. ОСНОВНАЯ ЛОГИКА ПРИ ЗАГРУЗКЕ
 document.addEventListener('DOMContentLoaded', () => {
     const authModal = document.getElementById('authModal');
     const openAuthBtn = document.getElementById('openAuthBtn');
@@ -108,13 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(formData)
             });
             const data = await response.json();
-
             if (response.ok) {
                 localStorage.setItem('userAccount', JSON.stringify(data.user));
-                updateUI(data.user);
+                showNotification(`Добро пожаловать!`);
                 authModal.classList.remove('active');
                 document.body.style.overflow = 'auto';
-                showNotification(`Добро пожаловать!`);
+                updateUI(data.user);
             } else {
                 showNotification(data.message || 'Ошибка');
             }
@@ -130,62 +137,52 @@ document.addEventListener('DOMContentLoaded', () => {
     if (signupForm) signupForm.onsubmit = (e) => handleAuth(e, 'signup');
 });
 
-// 5. ОБНОВЛЕНИЕ UI (БЕЗ УДАЛЕНИЯ КНОПОК РЕДАКТИРОВАНИЯ)
+// 5. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА (Исправлено исчезновение ника)
 function updateUI(user) {
-    if (!user) return;
-    
-    // Ник в хедере
     const authSection = document.getElementById('auth-section');
+    const sidebarUsername = document.getElementById('display-username');
+    const formattedName = user.username ? user.username.toUpperCase() : 'ПРОФИЛЬ';
+
     if (authSection) {
-        const formattedName = user.username ? user.username.toUpperCase() : 'ВОЙТИ';
         authSection.innerHTML = `
-            <a href="#" onclick="event.preventDefault(); toggleSidebar();" class="user-trigger">
+            <a href="#" onclick="toggleSidebar()" class="user-trigger">
                 <i class="fa-regular fa-circle-user"></i> ${formattedName}
             </a>
         `;
     }
 
-    // Ник в сайдбаре (только текст!)
-    const displayUser = document.getElementById('display-username');
-    if (displayUser) displayUser.innerText = user.username;
+    if (sidebarUsername) {
+        sidebarUsername.innerText = user.username;
+    }
 
-    // Почта
-    const displayEmail = document.getElementById('display-email');
-    if (displayEmail) displayEmail.innerText = user.email || 'Не указана';
-
-    // Телефон
-    const displayPhone = document.getElementById('display-phone');
-    if (displayPhone) {
-        const p = (user.phone || '').replace(/\D/g, '');
-        if (p.length >= 10) {
-            const clean = p.length === 11 ? p.substring(1) : p;
-            displayPhone.innerText = `+7 (${clean.substring(0,3)}) ${clean.substring(3,6)}-${clean.substring(6,8)}-${clean.substring(8,10)}`;
+    if (document.getElementById('display-email')) {
+        document.getElementById('display-email').innerText = user.email || 'Не указана';
+        const p = user.phone || '';
+        const d = p.replace(/\D/g, '');
+        if (d.length >= 10) {
+            const clean = d.length === 11 ? d.substring(1) : d;
+            document.getElementById('display-phone').innerText = `+7 (${clean.substring(0,3)}) ${clean.substring(3,6)}-${clean.substring(6,8)}-${clean.substring(8,10)}`;
         } else {
-            displayPhone.innerText = '+7';
+            document.getElementById('display-phone').innerText = '+7';
         }
     }
 }
 
 // 6. ЛОГИКА РЕДАКТИРОВАНИЯ
 window.editField = (type) => {
-    // Ищем элемент. Если это пароль, у него нет ID, ищем в последней группе безопасности
-    let displayElem = document.getElementById(`display-${type}`);
-    if (!displayElem && type === 'password') {
-        displayElem = document.querySelector('.settings-group:last-of-type .field-row span');
-    }
-    
+    const displayElem = document.getElementById(`display-${type}`);
     if (!displayElem) return;
 
-    const parentRow = displayElem.closest('.field-row') || displayElem.parentElement;
-    const currentValue = (type === 'password') ? '' : displayElem.innerText;
+    const parentRow = displayElem.parentElement;
+    const currentValue = displayElem.innerText;
     
     parentRow.style.display = 'none';
 
     const editHTML = `
         <div class="edit-mode-container" style="width: 100%; display: flex; gap: 5px; margin-top: 5px;">
-            <input type="${type === 'password' ? 'password' : 'text'}" 
+            <input type="${type === 'password' ? 'password' : (type === 'email' ? 'email' : 'text')}" 
                    id="edit-input-${type}" 
-                   value="${currentValue}" 
+                   value="${type === 'password' ? '' : currentValue}" 
                    placeholder="${type === 'password' ? 'Новый пароль' : ''}"
                    style="flex: 1; background: #111; border: 1px solid #333; color: #fff; padding: 8px; outline: none;">
             <button onclick="saveEdit('${type}')" style="background:#fff; color:#000; border:none; padding:5px 10px; cursor:pointer;"><i class="fa-solid fa-check"></i></button>
@@ -201,37 +198,32 @@ window.editField = (type) => {
 
 window.cancelEdit = () => {
     document.querySelectorAll('.edit-mode-container').forEach(el => el.remove());
-    document.querySelectorAll('.field-row, .user-info-top').forEach(el => el.style.display = 'flex');
+    document.querySelectorAll('.field-row').forEach(el => el.style.display = 'flex');
 };
 
 window.saveEdit = async (type) => {
     const input = document.getElementById(`edit-input-${type}`);
-    let newValue = input.value.trim();
+    let val = input.value.trim();
     const user = JSON.parse(localStorage.getItem('userAccount'));
 
-    if (!newValue && type !== 'password') return showNotification("Заполните поле");
+    if (!val && type !== 'password') return showNotification("Заполните поле");
 
-    let sendValue = newValue;
+    let sendVal = val;
     if (type === 'phone') {
-        sendValue = newValue.replace(/\D/g, '');
-        if (sendValue.length < 11) return showNotification("Номер слишком короткий");
+        sendVal = val.replace(/\D/g, '');
+        if (sendVal.length < 11) return showNotification("Номер слишком короткий");
     }
 
     try {
         const response = await fetch(`${API_URL}/api/update-profile`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: user._id || user.id, field: type, value: sendValue })
+            body: JSON.stringify({ userId: user._id || user.id, field: type, value: sendVal })
         });
         const data = await response.json();
-
         if (response.ok) {
-            // МЕРДЖ: Важно! Сохраняем старые данные, добавляем новые из ответа
+            // МЕРДЖ ДАННЫХ: сохраняем старые поля, добавляем новые от сервера
             const updatedUser = { ...user, ...data.user };
-            
-            // Если сервер не вернул обновленное поле в объекте user, форсируем его вручную (кроме пароля)
-            if (type !== 'password') updatedUser[type] = sendValue;
-
             localStorage.setItem('userAccount', JSON.stringify(updatedUser));
             updateUI(updatedUser);
             showNotification("Обновлено");
@@ -240,7 +232,7 @@ window.saveEdit = async (type) => {
             showNotification(data.message || "Ошибка");
         }
     } catch (e) {
-        showNotification("Ошибка сервера");
+        showNotification("Ошибка связи с сервером");
     }
 };
 
