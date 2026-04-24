@@ -59,7 +59,7 @@
             <div class="settings-group">
                 <label>НОМЕР ТЕЛЕФОНА</label>
                 <div class="field-row">
-                    <span id="display-phone">+7 (___) ___ __ __</span>
+                    <span id="display-phone">+7...</span>
                     <button onclick="editField('phone')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
                 </div>
             </div>
@@ -91,20 +91,18 @@
 
             <form id="login-form" class="auth-form active">
                 <div class="input-group">
-                    <label>USERNAME</label>
-                    <input type="text" name="username" placeholder="Введите логин" required>
+                    <label>USERNAME OR PHONE</label>
+                    <input type="text" name="username" placeholder="Логин или +7..." required>
                 </div>
                 <div class="input-group">
                     <label>PASSWORD</label>
-                    <div class="password-wrapper">
+                    <div class="password-container">
                         <input type="password" id="login-password" name="password" placeholder="Введите пароль" required>
-                        <i class="fa-regular fa-eye" onclick="togglePassword('login-password', this)"></i>
+                        <i class="fa-regular fa-eye toggle-password" onclick="togglePassword('login-password', this)"></i>
                     </div>
                 </div>
                 <button type="submit" class="btn-auth-submit">SIGN IN</button>
-                <div class="form-footer">
-                    <a href="#" onclick="handleForgotPassword()" class="forgot-password">Забыли пароль?</a>
-                </div>
+                <a href="#" class="forgot-password">Забыли пароль?</a>
             </form>
 
             <form id="signup-form" class="auth-form">
@@ -118,13 +116,13 @@
                 </div>
                 <div class="input-group">
                     <label>PHONE NUMBER</label>
-                    <input type="tel" name="phone" placeholder="+7 (999) 000-00-00" required>
+                    <input type="tel" name="phone" value="+7" maxlength="13" placeholder="+7" required>
                 </div>
                 <div class="input-group">
                     <label>PASSWORD</label>
-                    <div class="password-wrapper">
+                    <div class="password-container">
                         <input type="password" id="signup-password" name="password" placeholder="Придумайте пароль" required>
-                        <i class="fa-regular fa-eye" onclick="togglePassword('signup-password', this)"></i>
+                        <i class="fa-regular fa-eye toggle-password" onclick="togglePassword('signup-password', this)"></i>
                     </div>
                 </div>
                 <button type="submit" class="btn-auth-submit">SIGN UP</button> 
