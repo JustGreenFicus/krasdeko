@@ -22,14 +22,13 @@ function showNotification(msg) {
     }, 4000);
 }
 
-// 3. УЛУЧШЕННАЯ МАСКА ТЕЛЕФОНА (ЗАЩИТА +7)
+// 3. ЖЕСТКАЯ МАСКА ТЕЛЕФОНА (БЛОКИРОВКА ПРЕФИКСА)
 function applyPhoneMask(input) {
     if (!input) return;
     const prefix = '+7 ';
 
     const formatValue = (val) => {
         let d = val.replace(/\D/g, '');
-        // Если пользователь вставил номер через 8 или 7 — убираем первую цифру
         if (d.startsWith('7') || d.startsWith('8')) d = d.substring(1);
         d = d.substring(0, 10);
 
@@ -41,8 +40,14 @@ function applyPhoneMask(input) {
         return res;
     };
 
+    // Запрет перемещения курсора в область префикса
+    const restrictCursor = (e) => {
+        if (input.selectionStart < prefix.length) {
+            input.setSelectionRange(prefix.length, prefix.length);
+        }
+    };
+
     input.addEventListener('input', (e) => {
-        // Не даем стереть префикс
         if (!e.target.value.startsWith(prefix)) {
             e.target.value = prefix;
         }
@@ -52,44 +57,38 @@ function applyPhoneMask(input) {
         e.target.value = formatValue(e.target.value);
         const newLen = e.target.value.length;
         
-        // Умное управление курсором
         cursor = cursor + (newLen - oldLen);
         const finalPos = Math.max(prefix.length, cursor);
         e.target.setSelectionRange(finalPos, finalPos);
     });
 
     input.addEventListener('keydown', (e) => {
-        // Блокируем Backspace на позиции префикса
+        // Блокируем стирание префикса
         if (e.key === 'Backspace' && input.selectionStart <= prefix.length) {
+            e.preventDefault();
+        }
+        // Блокируем попытку уйти влево стрелками
+        if (e.key === 'ArrowLeft' && input.selectionStart <= prefix.length) {
             e.preventDefault();
         }
     });
 
-    // При клике или фокусе всегда ставим курсор после +7
-    const fixPos = () => {
-        if (input.selectionStart < prefix.length) {
-            input.setSelectionRange(input.value.length, input.value.length);
-        }
-    };
-    input.addEventListener('click', fixPos);
-    input.addEventListener('focus', fixPos);
+    input.addEventListener('click', restrictCursor);
+    input.addEventListener('focus', restrictCursor);
+    input.addEventListener('keyup', restrictCursor);
 }
 
-// 4. ОСНОВНАЯ ЛОГИКА
+// 4. ОСНОВНАЯ ЛОГИКА ПРИ ЗАГРУЗКЕ
 document.addEventListener('DOMContentLoaded', () => {
     const authModal = document.getElementById('authModal');
     const openAuthBtn = document.getElementById('openAuthBtn');
     const closeAuthBtn = document.getElementById('closeAuthBtn');
-    const overlay = document.getElementById('sidebar-overlay'); // Оверлей сайдбара
+    const overlay = document.getElementById('sidebar-overlay');
 
-    // Применяем маску ко всем полям телефона
     document.querySelectorAll('input[name="phone"]').forEach(applyPhoneMask);
 
-    // Закрытие сайдбара по клику на пустую область
     if (overlay) {
-        overlay.onclick = () => {
-            toggleSidebar();
-        };
+        overlay.onclick = () => toggleSidebar();
     }
 
     const savedUser = JSON.parse(localStorage.getItem('userAccount'));
@@ -110,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Обработка форм
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
 
@@ -163,7 +161,6 @@ function updateUI(user) {
     const sidebarUsername = document.getElementById('display-username');
     const formattedName = user.username ? user.username.toUpperCase() : 'ПРОФИЛЬ';
 
-    // Меняем кнопку в шапке
     if (authSection) {
         authSection.innerHTML = `
             <a href="#" onclick="toggleSidebar(); return false;" class="user-trigger">
@@ -172,12 +169,10 @@ function updateUI(user) {
         `;
     }
 
-    // Имя в боковой панели
     if (sidebarUsername) {
         sidebarUsername.innerText = user.username;
     }
 
-    // Данные в полях сайдбара
     if (document.getElementById('display-email')) {
         document.getElementById('display-email').innerText = user.email || 'Не указана';
         
@@ -200,23 +195,26 @@ window.toggleSidebar = () => {
     sidebar.classList.toggle('active');
     if (overlay) overlay.classList.toggle('active');
 
-    // Блокируем прокрутку сайта при открытом сайдбаре
     if (sidebar.classList.contains('active')) {
         document.body.style.overflow = 'hidden';
     } else {
         document.body.style.overflow = 'auto';
-        cancelEdit(); // Закрываем режимы редактирования при закрытии панели
+        cancelEdit();
     }
 };
 
 // 7. ЛОГИКА РЕДАКТИРОВАНИЯ
 window.editField = (type) => {
-    cancelEdit(); // Закрываем другие открытые поля перед открытием нового
+    cancelEdit();
     const displayElem = document.getElementById(`display-${type}`);
     if (!displayElem) return;
 
     const parentRow = displayElem.parentElement;
-    const currentValue = displayElem.innerText;
+    let currentValue = displayElem.innerText;
+    
+    // Если правим телефон, убираем форматирование для инпута
+    if (type === 'phone' && currentValue === '+7') currentValue = '+7 ';
+    
     parentRow.style.display = 'none';
 
     const editHTML = `
@@ -249,7 +247,9 @@ window.saveEdit = async (type) => {
     let sendVal = val;
     if (type === 'phone') {
         sendVal = val.replace(/\D/g, '');
-        if (sendVal.length < 11) return showNotification("Номер слишком короткий");
+        // Если номер начинается на 7 или 8, обрезаем
+        if (sendVal.length === 11) sendVal = sendVal.substring(1);
+        if (sendVal.length < 10) return showNotification("Номер слишком короткий");
     }
 
     try {
