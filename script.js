@@ -22,7 +22,7 @@ function showNotification(msg) {
     }, 4000);
 }
 
-// 3. ЖЕСТКАЯ МАСКА ТЕЛЕФОНА
+// 3. ЖЕСТКАЯ МАСКА ТЕЛЕФОНА (УЛУЧШЕННАЯ)
 function applyPhoneMask(input) {
     if (!input) return;
     const prefix = '+7 ';
@@ -40,28 +40,37 @@ function applyPhoneMask(input) {
     };
 
     const restrictCursor = () => {
+        // Если курсор пытаются поставить в зону +7, перекидываем его в конец
         if (input.selectionStart < prefix.length) {
-            input.setSelectionRange(prefix.length, prefix.length);
+            const end = input.value.length;
+            input.setSelectionRange(end, end);
         }
     };
 
     input.addEventListener('input', (e) => {
         if (!e.target.value.startsWith(prefix)) e.target.value = prefix;
+        
         let cursor = e.target.selectionStart;
         const oldLen = e.target.value.length;
         e.target.value = formatValue(e.target.value);
         const newLen = e.target.value.length;
+        
         cursor = cursor + (newLen - oldLen);
         const finalPos = Math.max(prefix.length, cursor);
         e.target.setSelectionRange(finalPos, finalPos);
     });
 
     input.addEventListener('keydown', (e) => {
-        if ((e.key === 'Backspace' || e.key === 'ArrowLeft') && input.selectionStart <= prefix.length) {
+        // СТЕНКА: Запрещаем Backspace и Delete в зоне префикса
+        if (e.key === 'Backspace' && input.selectionStart <= prefix.length) {
+            e.preventDefault();
+        }
+        if (e.key === 'Delete' && input.selectionStart < prefix.length) {
             e.preventDefault();
         }
     });
 
+    // При клике или фокусе всегда прыгаем в конец, если попали в +7
     input.addEventListener('click', restrictCursor);
     input.addEventListener('focus', restrictCursor);
 }
@@ -72,8 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const openAuthBtn = document.getElementById('openAuthBtn');
     const closeAuthBtn = document.getElementById('closeAuthBtn');
     const overlay = document.getElementById('sidebar-overlay');
-
-    // МОБИЛЬНОЕ МЕНЮ (БУРГЕР)
     const menuToggle = document.getElementById('mobile-menu');
     const navLinks = document.querySelector('.nav-links');
 
@@ -85,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Закрытие мобильного меню при клике на ссылку
     document.querySelectorAll('.nav-links a').forEach(link => {
         link.addEventListener('click', () => {
             if (menuToggle) menuToggle.classList.remove('active');
@@ -93,9 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.style.overflow = 'auto';
         });
     });
-
-    const activeTab = document.querySelector('.tab.active');
-    if (activeTab) moveUnderline(activeTab);
 
     document.querySelectorAll('input[name="phone"]').forEach(applyPhoneMask);
 
@@ -122,9 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.style.overflow = 'auto';
         };
     }
-
-    const loginForm = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
 
     async function handleAuth(e, endpoint) {
         e.preventDefault();
@@ -166,6 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
     if (loginForm) loginForm.onsubmit = (e) => handleAuth(e, 'login');
     if (signupForm) signupForm.onsubmit = (e) => handleAuth(e, 'signup');
 });
@@ -207,7 +209,6 @@ function updateUI(user) {
 window.toggleSidebar = () => {
     const sidebar = document.getElementById('user-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
-    
     if (!sidebar) return;
 
     sidebar.classList.toggle('active');
@@ -223,36 +224,46 @@ window.toggleSidebar = () => {
     }
 };
 
-// 7. ЛОГИКА РЕДАКТИРОВАНИЯ
+// 7. ЛОГИКА РЕДАКТИРОВАНИЯ (ИСПРАВЛЕНА: Кнопки сбоку + Курсор в конце)
 window.editField = (type) => {
     cancelEdit();
     const displayElem = document.getElementById(`display-${type}`);
     if (!displayElem) return;
 
-    const parentRow = displayElem.closest('.field-row') || displayElem.parentElement;
+    const parentRow = displayElem.closest('.field-row');
     const currentValue = displayElem.innerText;
     parentRow.style.display = 'none';
 
     const editHTML = `
-        <div class="edit-mode-container" id="edit-container-${type}">
+        <div class="edit-mode-container field-row-editing" id="edit-container-${type}">
             <input type="${type === 'password' ? 'password' : (type === 'email' ? 'email' : 'text')}" 
                    id="edit-input-${type}" 
-                   value="${type === 'password' ? '' : currentValue}">
-            <button onclick="saveEdit('${type}')" class="btn-save-mini"><i class="fa-solid fa-check"></i></button>
-            <button onclick="cancelEdit()" class="btn-cancel-mini"><i class="fa-solid fa-xmark"></i></button>
+                   value="${type === 'password' ? '' : currentValue}"
+                   autocomplete="off">
+            <div class="edit-actions">
+                <button onclick="saveEdit('${type}')" class="btn-save-mini"><i class="fa-solid fa-check"></i></button>
+                <button onclick="cancelEdit()" class="btn-cancel-mini"><i class="fa-solid fa-xmark"></i></button>
+            </div>
         </div>
     `;
     parentRow.insertAdjacentHTML('afterend', editHTML);
+    
     const input = document.getElementById(`edit-input-${type}`);
+    
+    // Применяем маску, если это телефон
     if (type === 'phone') applyPhoneMask(input);
+    
+    // ФОКУС И ПЕРЕНОС КУРСОРA В КОНЕЦ
     input.focus();
+    setTimeout(() => {
+        const valLen = input.value.length;
+        input.setSelectionRange(valLen, valLen);
+    }, 10);
 };
 
 window.cancelEdit = () => {
     document.querySelectorAll('.edit-mode-container').forEach(el => el.remove());
-    document.querySelectorAll('.field-row, .user-info-top').forEach(el => {
-        if (!el.classList.contains('nav-links')) el.style.display = 'flex';
-    });
+    document.querySelectorAll('.field-row').forEach(el => el.style.display = 'flex');
 };
 
 // 8. СОХРАНЕНИЕ
@@ -268,7 +279,9 @@ window.saveEdit = async (type) => {
     let sendVal = val;
     if (type === 'phone') {
         sendVal = val.replace(/\D/g, '');
-        if (sendVal.length === 11) sendVal = sendVal.substring(1);
+        if (sendVal.length === 11 && (sendVal.startsWith('7') || sendVal.startsWith('8'))) {
+            sendVal = sendVal.substring(1);
+        }
         if (sendVal.length < 10) return showNotification("Номер слишком короткий");
     }
 
@@ -282,9 +295,7 @@ window.saveEdit = async (type) => {
 
         if (response.ok) {
             const updatedUser = { ...oldUser, ...data.user };
-            if (type !== 'password') updatedUser[type] = sendVal;
             localStorage.setItem('userAccount', JSON.stringify(updatedUser));
-            
             cancelEdit();
             updateUI(updatedUser);
             showNotification("Данные обновлены");
@@ -305,7 +316,6 @@ window.logout = () => {
 window.switchForm = (type, element) => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-    
     element.classList.add('active');
     document.getElementById(type + '-form').classList.add('active');
     moveUnderline(element);
