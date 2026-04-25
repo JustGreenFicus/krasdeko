@@ -86,7 +86,7 @@ body {
 
 .nav-links li a:hover { opacity: 0.6; }
 
-/* 4. КОНТЕНТ ГЕРОЯ */
+/* 4. КОНТЕНТ ГЕРОЯ (ВОССТАНОВЛЕНО) */
 .hero-content h1 {
     font-size: clamp(2rem, 8vw, 4.5rem);
     font-weight: 300;
@@ -94,6 +94,32 @@ body {
     text-transform: uppercase;
     margin-bottom: 20px;
     line-height: 1.1;
+}
+
+.hero-content p {
+    font-size: 0.9rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+.btn-catalog-main {
+    display: inline-block;
+    padding: 16px 45px;
+    border: 1px solid #fff;
+    color: #fff;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 3px;
+    transition: all 0.4s ease;
+    background: transparent;
+}
+
+.btn-catalog-main:hover {
+    background: #fff;
+    color: #000;
 }
 
 /* 5. САЙДБАР ПРОФИЛЯ (ИСПРАВЛЕНО) */
@@ -105,7 +131,7 @@ body {
     height: 100vh;
     background: #000;
     z-index: 3000;
-    padding: 40px;
+    padding: 60px 40px 40px; /* Увеличил верхний паддинг для крестика */
     transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     border-left: 1px solid #222;
     display: flex;
@@ -116,7 +142,7 @@ body {
 
 .sidebar-header {
     display: flex;
-    justify-content: space-between; /* Распределяет ник влево, а крестик вправо */
+    justify-content: flex-start; 
     align-items: center;
     margin-bottom: 40px;
     width: 100%;
@@ -128,14 +154,19 @@ body {
     gap: 10px;
 }
 
+/* КРЕСТИК ВЫШЕ И СПРАВА */
 .close-sidebar-btn {
+    position: absolute;
+    top: 20px;
+    right: 25px;
     background: none;
     border: none;
     color: #fff;
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     cursor: pointer;
     line-height: 1;
-    padding: 0;
+    padding: 5px;
+    z-index: 10;
 }
 
 #sidebar-overlay {
@@ -201,11 +232,18 @@ body {
 
     .sidebar {
         width: 100%;
-        padding: 30px 20px;
+        padding: 60px 20px 40px;
     }
 
-    .sidebar-header {
-        margin-top: 10px;
+    .close-sidebar-btn {
+        top: 15px;
+        right: 15px;
+        font-size: 2rem;
+    }
+
+    .btn-catalog-main {
+        padding: 12px 35px;
+        font-size: 0.7rem;
     }
 
     .menu-toggle.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
