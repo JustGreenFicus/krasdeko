@@ -252,10 +252,61 @@ body {
 
 /* 8. ВСПОМОГАТЕЛЬНЫЕ СТИЛИ */
 .settings-group { margin-bottom: 25px; }
-.settings-group label { display: block; font-size: 0.65rem; color: #555; margin-bottom: 8px; text-transform: uppercase; }
-.field-row { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #1a1a1a; min-height: 40px; }
+
+.settings-group label { 
+    display: block; 
+    font-size: 0.65rem; 
+    color: #555; 
+    margin-bottom: 8px; 
+    text-transform: uppercase; 
+}
+
+/* Настройка строки: инпут слева, кнопки справа */
+.field-row { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding-bottom: 10px; 
+    border-bottom: 1px solid #1a1a1a; 
+    min-height: 40px; 
+    gap: 15px; /* Отступ между инпутом и кнопками */
+}
+
 .edit-icon-btn { background: none; border: none; color: #444; cursor: pointer; padding: 5px; }
-.logout-link { margin-top: auto; background: none; border: 1px solid #222; color: #ff4444; padding: 15px; cursor: pointer; text-transform: uppercase; }
+
+.logout-link { 
+    margin-top: auto; 
+    background: none; 
+    border: 1px solid #222; 
+    color: #ff4444; 
+    padding: 15px; 
+    cursor: pointer; 
+    text-transform: uppercase; 
+}
+
+/* --- КНОПКИ СОХРАНЕНИЯ / ОТМЕНЫ --- */
+.btn-save-mini, .btn-cancel-mini {
+    background: #000 !important;
+    border: 1px solid #333 !important;
+    color: #fff !important;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.btn-save-mini:hover { border-color: #fff; background: #111 !important; }
+.btn-cancel-mini:hover { border-color: #ff4444; background: #111 !important; }
+
+/* Контейнер для кнопок в ряд */
+.edit-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0; /* Чтобы кнопки не сжимались */
+}
 
 /* 10. ИСПРАВЛЕНИЕ ИНПУТОВ (УБИРАЕМ БЕЛЫЙ ЦВЕТ) */
 .sidebar input {
@@ -265,8 +316,9 @@ body {
     color: #fff !important;
     font-size: 1rem;
     padding: 5px 0;
-    width: 100%;
+    flex: 1; /* Инпут занимает всё свободное место слева */
     outline: none;
+    min-width: 0; /* Предотвращает переполнение во flex-боксе */
 }
 
 .sidebar input:focus {
