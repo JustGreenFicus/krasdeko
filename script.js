@@ -22,7 +22,7 @@ function showNotification(msg) {
     }, 4000);
 }
 
-// 3. ЖЕСТКАЯ МАСКА ТЕЛЕФОНА (УЛУЧШЕННАЯ)
+// 3. ЖЕСТКАЯ МАСКА ТЕЛЕФОНА (С ЗАПРЕТОМ КУРСОРA)
 function applyPhoneMask(input) {
     if (!input) return;
     const prefix = '+7 ';
@@ -40,10 +40,9 @@ function applyPhoneMask(input) {
     };
 
     const restrictCursor = () => {
-        // Если курсор пытаются поставить в зону +7, перекидываем его в конец
+        // Если курсор пытаются поставить внутрь "+7 ", кидаем его в начало ввода (индекс 3)
         if (input.selectionStart < prefix.length) {
-            const end = input.value.length;
-            input.setSelectionRange(end, end);
+            input.setSelectionRange(prefix.length, prefix.length);
         }
     };
 
@@ -61,18 +60,20 @@ function applyPhoneMask(input) {
     });
 
     input.addEventListener('keydown', (e) => {
-        // СТЕНКА: Запрещаем Backspace и Delete в зоне префикса
+        // Блокируем Backspace на границе префикса
         if (e.key === 'Backspace' && input.selectionStart <= prefix.length) {
             e.preventDefault();
         }
+        // Блокируем Delete внутри префикса
         if (e.key === 'Delete' && input.selectionStart < prefix.length) {
             e.preventDefault();
         }
     });
 
-    // При клике или фокусе всегда прыгаем в конец, если попали в +7
+    // Запрещаем кликать и выделять "+7 "
     input.addEventListener('click', restrictCursor);
     input.addEventListener('focus', restrictCursor);
+    input.addEventListener('selectionchange', restrictCursor);
 }
 
 // 4. ОСНОВНАЯ ЛОГИКА ПРИ ЗАГРУЗКЕ
@@ -224,7 +225,7 @@ window.toggleSidebar = () => {
     }
 };
 
-// 7. ЛОГИКА РЕДАКТИРОВАНИЯ (ИСПРАВЛЕНА: Кнопки сбоку + Курсор в конце)
+// 7. ЛОГИКА РЕДАКТИРОВАНИЯ (ИСПРАВЛЕНА ДЛЯ ПОЧТЫ И КНОПОК)
 window.editField = (type) => {
     cancelEdit();
     const displayElem = document.getElementById(`display-${type}`);
@@ -234,12 +235,14 @@ window.editField = (type) => {
     const currentValue = displayElem.innerText;
     parentRow.style.display = 'none';
 
+    // ВАЖНО: Добавлена обертка edit-actions для CSS
     const editHTML = `
         <div class="edit-mode-container field-row-editing" id="edit-container-${type}">
             <input type="${type === 'password' ? 'password' : (type === 'email' ? 'email' : 'text')}" 
                    id="edit-input-${type}" 
                    value="${type === 'password' ? '' : currentValue}"
-                   autocomplete="off">
+                   autocomplete="off"
+                   spellcheck="false">
             <div class="edit-actions">
                 <button onclick="saveEdit('${type}')" class="btn-save-mini"><i class="fa-solid fa-check"></i></button>
                 <button onclick="cancelEdit()" class="btn-cancel-mini"><i class="fa-solid fa-xmark"></i></button>
@@ -249,11 +252,8 @@ window.editField = (type) => {
     parentRow.insertAdjacentHTML('afterend', editHTML);
     
     const input = document.getElementById(`edit-input-${type}`);
-    
-    // Применяем маску, если это телефон
     if (type === 'phone') applyPhoneMask(input);
     
-    // ФОКУС И ПЕРЕНОС КУРСОРA В КОНЕЦ
     input.focus();
     setTimeout(() => {
         const valLen = input.value.length;
@@ -307,7 +307,7 @@ window.saveEdit = async (type) => {
     }
 };
 
-// 9. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+// 9. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (БЕЗ ИЗМЕНЕНИЙ)
 window.logout = () => {
     localStorage.removeItem('userAccount');
     window.location.reload();
