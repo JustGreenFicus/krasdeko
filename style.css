@@ -249,6 +249,16 @@ body {
     gap: 15px;
 }
 
+/* ФИКС: Контейнер режима редактирования */
+.field-row-editing {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 10px !important;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+}
+
 .edit-icon-btn { background: none; border: none; color: #444; cursor: pointer; padding: 5px; }
 
 .logout-link { 
@@ -267,7 +277,7 @@ body {
 .edit-actions {
     display: flex;
     gap: 8px;
-    flex-shrink: 0;
+    flex-shrink: 0 !important; /* ЗАПРЕЩАЕТ кнопкам сжиматься или уходить вниз */
 }
 
 .btn-save-mini, .btn-cancel-mini {
@@ -295,17 +305,17 @@ body {
 .sidebar input {
     background: transparent !important;
     border: none !important;
-    border-bottom: 1px solid #333 !important;
+    /* Убрал border-bottom здесь, так как он теперь у field-row-editing */
     color: #fff !important;
     font-size: 1rem;
     padding: 5px 0;
-    flex: 1; 
-    outline: none;
-    min-width: 0;
+    flex: 1 !important; 
+    outline: none !important;
+    min-width: 0 !important; /* Позволяет инпуту уменьшаться, чтобы влезли кнопки */
 }
 
 .sidebar input:focus {
-    border-bottom-color: #fff !important;
+    border-bottom: none !important;
 }
 
 @keyframes fadeIn {
