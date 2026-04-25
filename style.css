@@ -277,7 +277,7 @@ body {
 .edit-actions {
     display: flex;
     gap: 8px;
-    flex-shrink: 0 !important; /* ЗАПРЕЩАЕТ кнопкам сжиматься или уходить вниз */
+    flex-shrink: 0 !important; 
 }
 
 .btn-save-mini, .btn-cancel-mini {
@@ -305,19 +305,69 @@ body {
 .sidebar input {
     background: transparent !important;
     border: none !important;
-    /* Убрал border-bottom здесь, так как он теперь у field-row-editing */
     color: #fff !important;
     font-size: 1rem;
     padding: 5px 0;
     flex: 1 !important; 
     outline: none !important;
-    min-width: 0 !important; /* Позволяет инпуту уменьшаться, чтобы влезли кнопки */
+    min-width: 0 !important;
 }
 
 .sidebar input:focus {
     border-bottom: none !important;
 }
 
+/* --- 11. СТИЛИ ДЛЯ СМЕНЫ ПАРОЛЯ --- */
+.password-edit-block {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+    padding: 10px 0;
+    animation: fadeIn 0.3s ease;
+}
+
+.input-with-eye {
+    position: relative;
+    width: 100%;
+    border-bottom: 1px solid #222;
+    transition: border-color 0.3s;
+}
+
+.input-with-eye:focus-within {
+    border-color: #555;
+}
+
+.input-with-eye input {
+    width: 100%;
+    padding: 10px 35px 10px 0 !important;
+    font-size: 0.9rem !important;
+}
+
+.input-with-eye .eye-icon {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #444;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+    padding: 5px;
+}
+
+.input-with-eye .eye-icon:hover {
+    color: #fff;
+}
+
+.password-edit-block .edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+/* АНИМАЦИИ */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
