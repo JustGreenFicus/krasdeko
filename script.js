@@ -22,11 +22,10 @@ function showNotification(msg) {
     }, 4000);
 }
 
-// 3. ЖЕСТКАЯ МАСКА ТЕЛЕФОНА (С ЗАПРЕТОМ КУРСОРA)
+// 3. ЖЕСТКАЯ МАСКА ТЕЛЕФОНА
 function applyPhoneMask(input) {
     if (!input) return;
     const prefix = '+7 ';
-
     const formatValue = (val) => {
         let d = val.replace(/\D/g, '');
         if (d.startsWith('7') || d.startsWith('8')) d = d.substring(1);
@@ -38,35 +37,25 @@ function applyPhoneMask(input) {
         if (d.length >= 9) res += '-' + d.substring(8, 10);
         return res;
     };
-
     const restrictCursor = () => {
         if (input.selectionStart < prefix.length) {
             input.setSelectionRange(prefix.length, prefix.length);
         }
     };
-
     input.addEventListener('input', (e) => {
         if (!e.target.value.startsWith(prefix)) e.target.value = prefix;
-        
         let cursor = e.target.selectionStart;
         const oldLen = e.target.value.length;
         e.target.value = formatValue(e.target.value);
         const newLen = e.target.value.length;
-        
         cursor = cursor + (newLen - oldLen);
         const finalPos = Math.max(prefix.length, cursor);
         e.target.setSelectionRange(finalPos, finalPos);
     });
-
     input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && input.selectionStart <= prefix.length) {
-            e.preventDefault();
-        }
-        if (e.key === 'Delete' && input.selectionStart < prefix.length) {
-            e.preventDefault();
-        }
+        if (e.key === 'Backspace' && input.selectionStart <= prefix.length) e.preventDefault();
+        if (e.key === 'Delete' && input.selectionStart < prefix.length) e.preventDefault();
     });
-
     input.addEventListener('click', restrictCursor);
     input.addEventListener('focus', restrictCursor);
     input.addEventListener('selectionchange', restrictCursor);
@@ -98,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.querySelectorAll('input[name="phone"]').forEach(applyPhoneMask);
-
     if (overlay) overlay.onclick = () => toggleSidebar();
 
     const savedUser = JSON.parse(localStorage.getItem('userAccount'));
@@ -128,17 +116,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const form = e.target;
         const submitBtn = form.querySelector('button');
         const formData = {};
-        
         new FormData(form).forEach((value, key) => {
             if (key === 'phone') formData[key] = value.replace(/\D/g, '');
             else if (endpoint === 'login' && key === 'username') formData['identifier'] = value;
             else formData[key] = value;
         });
-
         submitBtn.disabled = true;
         const originalText = submitBtn.innerText;
         submitBtn.innerText = 'ОБРАБОТКА...';
-
         try {
             const response = await fetch(`${API_URL}/api/${endpoint}`, {
                 method: 'POST',
@@ -183,7 +168,6 @@ function updateUI(user) {
             </a>
         `;
     }
-
     if (sidebarUsername) sidebarUsername.innerText = nameToShow;
 
     const emailElem = document.getElementById('display-email');
@@ -207,13 +191,10 @@ window.toggleSidebar = () => {
     const sidebar = document.getElementById('user-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
     if (!sidebar) return;
-
     sidebar.classList.toggle('active');
     if (overlay) overlay.classList.toggle('active');
-    
     const isActive = sidebar.classList.contains('active');
     document.body.style.overflow = isActive ? 'hidden' : 'auto';
-
     if (!isActive) {
         cancelEdit();
         const currentUser = JSON.parse(localStorage.getItem('userAccount'));
@@ -221,44 +202,47 @@ window.toggleSidebar = () => {
     }
 };
 
-// 7. ЛОГИКА РЕДАКТИРОВАНИЯ (ИСПРАВЛЕНО: КУРСОР В КОНЦЕ + НИКНЕЙМ)
+// 7. ЛОГИКА РЕДАКТИРОВАНИЯ (ФИКС НИКНЕЙМА)
 window.editField = (type) => {
     cancelEdit();
     
-    // Универсальный поиск: если тип username, ищем display-username
-    const elementId = type === 'username' ? 'display-username' : `display-${type}`;
-    const displayElem = document.getElementById(elementId);
+    // Пытаемся найти элемент: сначала display-username, потом display-type
+    const displayElem = document.getElementById(`display-${type}`) || document.getElementById('display-username');
     
-    if (!displayElem) return;
+    if (!displayElem) {
+        console.error("Элемент для редактирования не найден");
+        return;
+    }
 
     const parentRow = displayElem.closest('.field-row');
     const currentValue = displayElem.innerText;
     parentRow.style.display = 'none';
 
+    // Для никнейма устанавливаем тип username, чтобы сервер понял ключ
+    const fieldType = (type === 'username' || displayElem.id === 'display-username') ? 'username' : type;
+
     const editHTML = `
-        <div class="edit-mode-container field-row-editing" id="edit-container-${type}">
-            <input type="${type === 'password' ? 'password' : (type === 'email' ? 'email' : 'text')}" 
-                   id="edit-input-${type}" 
-                   value="${type === 'password' ? '' : currentValue}"
+        <div class="edit-mode-container field-row-editing" id="edit-container-${fieldType}">
+            <input type="${fieldType === 'password' ? 'password' : (fieldType === 'email' ? 'email' : 'text')}" 
+                   id="edit-input-${fieldType}" 
+                   value="${fieldType === 'password' ? '' : currentValue}"
                    autocomplete="off"
                    spellcheck="false">
             <div class="edit-actions">
-                <button onclick="saveEdit('${type}')" class="btn-save-mini"><i class="fa-solid fa-check"></i></button>
+                <button onclick="saveEdit('${fieldType}')" class="btn-save-mini"><i class="fa-solid fa-check"></i></button>
                 <button onclick="cancelEdit()" class="btn-cancel-mini"><i class="fa-solid fa-xmark"></i></button>
             </div>
         </div>
     `;
     parentRow.insertAdjacentHTML('afterend', editHTML);
     
-    const input = document.getElementById(`edit-input-${type}`);
-    if (type === 'phone') applyPhoneMask(input);
+    const input = document.getElementById(`edit-input-${fieldType}`);
+    if (fieldType === 'phone') applyPhoneMask(input);
     
     input.focus();
-    
-    // ПЕРЕНОС КУРСОРА В КОНЕЦ
-    const currentVal = input.value;
+    const val = input.value;
     input.value = '';
-    input.value = currentVal;
+    input.value = val; // Курсор в конец
 
     setTimeout(() => {
         const len = input.value.length;
@@ -271,38 +255,26 @@ window.cancelEdit = () => {
     document.querySelectorAll('.field-row').forEach(el => el.style.display = 'flex');
 };
 
-// 8. СОХРАНЕНИЕ (ВАЛИДАЦИЯ + НИКНЕЙМ)
+// 8. СОХРАНЕНИЕ
 window.saveEdit = async (type) => {
     const input = document.getElementById(`edit-input-${type}`);
     if (!input) return;
 
     let val = input.value.trim();
     let oldUser = JSON.parse(localStorage.getItem('userAccount'));
-
     if (!val && type !== 'password') return showNotification("Заполните поле");
 
-    // ВАЛИДАЦИЯ ПОЧТЫ
     if (type === 'email') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const commonMistakes = ['.con', '.ruu', '.rm', '.рф', '.ne', '.ор', '.cpm', '.vom'];
-        
-        if (!emailRegex.test(val)) return showNotification("Некорректный формат почты");
-
-        const hasMistake = commonMistakes.some(ext => val.toLowerCase().endsWith(ext));
-        if (hasMistake) return showNotification("Ошибка в домене (проверьте .com, .ru)");
+        if (!emailRegex.test(val)) return showNotification("Некорректная почта");
     }
     
-    // ВАЛИДАЦИЯ НИКНЕЙМА
-    if (type === 'username' && val.length < 3) {
-        return showNotification("Никнейм слишком короткий");
-    }
+    if (type === 'username' && val.length < 3) return showNotification("Ник слишком короткий");
 
     let sendVal = val;
     if (type === 'phone') {
         sendVal = val.replace(/\D/g, '');
-        if (sendVal.length === 11 && (sendVal.startsWith('7') || sendVal.startsWith('8'))) {
-            sendVal = sendVal.substring(1);
-        }
+        if (sendVal.length === 11) sendVal = sendVal.substring(1);
         if (sendVal.length < 10) return showNotification("Номер слишком короткий");
     }
 
@@ -313,7 +285,6 @@ window.saveEdit = async (type) => {
             body: JSON.stringify({ userId: oldUser._id || oldUser.id, field: type, value: sendVal })
         });
         const data = await response.json();
-
         if (response.ok) {
             const updatedUser = { ...oldUser, ...data.user };
             localStorage.setItem('userAccount', JSON.stringify(updatedUser));
