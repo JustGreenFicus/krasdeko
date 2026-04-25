@@ -148,12 +148,6 @@ body {
     width: 100%;
 }
 
-.user-info-top {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
 .close-sidebar-btn {
     position: absolute;
     top: 20px;
@@ -206,18 +200,14 @@ body {
 
 /* 7. АДАПТИВНОСТЬ */
 @media (max-width: 768px) {
-    .menu-toggle {
-        display: flex;
-    }
+    .menu-toggle { display: flex; }
 
     .nav-links {
         display: none;
         flex-direction: column;
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
+        top: 0; left: 0;
+        width: 100%; height: 100vh;
         background: #000;
         justify-content: center;
         gap: 30px;
@@ -225,32 +215,20 @@ body {
         animation: fadeIn 0.3s ease;
     }
 
-    .nav-links.mobile-active {
-        display: flex;
-    }
+    .nav-links.mobile-active { display: flex; }
 
-    .sidebar {
-        width: 100%;
-        padding: 60px 20px 40px;
-    }
+    .sidebar { width: 100%; padding: 60px 20px 40px; }
 
-    .close-sidebar-btn {
-        top: 15px;
-        right: 15px;
-        font-size: 2rem;
-    }
+    .close-sidebar-btn { top: 15px; right: 15px; font-size: 2rem; }
 
-    .btn-catalog-main {
-        padding: 12px 35px;
-        font-size: 0.7rem;
-    }
+    .btn-catalog-main { padding: 12px 35px; font-size: 0.7rem; }
 
     .menu-toggle.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
     .menu-toggle.active .bar:nth-child(2) { opacity: 0; }
     .menu-toggle.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 }
 
-/* 8. ВСПОМОГАТЕЛЬНЫЕ СТИЛИ */
+/* 8. ВСПОМОГАТЕЛЬНЫЕ СТИЛИ (САЙДБАР) */
 .settings-group { margin-bottom: 25px; }
 
 .settings-group label { 
@@ -261,7 +239,6 @@ body {
     text-transform: uppercase; 
 }
 
-/* Настройка строки: инпут слева, кнопки справа */
 .field-row { 
     display: flex; 
     justify-content: space-between; 
@@ -269,7 +246,7 @@ body {
     padding-bottom: 10px; 
     border-bottom: 1px solid #1a1a1a; 
     min-height: 40px; 
-    gap: 15px; /* Отступ между инпутом и кнопками */
+    gap: 15px;
 }
 
 .edit-icon-btn { background: none; border: none; color: #444; cursor: pointer; padding: 5px; }
@@ -282,9 +259,17 @@ body {
     padding: 15px; 
     cursor: pointer; 
     text-transform: uppercase; 
+    transition: 0.3s;
 }
+.logout-link:hover { border-color: #ff4444; background: rgba(255, 68, 68, 0.05); }
 
 /* --- КНОПКИ СОХРАНЕНИЯ / ОТМЕНЫ --- */
+.edit-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
 .btn-save-mini, .btn-cancel-mini {
     background: #000 !important;
     border: 1px solid #333 !important;
@@ -301,14 +286,12 @@ body {
 .btn-save-mini:hover { border-color: #fff; background: #111 !important; }
 .btn-cancel-mini:hover { border-color: #ff4444; background: #111 !important; }
 
-/* Контейнер для кнопок в ряд */
-.edit-actions {
-    display: flex;
-    gap: 8px;
-    flex-shrink: 0; /* Чтобы кнопки не сжимались */
-}
+/* 9. УВЕДОМЛЕНИЯ */
+.toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; }
+.toast { background: #fff; color: #000; padding: 15px 25px; margin-bottom: 10px; transform: translateX(120%); transition: 0.5s; }
+.toast.show { transform: translateX(0); }
 
-/* 10. ИСПРАВЛЕНИЕ ИНПУТОВ (УБИРАЕМ БЕЛЫЙ ЦВЕТ) */
+/* 10. ИСПРАВЛЕНИЕ ИНПУТОВ */
 .sidebar input {
     background: transparent !important;
     border: none !important;
@@ -316,9 +299,9 @@ body {
     color: #fff !important;
     font-size: 1rem;
     padding: 5px 0;
-    flex: 1; /* Инпут занимает всё свободное место слева */
+    flex: 1; 
     outline: none;
-    min-width: 0; /* Предотвращает переполнение во flex-боксе */
+    min-width: 0;
 }
 
 .sidebar input:focus {
@@ -329,8 +312,3 @@ body {
     from { opacity: 0; }
     to { opacity: 1; }
 }
-
-/* 9. УВЕДОМЛЕНИЯ */
-.toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; }
-.toast { background: #fff; color: #000; padding: 15px 25px; margin-bottom: 10px; transform: translateX(120%); transition: 0.5s; }
-.toast.show { transform: translateX(0); }
