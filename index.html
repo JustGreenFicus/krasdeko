@@ -72,7 +72,7 @@
             <div class="settings-group">
                 <label>БЕЗОПАСНОСТЬ</label>
                 <div class="field-row">
-                    <span>••••••••</span>
+                    <span id="display-password">••••••••</span>
                     <button onclick="editField('password')" class="edit-icon-btn"><i class="fa-solid fa-pen-to-square"></i></button>
                 </div>
             </div>
@@ -85,13 +85,11 @@
     <div class="modal-overlay" id="authModal">
         <div class="auth-container">
             <span class="close-modal" id="closeAuthBtn">&times;</span>
-            
             <div class="tab-group">
                 <div class="tab active" onclick="switchForm('login', this)">SIGN IN</div>
                 <div class="tab" onclick="switchForm('signup', this)">SIGN UP</div>
                 <div class="underline"></div>
             </div>
-
             <form id="login-form" class="auth-form active">
                 <div class="input-group">
                     <label>USERNAME OR PHONE</label>
@@ -107,7 +105,6 @@
                 <button type="submit" class="btn-auth-submit">SIGN IN</button>
                 <a href="#" class="forgot-password">Забыли пароль?</a>
             </form>
-
             <form id="signup-form" class="auth-form">
                 <div class="input-group">
                     <label>USERNAME</label>
