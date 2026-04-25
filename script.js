@@ -221,10 +221,14 @@ window.toggleSidebar = () => {
     }
 };
 
-// 7. ЛОГИКА РЕДАКТИРОВАНИЯ (ИСПРАВЛЕНА: КУРСОР В КОНЦЕ)
+// 7. ЛОГИКА РЕДАКТИРОВАНИЯ (ИСПРАВЛЕНО: КУРСОР В КОНЦЕ + НИКНЕЙМ)
 window.editField = (type) => {
     cancelEdit();
-    const displayElem = document.getElementById(`display-${type}`);
+    
+    // Универсальный поиск: если тип username, ищем display-username
+    const elementId = type === 'username' ? 'display-username' : `display-${type}`;
+    const displayElem = document.getElementById(elementId);
+    
     if (!displayElem) return;
 
     const parentRow = displayElem.closest('.field-row');
@@ -251,12 +255,11 @@ window.editField = (type) => {
     
     input.focus();
     
-    // ПЕРЕНОС КУРСОРА В КОНЕЦ (Сброс и возврат значения)
+    // ПЕРЕНОС КУРСОРА В КОНЕЦ
     const currentVal = input.value;
     input.value = '';
     input.value = currentVal;
 
-    // Дополнительная задержка для надежности в Safari/Chrome
     setTimeout(() => {
         const len = input.value.length;
         input.setSelectionRange(len, len);
@@ -268,7 +271,7 @@ window.cancelEdit = () => {
     document.querySelectorAll('.field-row').forEach(el => el.style.display = 'flex');
 };
 
-// 8. СОХРАНЕНИЕ (ДОБАВЛЕНА ВАЛИДАЦИЯ ДОМЕНОВ)
+// 8. СОХРАНЕНИЕ (ВАЛИДАЦИЯ + НИКНЕЙМ)
 window.saveEdit = async (type) => {
     const input = document.getElementById(`edit-input-${type}`);
     if (!input) return;
@@ -281,19 +284,17 @@ window.saveEdit = async (type) => {
     // ВАЛИДАЦИЯ ПОЧТЫ
     if (type === 'email') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        // Список типичных ошибок в доменах
         const commonMistakes = ['.con', '.ruu', '.rm', '.рф', '.ne', '.ор', '.cpm', '.vom'];
         
-        if (!emailRegex.test(val)) {
-            return showNotification("Некорректный формат почты");
-        }
+        if (!emailRegex.test(val)) return showNotification("Некорректный формат почты");
 
-        const lowerVal = val.toLowerCase();
-        const hasMistake = commonMistakes.some(ext => lowerVal.endsWith(ext));
-        
-        if (hasMistake) {
-            return showNotification("Ошибка в домене (проверьте .com, .ru)");
-        }
+        const hasMistake = commonMistakes.some(ext => val.toLowerCase().endsWith(ext));
+        if (hasMistake) return showNotification("Ошибка в домене (проверьте .com, .ru)");
+    }
+    
+    // ВАЛИДАЦИЯ НИКНЕЙМА
+    if (type === 'username' && val.length < 3) {
+        return showNotification("Никнейм слишком короткий");
     }
 
     let sendVal = val;
