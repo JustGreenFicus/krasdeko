@@ -202,30 +202,29 @@ window.toggleSidebar = () => {
     }
 };
 
-// 7. ЛОГИКА РЕДАКТИРОВАНИЯ (ФИКС НИКНЕЙМА)
+// 7. ЛОГИКА РЕДАКТИРОВАНИЯ
 window.editField = (type) => {
     cancelEdit();
     
-    // Пытаемся найти элемент: сначала display-username, потом display-type
-    const displayElem = document.getElementById(`display-${type}`) || document.getElementById('display-username');
-    
-    if (!displayElem) {
-        console.error("Элемент для редактирования не найден");
-        return;
+    // Если меняем пароль, вызываем спец. функцию
+    if (type === 'password') {
+        return editPassword();
     }
+    
+    const displayElem = document.getElementById(`display-${type}`) || document.getElementById('display-username');
+    if (!displayElem) return;
 
     const parentRow = displayElem.closest('.field-row');
     const currentValue = displayElem.innerText;
     parentRow.style.display = 'none';
 
-    // Для никнейма устанавливаем тип username, чтобы сервер понял ключ
     const fieldType = (type === 'username' || displayElem.id === 'display-username') ? 'username' : type;
 
     const editHTML = `
         <div class="edit-mode-container field-row-editing" id="edit-container-${fieldType}">
-            <input type="${fieldType === 'password' ? 'password' : (fieldType === 'email' ? 'email' : 'text')}" 
+            <input type="${fieldType === 'email' ? 'email' : 'text'}" 
                    id="edit-input-${fieldType}" 
-                   value="${fieldType === 'password' ? '' : currentValue}"
+                   value="${currentValue}"
                    autocomplete="off"
                    spellcheck="false">
             <div class="edit-actions">
@@ -242,12 +241,42 @@ window.editField = (type) => {
     input.focus();
     const val = input.value;
     input.value = '';
-    input.value = val; // Курсор в конец
+    input.value = val;
 
     setTimeout(() => {
         const len = input.value.length;
         input.setSelectionRange(len, len);
     }, 50);
+};
+
+// СПЕЦИАЛЬНАЯ ФОРМА ДЛЯ ПАРОЛЯ
+window.editPassword = () => {
+    const displayRow = document.querySelector('.settings-group .field-row:has(#display-password)') || 
+                       document.querySelector('button[onclick="editField(\'password\')"]').closest('.field-row');
+    
+    if (displayRow) displayRow.style.display = 'none';
+
+    const editHTML = `
+        <div class="edit-mode-container password-edit-block" id="edit-container-password">
+            <div class="input-with-eye">
+                <input type="password" id="old-password" placeholder="Старый пароль">
+                <i class="fa-regular fa-eye eye-icon" onclick="togglePassword('old-password', this)"></i>
+            </div>
+            <div class="input-with-eye">
+                <input type="password" id="new-password" placeholder="Новый пароль">
+                <i class="fa-regular fa-eye eye-icon" onclick="togglePassword('new-password', this)"></i>
+            </div>
+            <div class="input-with-eye">
+                <input type="password" id="confirm-password" placeholder="Повторите новый">
+                <i class="fa-regular fa-eye eye-icon" onclick="togglePassword('confirm-password', this)"></i>
+            </div>
+            <div class="edit-actions">
+                <button onclick="savePassword()" class="btn-save-mini"><i class="fa-solid fa-check"></i></button>
+                <button onclick="cancelEdit()" class="btn-cancel-mini"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+    `;
+    displayRow.insertAdjacentHTML('afterend', editHTML);
 };
 
 window.cancelEdit = () => {
@@ -262,7 +291,7 @@ window.saveEdit = async (type) => {
 
     let val = input.value.trim();
     let oldUser = JSON.parse(localStorage.getItem('userAccount'));
-    if (!val && type !== 'password') return showNotification("Заполните поле");
+    if (!val) return showNotification("Заполните поле");
 
     if (type === 'email') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -293,6 +322,40 @@ window.saveEdit = async (type) => {
             showNotification("Данные обновлены");
         } else {
             showNotification(data.message || "Ошибка");
+        }
+    } catch (e) {
+        showNotification("Ошибка связи");
+    }
+};
+
+// СОХРАНЕНИЕ ПАРОЛЯ
+window.savePassword = async () => {
+    const oldPass = document.getElementById('old-password').value;
+    const newPass = document.getElementById('new-password').value;
+    const confirmPass = document.getElementById('confirm-password').value;
+    const user = JSON.parse(localStorage.getItem('userAccount'));
+
+    if (!oldPass || !newPass || !confirmPass) return showNotification("Заполните все поля");
+    if (newPass !== confirmPass) return showNotification("Пароли не совпадают");
+    if (newPass.length < 6) return showNotification("Пароль слишком короткий");
+
+    try {
+        const response = await fetch(`${API_URL}/api/update-profile`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                userId: user._id || user.id, 
+                field: 'password', 
+                oldPassword: oldPass, 
+                value: newPass 
+            })
+        });
+        const data = await response.json();
+        if (response.ok) {
+            showNotification("Пароль изменен");
+            cancelEdit();
+        } else {
+            showNotification(data.message || "Ошибка пароля");
         }
     } catch (e) {
         showNotification("Ошибка связи");
