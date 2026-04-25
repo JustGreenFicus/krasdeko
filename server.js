@@ -43,6 +43,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // Вспомогательная функция для очистки телефона (оставляем только цифры)
+// Это предотвращает проблему "прыгающего" курсора из-за лишних символов в базе
 const cleanPhone = (phone) => phone ? phone.replace(/\D/g, '') : "";
 
 // --- API: РЕГИСТРАЦИЯ ---
@@ -58,7 +59,7 @@ app.post('/api/signup', async (req, res) => {
             username, 
             email, 
             password: hashedPassword,
-            phone: cleanPhone(phone) // Сохраняем только цифры: 79676528020
+            phone: cleanPhone(phone) // Сохраняем в БД только цифры (например: 79676528020)
         });
         await newUser.save();
         res.json({ message: 'Аккаунт создан!', user: { id: newUser._id, username, email, phone: newUser.phone } });
@@ -67,18 +68,19 @@ app.post('/api/signup', async (req, res) => {
     }
 });
 
-// --- API: ВХОД ---
+// --- API: ВХОД (с поддержкой ника и чистого телефона) ---
 app.post('/api/login', async (req, res) => {
     try {
         let { identifier, password } = req.body;
         
-        // Очищаем то, что ввел пользователь, на случай если он ввел телефон со скобками
-        const processedIdentifier = cleanPhone(identifier);
+        // Очищаем вводимый идентификатор, если это телефон в любом формате
+        const processedPhone = cleanPhone(identifier);
 
         const user = await User.findOne({ 
             $or: [
                 { username: identifier }, 
-                { phone: processedIdentifier } // Ищем по чистым цифрам
+                { phone: identifier }, 
+                { phone: processedPhone } // Ищем по очищенным цифрам
             ] 
         });
 
@@ -108,7 +110,7 @@ app.post('/api/update-profile', async (req, res) => {
         if (field === 'username') {
             const busy = await User.findOne({ 
                 username: value, 
-                _id: { $ne: userId }
+                _id: { $ne: userId } 
             });
             if (busy) return res.status(400).json({ message: 'Этот никнейм уже занят' });
         }
@@ -117,7 +119,8 @@ app.post('/api/update-profile', async (req, res) => {
         if (field === 'password') {
             updateData[field] = await bcrypt.hash(value, 10);
         } else if (field === 'phone') {
-            updateData[field] = cleanPhone(value); // При обновлении тоже чистим формат
+            // Исправляем формат перед обновлением в базе
+            updateData[field] = cleanPhone(value);
         } else {
             updateData[field] = value;
         }
