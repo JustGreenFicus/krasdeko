@@ -73,6 +73,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeAuthBtn = document.getElementById('closeAuthBtn');
     const overlay = document.getElementById('sidebar-overlay');
 
+    // МОБИЛЬНОЕ МЕНЮ (БУРГЕР)
+    const menuToggle = document.getElementById('mobile-menu');
+    const navLinks = document.querySelector('.nav-links');
+
+    if (menuToggle) {
+        menuToggle.onclick = () => {
+            menuToggle.classList.toggle('active');
+            navLinks.classList.toggle('mobile-active');
+            document.body.style.overflow = navLinks.classList.contains('mobile-active') ? 'hidden' : 'auto';
+        };
+    }
+
+    // Закрытие мобильного меню при клике на ссылку
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (menuToggle) menuToggle.classList.remove('active');
+            if (navLinks) navLinks.classList.remove('mobile-active');
+            document.body.style.overflow = 'auto';
+        });
+    });
+
     const activeTab = document.querySelector('.tab.active');
     if (activeTab) moveUnderline(activeTab);
 
@@ -182,7 +203,7 @@ function updateUI(user) {
     }
 }
 
-// 6. УПРАВЛЕНИЕ САЙДБАРОМ (ИСПРАВЛЕНО)
+// 6. УПРАВЛЕНИЕ САЙДБАРОМ
 window.toggleSidebar = () => {
     const sidebar = document.getElementById('user-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
@@ -195,7 +216,6 @@ window.toggleSidebar = () => {
     const isActive = sidebar.classList.contains('active');
     document.body.style.overflow = isActive ? 'hidden' : 'auto';
 
-    // При закрытии восстанавливаем видимость полей и обновляем данные из памяти
     if (!isActive) {
         cancelEdit();
         const currentUser = JSON.parse(localStorage.getItem('userAccount'));
@@ -203,7 +223,7 @@ window.toggleSidebar = () => {
     }
 };
 
-// 7. ЛОГИКА РЕДАКТИРОВАНИЯ (ИСПРАВЛЕНО)
+// 7. ЛОГИКА РЕДАКТИРОВАНИЯ
 window.editField = (type) => {
     cancelEdit();
     const displayElem = document.getElementById(`display-${type}`);
@@ -230,7 +250,6 @@ window.editField = (type) => {
 
 window.cancelEdit = () => {
     document.querySelectorAll('.edit-mode-container').forEach(el => el.remove());
-    // Возвращаем видимость всем скрытым строкам
     document.querySelectorAll('.field-row, .user-info-top').forEach(el => {
         if (!el.classList.contains('nav-links')) el.style.display = 'flex';
     });
