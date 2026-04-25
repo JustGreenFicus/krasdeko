@@ -42,12 +42,14 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// Вспомогательная функция для очистки телефона (оставляем только цифры)
+const cleanPhone = (phone) => phone ? phone.replace(/\D/g, '') : "";
+
 // --- API: РЕГИСТРАЦИЯ ---
 app.post('/api/signup', async (req, res) => {
     try {
         const { username, email, password, phone } = req.body;
         
-        // Проверка на существующего пользователя
         const existingUser = await User.findOne({ username });
         if (existingUser) return res.status(400).json({ message: 'Этот логин уже занят' });
         
@@ -56,7 +58,7 @@ app.post('/api/signup', async (req, res) => {
             username, 
             email, 
             password: hashedPassword,
-            phone: phone || "" 
+            phone: cleanPhone(phone) // Сохраняем только цифры: 79676528020
         });
         await newUser.save();
         res.json({ message: 'Аккаунт создан!', user: { id: newUser._id, username, email, phone: newUser.phone } });
@@ -65,19 +67,18 @@ app.post('/api/signup', async (req, res) => {
     }
 });
 
-// --- API: ВХОД (с поддержкой ника и телефона) ---
+// --- API: ВХОД ---
 app.post('/api/login', async (req, res) => {
     try {
         let { identifier, password } = req.body;
         
-        // Очистка для поиска по телефону (убираем всё кроме цифр и букв)
-        const cleanIdentifier = identifier.replace(/[^\d\w]/g, '');
+        // Очищаем то, что ввел пользователь, на случай если он ввел телефон со скобками
+        const processedIdentifier = cleanPhone(identifier);
 
         const user = await User.findOne({ 
             $or: [
                 { username: identifier }, 
-                { phone: identifier }, 
-                { phone: cleanIdentifier } 
+                { phone: processedIdentifier } // Ищем по чистым цифрам
             ] 
         });
 
@@ -99,25 +100,24 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// --- API: ОБНОВЛЕНИЕ ПРОФИЛЯ (с проверкой уникальности ника) ---
+// --- API: ОБНОВЛЕНИЕ ПРОФИЛЯ ---
 app.post('/api/update-profile', async (req, res) => {
     try {
         const { userId, field, value } = req.body;
         
-        // КЛЮЧЕВАЯ ПРОВЕРКА: Если меняем ник, проверяем, не занят ли он ДРУГИМ пользователем
         if (field === 'username') {
             const busy = await User.findOne({ 
                 username: value, 
-                _id: { $ne: userId } // $ne означает "not equal" (не равен текущему ID)
+                _id: { $ne: userId }
             });
-            if (busy) {
-                return res.status(400).json({ message: 'Этот никнейм уже занят' });
-            }
+            if (busy) return res.status(400).json({ message: 'Этот никнейм уже занят' });
         }
 
         let updateData = {};
         if (field === 'password') {
             updateData[field] = await bcrypt.hash(value, 10);
+        } else if (field === 'phone') {
+            updateData[field] = cleanPhone(value); // При обновлении тоже чистим формат
         } else {
             updateData[field] = value;
         }
