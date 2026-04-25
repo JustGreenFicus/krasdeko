@@ -96,7 +96,7 @@ body {
     line-height: 1.1;
 }
 
-/* 5. САЙДБАР ПРОФИЛЯ (ОБНОВЛЕНО) */
+/* 5. САЙДБАР ПРОФИЛЯ (ИСПРАВЛЕНО) */
 .sidebar {
     position: fixed;
     top: 0;
@@ -116,10 +116,16 @@ body {
 
 .sidebar-header {
     display: flex;
-    flex-direction: row-reverse; /* Кнопка закрытия будет справа */
-    justify-content: space-between;
+    justify-content: space-between; /* Распределяет ник влево, а крестик вправо */
     align-items: center;
     margin-bottom: 40px;
+    width: 100%;
+}
+
+.user-info-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .close-sidebar-btn {
@@ -129,7 +135,7 @@ body {
     font-size: 2.5rem;
     cursor: pointer;
     line-height: 1;
-    margin-left: auto; /* Прижимает к правому краю */
+    padding: 0;
 }
 
 #sidebar-overlay {
@@ -211,7 +217,7 @@ body {
 .settings-group { margin-bottom: 25px; }
 .settings-group label { display: block; font-size: 0.65rem; color: #555; margin-bottom: 8px; text-transform: uppercase; }
 .field-row { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #1a1a1a; }
-.edit-icon-btn { background: none; border: none; color: #444; cursor: pointer; }
+.edit-icon-btn { background: none; border: none; color: #444; cursor: pointer; padding: 5px; }
 .logout-link { margin-top: auto; background: none; border: 1px solid #222; color: #ff4444; padding: 15px; cursor: pointer; text-transform: uppercase; }
 
 @keyframes fadeIn {
