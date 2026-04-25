@@ -40,7 +40,6 @@ function applyPhoneMask(input) {
     };
 
     const restrictCursor = () => {
-        // Если курсор пытаются поставить внутрь "+7 ", кидаем его в начало ввода (индекс 3)
         if (input.selectionStart < prefix.length) {
             input.setSelectionRange(prefix.length, prefix.length);
         }
@@ -60,17 +59,14 @@ function applyPhoneMask(input) {
     });
 
     input.addEventListener('keydown', (e) => {
-        // Блокируем Backspace на границе префикса
         if (e.key === 'Backspace' && input.selectionStart <= prefix.length) {
             e.preventDefault();
         }
-        // Блокируем Delete внутри префикса
         if (e.key === 'Delete' && input.selectionStart < prefix.length) {
             e.preventDefault();
         }
     });
 
-    // Запрещаем кликать и выделять "+7 "
     input.addEventListener('click', restrictCursor);
     input.addEventListener('focus', restrictCursor);
     input.addEventListener('selectionchange', restrictCursor);
@@ -225,7 +221,7 @@ window.toggleSidebar = () => {
     }
 };
 
-// 7. ЛОГИКА РЕДАКТИРОВАНИЯ (ИСПРАВЛЕНА ДЛЯ ПОЧТЫ И КНОПОК)
+// 7. ЛОГИКА РЕДАКТИРОВАНИЯ (ИСПРАВЛЕНА: КУРСОР В КОНЦЕ)
 window.editField = (type) => {
     cancelEdit();
     const displayElem = document.getElementById(`display-${type}`);
@@ -235,7 +231,6 @@ window.editField = (type) => {
     const currentValue = displayElem.innerText;
     parentRow.style.display = 'none';
 
-    // ВАЖНО: Добавлена обертка edit-actions для CSS
     const editHTML = `
         <div class="edit-mode-container field-row-editing" id="edit-container-${type}">
             <input type="${type === 'password' ? 'password' : (type === 'email' ? 'email' : 'text')}" 
@@ -255,10 +250,17 @@ window.editField = (type) => {
     if (type === 'phone') applyPhoneMask(input);
     
     input.focus();
+    
+    // ПЕРЕНОС КУРСОРА В КОНЕЦ (Сброс и возврат значения)
+    const currentVal = input.value;
+    input.value = '';
+    input.value = currentVal;
+
+    // Дополнительная задержка для надежности в Safari/Chrome
     setTimeout(() => {
-        const valLen = input.value.length;
-        input.setSelectionRange(valLen, valLen);
-    }, 10);
+        const len = input.value.length;
+        input.setSelectionRange(len, len);
+    }, 50);
 };
 
 window.cancelEdit = () => {
@@ -266,7 +268,7 @@ window.cancelEdit = () => {
     document.querySelectorAll('.field-row').forEach(el => el.style.display = 'flex');
 };
 
-// 8. СОХРАНЕНИЕ
+// 8. СОХРАНЕНИЕ (ДОБАВЛЕНА ВАЛИДАЦИЯ ДОМЕНОВ)
 window.saveEdit = async (type) => {
     const input = document.getElementById(`edit-input-${type}`);
     if (!input) return;
@@ -275,6 +277,24 @@ window.saveEdit = async (type) => {
     let oldUser = JSON.parse(localStorage.getItem('userAccount'));
 
     if (!val && type !== 'password') return showNotification("Заполните поле");
+
+    // ВАЛИДАЦИЯ ПОЧТЫ
+    if (type === 'email') {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // Список типичных ошибок в доменах
+        const commonMistakes = ['.con', '.ruu', '.rm', '.рф', '.ne', '.ор', '.cpm', '.vom'];
+        
+        if (!emailRegex.test(val)) {
+            return showNotification("Некорректный формат почты");
+        }
+
+        const lowerVal = val.toLowerCase();
+        const hasMistake = commonMistakes.some(ext => lowerVal.endsWith(ext));
+        
+        if (hasMistake) {
+            return showNotification("Ошибка в домене (проверьте .com, .ru)");
+        }
+    }
 
     let sendVal = val;
     if (type === 'phone') {
@@ -307,7 +327,7 @@ window.saveEdit = async (type) => {
     }
 };
 
-// 9. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (БЕЗ ИЗМЕНЕНИЙ)
+// 9. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
 window.logout = () => {
     localStorage.removeItem('userAccount');
     window.location.reload();
