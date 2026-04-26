@@ -45,43 +45,87 @@ body {
     font-weight: 700;
     letter-spacing: 4px;
     text-transform: uppercase;
-    z-index: 1001;
     text-decoration: none;
 }
 
-.logo span {
-    font-weight: 300;
-    opacity: 0.8;
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 30px;
 }
 
-/* 4. КОНТЕНТ ГЕРОЯ */
-.hero-content h1 {
-    font-size: clamp(2rem, 8vw, 4.5rem);
-    font-weight: 300;
-    letter-spacing: 12px;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-}
-
-.btn-catalog-main {
-    display: inline-block;
-    padding: 16px 45px;
-    border: 1px solid #fff;
+.nav-links li a {
     color: #fff;
     text-decoration: none;
     text-transform: uppercase;
-    font-size: 0.8rem;
-    letter-spacing: 3px;
-    transition: all 0.4s ease;
-    background: transparent;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
 }
 
-.btn-catalog-main:hover {
-    background: #fff;
-    color: #000;
+/* 4. САЙДБАР ПРОФИЛЯ (ВОЗВРАЩЕНИЕ СТИЛЕЙ) */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 400px;
+    height: 100vh;
+    background: #000;
+    z-index: 3000;
+    padding: 60px 40px;
+    transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    border-left: 1px solid #222;
+    display: flex;
+    flex-direction: column;
 }
 
-/* 6. МОДАЛКА АВТОРИЗАЦИИ */
+.sidebar.active { right: 0; }
+
+.settings-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.settings-group label {
+    display: block;
+    font-size: 0.65rem;
+    color: #555;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.field-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #1a1a1a;
+    min-height: 40px;
+}
+
+.sidebar-divider {
+    height: 1px;
+    background: #222;
+    margin: 20px 0;
+}
+
+.logout-link {
+    margin-top: auto;
+    background: none;
+    border: 1px solid #222;
+    color: #ff4444;
+    padding: 15px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: 0.3s;
+}
+
+.logout-link:hover {
+    border-color: #ff4444;
+    background: rgba(255, 68, 68, 0.05);
+}
+
+/* 5. МОДАЛКА И КНОПКА ЗАБЫЛИ ПАРОЛЬ */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -100,16 +144,14 @@ body {
     width: 90%;
     max-width: 400px;
     padding: 50px 40px;
-    position: relative;
     border: 1px solid #222;
 }
 
-/* 6.1 ТАБЫ */
 .auth-tabs {
     display: flex;
-    position: relative;
     margin-bottom: 30px;
     border-bottom: 1px solid #222;
+    position: relative;
 }
 
 .tab {
@@ -119,9 +161,7 @@ body {
     cursor: pointer;
     font-size: 0.8rem;
     letter-spacing: 2px;
-    text-transform: uppercase;
     color: #555;
-    transition: color 0.3s;
 }
 
 .tab.active { color: #fff; }
@@ -131,69 +171,34 @@ body {
     bottom: -1px; left: 0;
     height: 2px;
     background: #fff;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 6.2 ПОЛЯ ВВОДА И ВАЛИДАЦИЯ */
-.auth-form { display: none; animation: fadeIn 0.4s ease; }
-.auth-form.active { display: block; }
-
-.form-group {
-    margin-bottom: 20px;
-    position: relative;
-}
-
-.auth-form label {
-    display: block;
-    font-size: 0.7rem;
-    color: #555;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.auth-form input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #222;
-    color: #fff;
-    padding: 10px 0;
-    font-size: 0.9rem;
-    outline: none;
-    transition: all 0.3s ease;
-}
-
-/* Подсветка ошибки (как в ЛК) */
-.auth-form input.error {
-    border-bottom-color: #ff4444 !important;
-}
-
-.error-hint {
-    color: #ff4444;
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    margin-top: 5px;
-    display: none; /* Включается через JS при ошибке */
-}
-
-.auth-form input:focus {
-    border-bottom-color: #fff;
-}
-
-/* Иконка глазика */
-.input-wrapper { position: relative; }
-.input-wrapper .eye-icon {
-    position: absolute;
-    right: 0; top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #444;
     transition: 0.3s;
 }
-.input-wrapper .eye-icon:hover { color: #fff; }
 
-/* 6.3 КНОПКИ ФОРМЫ */
+/* КНОПКА ЗАБЫЛИ ПАРОЛЬ (ФИКС) */
+.auth-footer {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.auth-footer a.forgot-password {
+    display: inline-block !important;
+    color: #fff !important;
+    text-decoration: none !important;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 12px 25px;
+    border: 1px solid #fff !important;
+    transition: 0.4s;
+    background: transparent;
+}
+
+.auth-footer a.forgot-password:hover {
+    background: #fff !important;
+    color: #000 !important;
+}
+
+/* 6. КНОПКИ И ВВОД */
 .btn-auth-submit {
     width: 100%;
     padding: 15px;
@@ -201,70 +206,34 @@ body {
     color: #000;
     border: none;
     text-transform: uppercase;
-    font-size: 0.8rem;
-    letter-spacing: 2px;
     font-weight: bold;
+    letter-spacing: 2px;
     cursor: pointer;
     margin-top: 20px;
-    transition: 0.3s;
 }
 
-.btn-auth-submit:hover { background: #ccc; }
-
-/* КНОПКА ЗАБЫЛИ ПАРОЛЬ - ФИКС СТИЛЯ */
-.auth-footer {
-    margin-top: 35px;
-    text-align: center;
+.auth-form input.error {
+    border-bottom-color: #ff4444 !important;
 }
 
-.auth-footer a {
-    display: inline-block !important; /* Гарантируем блочность */
-    color: #fff !important;
-    text-decoration: none !important;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    padding: 12px 25px;
-    border: 1px solid #fff !important; /* Явная белая рамка */
-    transition: all 0.4s ease !important;
-    background: transparent;
+/* 7. АДАПТИВНОСТЬ */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 20px;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .nav-links {
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .sidebar { width: 100%; }
 }
 
-.auth-footer a:hover {
-    background: #fff !important;
-    color: #000 !important;
-}
-
-/* 8. САЙДБАР (ПРОФИЛЬ) */
-.sidebar {
-    position: fixed;
-    top: 0; right: -100%;
-    width: 400px; height: 100vh;
-    background: #000;
-    z-index: 3000;
-    padding: 60px 40px;
-    transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    border-left: 1px solid #222;
-}
-.sidebar.active { right: 0; }
-
-.sidebar input {
-    background: transparent !important;
-    border: none !important;
-    color: #fff !important;
-    font-size: 1rem;
-    padding: 5px 0;
-    outline: none !important;
-}
-
-/* АНИМАЦИИ */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
-}
-
-/* АДАПТИВНОСТЬ */
-@media (max-width: 768px) {
-    .sidebar { width: 100%; }
-    .auth-container { width: 95%; padding: 40px 20px; }
 }
