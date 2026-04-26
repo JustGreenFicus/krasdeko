@@ -199,7 +199,7 @@ body {
     border: 1px solid #222;
 }
 
-/* 6.1 ТАБЫ И ПЕРЕКЛЮЧЕНИЕ ФОРМ (ИСПРАВЛЕНИЕ КАШИ) */
+/* 6.1 ТАБЫ И ПЕРЕКЛЮЧЕНИЕ ФОРМ */
 .auth-tabs {
     display: flex;
     position: relative;
@@ -233,16 +233,16 @@ body {
 }
 
 .auth-form {
-    display: none; /* Скрываем все формы по умолчанию */
+    display: none;
     animation: fadeIn 0.4s ease;
 }
 
 .auth-form.active {
-    display: block; /* Показываем только активную */
+    display: block;
 }
 
 .auth-form h2 {
-    display: none; /* Если заголовки внутри форм дублируют табы */
+    display: none;
 }
 
 /* Стили элементов внутри форм */
@@ -294,15 +294,26 @@ body {
     background: #ccc;
 }
 
+/* ИСПРАВЛЕННАЯ ССЫЛКА ЗАБЫЛИ ПАРОЛЬ */
 .auth-footer {
-    margin-top: 20px;
+    margin-top: 25px;
     text-align: center;
 }
 
 .auth-footer a {
-    color: #555;
+    color: #555; /* Ненавязчивый серый */
     text-decoration: none;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+}
+
+.auth-footer a:hover {
+    color: #fff; /* Белый при наведении */
+    border-bottom: 1px solid #555;
 }
 
 /* 7. АДАПТИВНОСТЬ */
