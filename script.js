@@ -68,6 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.getElementById('mobile-menu');
     const navLinks = document.querySelector('.nav-links');
 
+    // Инициализация подчеркивания табов при старте
+    const activeTab = document.querySelector('.tab.active');
+    if (activeTab) moveUnderline(activeTab);
+
     if (menuToggle) {
         menuToggle.onclick = () => {
             menuToggle.classList.toggle('active');
@@ -86,10 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
         openAuthBtn.onclick = (e) => {
             e.preventDefault();
             authModal.classList.add('active');
-            setTimeout(() => {
-                const tab = document.querySelector('.tab.active');
-                if (tab) moveUnderline(tab);
-            }, 10);
+            // Принудительно ставим форму входа, чтобы не было наложения
+            const loginTab = document.querySelector('.tab[onclick*="login"]');
+            if (loginTab) switchForm('login', loginTab);
         };
     }
 
@@ -183,7 +186,7 @@ window.toggleSidebar = () => {
     if (!sidebar.classList.contains('active')) cancelEdit();
 };
 
-// 7. РЕДАКТИРОВАНИЕ
+// 7. РЕДАКТИРОВАНИЕ ПРОФИЛЯ
 window.editField = (type) => {
     cancelEdit();
     if (type === 'password') return editPassword();
@@ -235,7 +238,6 @@ window.editPassword = () => {
     displayRow.insertAdjacentHTML('afterend', editHTML);
 };
 
-// Мгновенная подсветка несовпадающих паролей
 window.liveComparePass = () => {
     const n = document.getElementById('new-password');
     const c = document.getElementById('confirm-password');
@@ -269,7 +271,7 @@ window.saveEdit = async (type) => {
             localStorage.setItem('userAccount', JSON.stringify(updatedUser));
             updateUI(updatedUser);
             cancelEdit();
-            showNotification("Данные обновлены");
+            showNotification("Обновлено");
         } else {
             showNotification(data.message, 'error');
         }
@@ -284,7 +286,6 @@ window.savePassword = async () => {
     const confirmPassInput = document.getElementById('confirm-password');
     const user = JSON.parse(localStorage.getItem('userAccount'));
 
-    // Сброс индикации
     oldPassInput.parentElement.style.borderBottom = "1px solid #333";
 
     if (newPassInput.value !== confirmPassInput.value) {
@@ -306,10 +307,9 @@ window.savePassword = async () => {
         const data = await response.json();
         
         if (response.ok) {
-            showNotification("Пароль изменен!");
+            showNotification("Пароль изменен успешно");
             cancelEdit();
         } else {
-            // Если сервер отклонил старый пароль
             showNotification(data.message || "Неверный старый пароль", "error");
             oldPassInput.parentElement.style.borderBottom = "1px solid #ff4444";
         }
@@ -318,17 +318,24 @@ window.savePassword = async () => {
     }
 };
 
-// 9. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+// 9. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (ТАБЫ И ВЫХОД)
 window.logout = () => {
     localStorage.removeItem('userAccount');
     window.location.reload();
 };
 
 window.switchForm = (type, element) => {
+    // 1. Убираем активный класс у всех табов
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    // 2. Скрываем все формы
     document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    
+    // 3. Активируем нужный таб и форму
     element.classList.add('active');
-    document.getElementById(type + '-form').classList.add('active');
+    const targetForm = document.getElementById(type + '-form');
+    if (targetForm) targetForm.classList.add('active');
+    
+    // 4. Двигаем линию подчеркивания
     moveUnderline(element);
 };
 
