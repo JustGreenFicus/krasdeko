@@ -294,26 +294,27 @@ body {
     background: #ccc;
 }
 
-/* ИСПРАВЛЕННАЯ ССЫЛКА ЗАБЫЛИ ПАРОЛЬ */
+/* ВОЗВРАЩЕННЫЙ КНОПОЧНЫЙ СТИЛЬ "ЗАБЫЛИ ПАРОЛЬ" */
 .auth-footer {
-    margin-top: 25px;
+    margin-top: 35px;
     text-align: center;
 }
 
 .auth-footer a {
-    color: #555; /* Ненавязчивый серый */
+    display: inline-block;
+    color: #fff;
     text-decoration: none;
     font-size: 0.7rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    border-bottom: 1px solid transparent;
-    padding-bottom: 2px;
+    letter-spacing: 2px;
+    padding: 12px 25px;
+    border: 1px solid #fff; /* Белая рамка */
+    transition: all 0.4s ease;
 }
 
 .auth-footer a:hover {
-    color: #fff; /* Белый при наведении */
-    border-bottom: 1px solid #555;
+    background: #fff;
+    color: #000;
 }
 
 /* 7. АДАПТИВНОСТЬ */
