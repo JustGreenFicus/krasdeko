@@ -46,6 +46,7 @@ body {
     letter-spacing: 4px;
     text-transform: uppercase;
     z-index: 1001;
+    text-decoration: none;
 }
 
 .logo span {
@@ -198,6 +199,112 @@ body {
     border: 1px solid #222;
 }
 
+/* 6.1 ТАБЫ И ПЕРЕКЛЮЧЕНИЕ ФОРМ (ИСПРАВЛЕНИЕ КАШИ) */
+.auth-tabs {
+    display: flex;
+    position: relative;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #222;
+}
+
+.tab {
+    flex: 1;
+    padding: 15px 0;
+    text-align: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #555;
+    transition: color 0.3s;
+}
+
+.tab.active {
+    color: #fff;
+}
+
+.underline {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    background: #fff;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-form {
+    display: none; /* Скрываем все формы по умолчанию */
+    animation: fadeIn 0.4s ease;
+}
+
+.auth-form.active {
+    display: block; /* Показываем только активную */
+}
+
+.auth-form h2 {
+    display: none; /* Если заголовки внутри форм дублируют табы */
+}
+
+/* Стили элементов внутри форм */
+.auth-form .form-group {
+    margin-bottom: 20px;
+}
+
+.auth-form label {
+    display: block;
+    font-size: 0.7rem;
+    color: #555;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.auth-form input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #222;
+    color: #fff;
+    padding: 10px 0;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.auth-form input:focus {
+    border-color: #fff;
+}
+
+.btn-auth-submit {
+    width: 100%;
+    padding: 15px;
+    background: #fff;
+    color: #000;
+    border: none;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: 0.3s;
+}
+
+.btn-auth-submit:hover {
+    background: #ccc;
+}
+
+.auth-footer {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.auth-footer a {
+    color: #555;
+    text-decoration: none;
+    font-size: 0.75rem;
+}
+
 /* 7. АДАПТИВНОСТЬ */
 @media (max-width: 768px) {
     .menu-toggle { display: flex; }
@@ -212,10 +319,9 @@ body {
         justify-content: center;
         gap: 30px;
         z-index: 1000;
-        animation: fadeIn 0.3s ease;
     }
 
-    .nav-links.mobile-active { display: flex; }
+    .nav-links.mobile-active { display: flex; animation: fadeIn 0.3s ease; }
 
     .sidebar { width: 100%; padding: 60px 20px 40px; }
 
@@ -228,7 +334,7 @@ body {
     .menu-toggle.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 }
 
-/* 8. ВСПОМОГАТЕЛЬНЫЕ СТИЛИ (САЙДБАР) */
+/* 8. САЙДБАР (ПРОФИЛЬ) */
 .settings-group { margin-bottom: 25px; }
 
 .settings-group label { 
@@ -249,7 +355,6 @@ body {
     gap: 15px;
 }
 
-/* ФИКС: Контейнер режима редактирования */
 .field-row-editing {
     display: flex !important;
     align-items: center !important;
@@ -273,7 +378,6 @@ body {
 }
 .logout-link:hover { border-color: #ff4444; background: rgba(255, 68, 68, 0.05); }
 
-/* --- КНОПКИ СОХРАНЕНИЯ / ОТМЕНЫ --- */
 .edit-actions {
     display: flex;
     gap: 8px;
@@ -293,15 +397,22 @@ body {
     transition: 0.3s ease;
 }
 
-.btn-save-mini:hover { border-color: #fff; background: #111 !important; }
-.btn-cancel-mini:hover { border-color: #ff4444; background: #111 !important; }
-
 /* 9. УВЕДОМЛЕНИЯ */
 .toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; }
-.toast { background: #fff; color: #000; padding: 15px 25px; margin-bottom: 10px; transform: translateX(120%); transition: 0.5s; }
+.toast { 
+    background: #fff; 
+    color: #000; 
+    padding: 15px 25px; 
+    margin-bottom: 10px; 
+    transform: translateX(120%); 
+    transition: 0.5s; 
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 .toast.show { transform: translateX(0); }
 
-/* 10. ИСПРАВЛЕНИЕ ИНПУТОВ */
+/* 10. ИСПРАВЛЕНИЕ ИНПУТОВ САЙДБАРА */
 .sidebar input {
     background: transparent !important;
     border: none !important;
@@ -313,11 +424,7 @@ body {
     min-width: 0 !important;
 }
 
-.sidebar input:focus {
-    border-bottom: none !important;
-}
-
-/* --- 11. СТИЛИ ДЛЯ СМЕНЫ ПАРОЛЯ --- */
+/* 11. СМЕНА ПАРОЛЯ */
 .password-edit-block {
     display: flex !important;
     flex-direction: column !important;
@@ -331,17 +438,11 @@ body {
     position: relative;
     width: 100%;
     border-bottom: 1px solid #222;
-    transition: border-color 0.3s;
-}
-
-.input-with-eye:focus-within {
-    border-color: #555;
 }
 
 .input-with-eye input {
     width: 100%;
     padding: 10px 35px 10px 0 !important;
-    font-size: 0.9rem !important;
 }
 
 .input-with-eye .eye-icon {
@@ -351,24 +452,10 @@ body {
     transform: translateY(-50%);
     cursor: pointer;
     color: #444;
-    font-size: 0.9rem;
-    transition: color 0.3s;
-    padding: 5px;
-}
-
-.input-with-eye .eye-icon:hover {
-    color: #fff;
-}
-
-.password-edit-block .edit-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 5px;
 }
 
 /* АНИМАЦИИ */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
