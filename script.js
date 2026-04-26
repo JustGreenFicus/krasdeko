@@ -14,7 +14,6 @@ function showNotification(msg, type = 'success') {
     toast.className = `toast ${type}`;
     toast.innerText = msg;
     
-    // Стилизация в зависимости от типа
     if(type === 'error') toast.style.borderLeft = "4px solid #ff4444";
     
     container.appendChild(toast);
@@ -22,7 +21,7 @@ function showNotification(msg, type = 'success') {
     setTimeout(() => toast.classList.add('show'), 10);
     setTimeout(() => {
         toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 500);
+        setTimeout(() => { if(toast) toast.remove(); }, 500);
     }, 4000);
 }
 
@@ -56,10 +55,6 @@ function applyPhoneMask(input) {
         const finalPos = Math.max(prefix.length, cursor);
         e.target.setSelectionRange(finalPos, finalPos);
     });
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && input.selectionStart <= prefix.length) e.preventDefault();
-        if (e.key === 'Delete' && input.selectionStart < prefix.length) e.preventDefault();
-    });
     input.addEventListener('click', restrictCursor);
     input.addEventListener('focus', restrictCursor);
 }
@@ -77,32 +72,20 @@ document.addEventListener('DOMContentLoaded', () => {
         menuToggle.onclick = () => {
             menuToggle.classList.toggle('active');
             navLinks.classList.toggle('mobile-active');
-            document.body.style.overflow = navLinks.classList.contains('mobile-active') ? 'hidden' : 'auto';
         };
     }
-
-    document.querySelectorAll('.nav-links a').forEach(link => {
-        link.addEventListener('click', () => {
-            if (menuToggle) menuToggle.classList.remove('active');
-            if (navLinks) navLinks.classList.remove('mobile-active');
-            document.body.style.overflow = 'auto';
-        });
-    });
 
     document.querySelectorAll('input[name="phone"]').forEach(applyPhoneMask);
     if (overlay) overlay.onclick = () => toggleSidebar();
 
-    // Проверка авторизации при загрузке
+    // Проверка авторизации
     const savedUser = JSON.parse(localStorage.getItem('userAccount'));
-    if (savedUser) {
-        updateUI(savedUser);
-    }
+    if (savedUser) updateUI(savedUser);
 
     if (openAuthBtn) {
         openAuthBtn.onclick = (e) => {
             e.preventDefault();
             authModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
             setTimeout(() => {
                 const tab = document.querySelector('.tab.active');
                 if (tab) moveUnderline(tab);
@@ -111,10 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (closeAuthBtn) {
-        closeAuthBtn.onclick = () => {
-            authModal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        };
+        closeAuthBtn.onclick = () => authModal.classList.remove('active');
     }
 
     async function handleAuth(e, endpoint) {
@@ -141,9 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             if (response.ok) {
                 localStorage.setItem('userAccount', JSON.stringify(data.user));
-                showNotification(`Добро пожаловать, ${data.user.username}!`);
+                showNotification(`Добро пожаловать!`);
                 authModal.classList.remove('active');
-                document.body.style.overflow = 'auto';
                 updateUI(data.user);
             } else {
                 showNotification(data.message || 'Ошибка', 'error');
@@ -177,7 +156,6 @@ function updateUI(user) {
         `;
     }
     
-    // Обновляем данные в сайдбаре
     if (sidebarUsername) sidebarUsername.innerText = nameToShow;
     const emailElem = document.getElementById('display-email');
     if (emailElem) emailElem.innerText = user.email || 'Не указана';
@@ -185,8 +163,9 @@ function updateUI(user) {
     const phoneElem = document.getElementById('display-phone');
     if (phoneElem) {
         let p = String(user.phone || '');
-        if (p.length >= 10) {
-            let clean = p.length === 11 ? p.substring(1) : p;
+        let clean = p.replace(/\D/g, '');
+        if (clean.length >= 10) {
+            if (clean.length === 11) clean = clean.substring(1);
             phoneElem.innerText = `+7 (${clean.substring(0,3)}) ${clean.substring(3,6)}-${clean.substring(6,8)}-${clean.substring(8,10)}`;
         } else {
             phoneElem.innerText = 'Не указан';
@@ -199,17 +178,12 @@ window.toggleSidebar = () => {
     const sidebar = document.getElementById('user-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
     if (!sidebar) return;
-    
     sidebar.classList.toggle('active');
     if (overlay) overlay.classList.toggle('active');
-    
-    const isActive = sidebar.classList.contains('active');
-    document.body.style.overflow = isActive ? 'hidden' : 'auto';
-    
-    if (!isActive) cancelEdit();
+    if (!sidebar.classList.contains('active')) cancelEdit();
 };
 
-// 7. ЛОГИКА РЕДАКТИРОВАНИЯ ПАРОЛЯ С ВАЛИДАЦИЕЙ
+// 7. РЕДАКТИРОВАНИЕ
 window.editField = (type) => {
     cancelEdit();
     if (type === 'password') return editPassword();
@@ -241,7 +215,7 @@ window.editPassword = () => {
     const editHTML = `
         <div class="edit-mode-container password-edit-block" id="edit-container-password">
             <div class="input-with-eye">
-                <input type="password" id="old-password" placeholder="Старый пароль" oninput="liveCheckOldPass(this)">
+                <input type="password" id="old-password" placeholder="Старый пароль">
                 <i class="fa-regular fa-eye eye-icon" onclick="togglePassword('old-password', this)"></i>
             </div>
             <div class="input-with-eye">
@@ -261,28 +235,13 @@ window.editPassword = () => {
     displayRow.insertAdjacentHTML('afterend', editHTML);
 };
 
-// МГНОВЕННЫЕ ПРОВЕРКИ
-window.liveCheckOldPass = (input) => {
-    const user = JSON.parse(localStorage.getItem('userAccount'));
-    // Внимание: Проверка на клиенте работает только если пароль есть в объекте user
-    // Если сервер не присылает пароль, эта проверка будет ждать ответа сервера при сохранении
-    if (user.password && input.value !== user.password) {
-        input.parentElement.style.borderBottom = "1px solid #ff4444";
-    } else {
-        input.parentElement.style.borderBottom = "1px solid #333";
-    }
-};
-
+// Мгновенная подсветка несовпадающих паролей
 window.liveComparePass = () => {
     const n = document.getElementById('new-password');
     const c = document.getElementById('confirm-password');
-    if (n.value !== c.value && c.value !== "") {
-        n.parentElement.style.borderBottom = "1px solid #ff4444";
-        c.parentElement.style.borderBottom = "1px solid #ff4444";
-    } else {
-        n.parentElement.style.borderBottom = "1px solid #333";
-        c.parentElement.style.borderBottom = "1px solid #333";
-    }
+    const color = (n.value !== c.value && c.value !== "") ? "#ff4444" : "#333";
+    n.parentElement.style.borderBottom = `1px solid ${color}`;
+    c.parentElement.style.borderBottom = `1px solid ${color}`;
 };
 
 window.cancelEdit = () => {
@@ -320,13 +279,16 @@ window.saveEdit = async (type) => {
 };
 
 window.savePassword = async () => {
-    const oldPass = document.getElementById('old-password').value;
-    const newPass = document.getElementById('new-password').value;
-    const confirmPass = document.getElementById('confirm-password').value;
+    const oldPassInput = document.getElementById('old-password');
+    const newPassInput = document.getElementById('new-password');
+    const confirmPassInput = document.getElementById('confirm-password');
     const user = JSON.parse(localStorage.getItem('userAccount'));
 
-    if (newPass !== confirmPass) {
-        showNotification("Пароли не совпадают", "error");
+    // Сброс индикации
+    oldPassInput.parentElement.style.borderBottom = "1px solid #333";
+
+    if (newPassInput.value !== confirmPassInput.value) {
+        showNotification("Новые пароли не совпадают", "error");
         return;
     }
 
@@ -337,22 +299,19 @@ window.savePassword = async () => {
             body: JSON.stringify({ 
                 userId: user._id || user.id, 
                 field: 'password', 
-                oldPassword: oldPass, 
-                value: newPass 
+                oldPassword: oldPassInput.value, 
+                value: newPassInput.value 
             })
         });
         const data = await response.json();
+        
         if (response.ok) {
-            showNotification("Пароль изменен успешно");
-            // Обновляем локальный пароль если он там был
-            if(user.password) {
-                user.password = newPass;
-                localStorage.setItem('userAccount', JSON.stringify(user));
-            }
+            showNotification("Пароль изменен!");
             cancelEdit();
         } else {
+            // Если сервер отклонил старый пароль
             showNotification(data.message || "Неверный старый пароль", "error");
-            document.getElementById('old-password').parentElement.style.borderBottom = "1px solid #ff4444";
+            oldPassInput.parentElement.style.borderBottom = "1px solid #ff4444";
         }
     } catch (e) {
         showNotification("Ошибка связи", "error");
