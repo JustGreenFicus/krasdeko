@@ -15,6 +15,7 @@ function showNotification(msg, type = 'success') {
     toast.innerText = msg;
     if(type === 'error') toast.style.borderLeft = "4px solid #ff4444";
     container.appendChild(toast);
+    
     setTimeout(() => toast.classList.add('show'), 10);
     setTimeout(() => {
         toast.classList.remove('show');
@@ -56,7 +57,7 @@ function applyPhoneMask(input) {
     input.addEventListener('focus', restrictCursor);
 }
 
-// 4. ОСНОВНАЯ ЛОГИКА ПРИ ЗАГРУЗКЕ
+// 4. ОСНОВНАЯ ЛОГИКА
 document.addEventListener('DOMContentLoaded', () => {
     const authModal = document.getElementById('authModal');
     const openAuthBtn = document.getElementById('openAuthBtn');
@@ -64,15 +65,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('sidebar-overlay');
     const menuToggle = document.getElementById('mobile-menu');
 
-    // Подчеркивание табов
+    // Табы
     setTimeout(() => {
         const activeTab = document.querySelector('.tab.active');
         if (activeTab) moveUnderline(activeTab);
     }, 100);
 
-    // Синхронизация бургера
+    // Бургер + Сайдбар
     if (menuToggle) {
-        menuToggle.onclick = () => {
+        menuToggle.onclick = (e) => {
+            e.stopPropagation();
             menuToggle.classList.toggle('active');
             toggleSidebar();
         };
@@ -81,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('input[name="phone"]').forEach(applyPhoneMask);
     if (overlay) overlay.onclick = () => toggleSidebar();
 
+    // Загрузка пользователя
     const savedUser = JSON.parse(localStorage.getItem('userAccount'));
     if (savedUser) updateUI(savedUser);
 
@@ -97,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeAuthBtn.onclick = () => authModal.classList.remove('active');
     }
 
-    // Формы
+    // Авторизация
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
     if (loginForm) loginForm.onsubmit = (e) => handleAuth(e, 'login');
@@ -108,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const form = e.target;
         const submitBtn = form.querySelector('button');
         const formData = {};
+        
         new FormData(form).forEach((value, key) => {
             if (key === 'phone') formData[key] = value.replace(/\D/g, '');
             else if (endpoint === 'login' && key === 'username') formData['identifier'] = value;
@@ -119,22 +123,24 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.innerText = 'ОБРАБОТКА...';
 
         try {
-            const response = await fetch(`${API_URL}/api/${endpoint}`, {
+            // Исправлено: формирование URL без двойных слешей
+            const response = await fetch(`${API_URL.replace(/\/$/, '')}/api/${endpoint}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
             const data = await response.json();
+            
             if (response.ok) {
                 localStorage.setItem('userAccount', JSON.stringify(data.user));
                 showNotification(`Добро пожаловать!`);
                 authModal.classList.remove('active');
                 updateUI(data.user);
             } else {
-                showNotification(data.message || 'Ошибка', 'error');
+                showNotification(data.message || 'Ошибка доступа', 'error');
             }
         } catch (error) {
-            showNotification('Ошибка сервера', 'error');
+            showNotification('Сервер недоступен', 'error');
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerText = originalText;
@@ -142,11 +148,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 5. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА (ПРЕМИАЛЬНЫЙ ВИД)
+// 5. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
 function updateUI(user) {
     if (!user) return;
     
-    // Шапка
     const authSection = document.getElementById('auth-section');
     if (authSection) {
         authSection.innerHTML = `
@@ -156,7 +161,6 @@ function updateUI(user) {
         `;
     }
 
-    // Сайдбар
     const sidebar = document.getElementById('user-sidebar');
     if (sidebar) {
         sidebar.innerHTML = `
@@ -164,20 +168,18 @@ function updateUI(user) {
             <div class="settings-group">
                 <div class="field-row">
                     <div class="field-info">
-                        <div class="field-label">Имя пользователя</div>
+                        <div class="field-label">Логин</div>
                         <div class="field-value" id="display-username">${user.username}</div>
                     </div>
                     <button class="edit-icon-btn" onclick="editField('username')"><i class="fa-solid fa-pen-nib"></i></button>
                 </div>
-
                 <div class="field-row">
                     <div class="field-info">
-                        <div class="field-label">Электронная почта</div>
+                        <div class="field-label">Email</div>
                         <div class="field-value" id="display-email">${user.email}</div>
                     </div>
                     <button class="edit-icon-btn" onclick="editField('email')"><i class="fa-solid fa-pen-nib"></i></button>
                 </div>
-
                 <div class="field-row">
                     <div class="field-info">
                         <div class="field-label">Телефон</div>
@@ -185,16 +187,15 @@ function updateUI(user) {
                     </div>
                     <button class="edit-icon-btn" onclick="editField('phone')"><i class="fa-solid fa-pen-nib"></i></button>
                 </div>
-
                 <div class="field-row">
                     <div class="field-info">
-                        <div class="field-label">Пароль</div>
-                        <div class="field-value" id="display-password">••••••••</div>
+                        <div class="field-label">Безопасность</div>
+                        <div class="field-value">••••••••</div>
                     </div>
                     <button class="edit-icon-btn" onclick="editField('password')"><i class="fa-solid fa-key"></i></button>
                 </div>
             </div>
-            <button class="btn-logout" onclick="logout()">Завершить сеанс</button>
+            <button class="btn-logout" onclick="logout()">Выйти из системы</button>
         `;
     }
 }
@@ -213,13 +214,17 @@ window.toggleSidebar = () => {
     const menuToggle = document.getElementById('mobile-menu');
 
     if (!sidebar) return;
-    sidebar.classList.toggle('active');
+    
+    const isActive = sidebar.classList.toggle('active');
     if (overlay) overlay.classList.toggle('active');
 
-    if (!sidebar.classList.contains('active')) {
-        if (menuToggle) menuToggle.classList.remove('active');
-        cancelEdit();
+    // Синхронизируем состояние бургера
+    if (menuToggle) {
+        if (isActive) menuToggle.classList.add('active');
+        else menuToggle.classList.remove('active');
     }
+
+    if (!isActive) cancelEdit();
 };
 
 // 7. РЕДАКТИРОВАНИЕ
@@ -228,6 +233,8 @@ window.editField = (type) => {
     if (type === 'password') return editPassword();
 
     const displayElem = document.getElementById(`display-${type}`);
+    if (!displayElem) return;
+    
     const parentRow = displayElem.closest('.field-row');
     const currentValue = displayElem.innerText;
     parentRow.style.display = 'none';
@@ -248,21 +255,22 @@ window.editField = (type) => {
 };
 
 window.editPassword = () => {
-    const displayRow = document.querySelector('.field-row:has(#display-password)');
-    if (displayRow) displayRow.style.display = 'none';
+    const rows = document.querySelectorAll('.field-row');
+    const passRow = Array.from(rows).find(r => r.innerText.includes('Безопасность'));
+    if (passRow) passRow.style.display = 'none';
 
     const editHTML = `
         <div class="edit-mode-container" id="edit-container-password">
             <input type="password" id="old-password" placeholder="Текущий пароль" style="margin-bottom:10px">
-            <input type="password" id="new-password" placeholder="Новый пароль" style="margin-bottom:10px" oninput="liveComparePass()">
-            <input type="password" id="confirm-password" placeholder="Повторите новый" oninput="liveComparePass()">
+            <input type="password" id="new-password" placeholder="Новый пароль" style="margin-bottom:10px">
+            <input type="password" id="confirm-password" placeholder="Повторите новый">
             <div class="edit-actions">
                 <button onclick="savePassword()" class="btn-save-mini"><i class="fa-solid fa-check"></i></button>
                 <button onclick="cancelEdit()" class="btn-cancel-mini"><i class="fa-solid fa-xmark"></i></button>
             </div>
         </div>
     `;
-    displayRow.insertAdjacentHTML('afterend', editHTML);
+    if (passRow) passRow.insertAdjacentHTML('afterend', editHTML);
 };
 
 window.cancelEdit = () => {
@@ -278,7 +286,7 @@ window.saveEdit = async (type) => {
     if (type === 'phone') val = val.replace(/\D/g, '').replace(/^7/, '');
 
     try {
-        const response = await fetch(`${API_URL}/api/update-profile`, {
+        const response = await fetch(`${API_URL.replace(/\/$/, '')}/api/update-profile`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: user._id || user.id, field: type, value: val })
@@ -289,7 +297,7 @@ window.saveEdit = async (type) => {
             localStorage.setItem('userAccount', JSON.stringify(updatedUser));
             updateUI(updatedUser);
             cancelEdit();
-            showNotification("Изменено успешно");
+            showNotification("Данные обновлены");
         } else {
             showNotification(data.message, 'error');
         }
@@ -304,17 +312,23 @@ window.savePassword = async () => {
     const confPass = document.getElementById('confirm-password').value;
     const user = JSON.parse(localStorage.getItem('userAccount'));
 
-    if (newPass !== confPass) { return showNotification("Пароли не совпадают", "error"); }
+    if (!oldPass || !newPass) return showNotification("Заполните поля", "error");
+    if (newPass !== confPass) return showNotification("Пароли не совпадают", "error");
 
     try {
-        const response = await fetch(`${API_URL}/api/update-profile`, {
+        const response = await fetch(`${API_URL.replace(/\/$/, '')}/api/update-profile`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: user._id || user.id, field: 'password', oldPassword: oldPass, value: newPass })
+            body: JSON.stringify({ 
+                userId: user._id || user.id, 
+                field: 'password', 
+                oldPassword: oldPass, 
+                value: newPass 
+            })
         });
         const data = await response.json();
         if (response.ok) {
-            showNotification("Пароль обновлен");
+            showNotification("Пароль изменен");
             cancelEdit();
         } else {
             showNotification(data.message || "Ошибка", "error");
@@ -323,7 +337,10 @@ window.savePassword = async () => {
 };
 
 // 9. ВСПОМОГАТЕЛЬНЫЕ
-window.logout = () => { localStorage.removeItem('userAccount'); window.location.reload(); };
+window.logout = () => { 
+    localStorage.removeItem('userAccount'); 
+    window.location.reload(); 
+};
 
 window.switchForm = (type, element) => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -341,10 +358,3 @@ function moveUnderline(element) {
         underline.style.left = element.offsetLeft + 'px';
     }
 }
-
-window.togglePassword = (inputId, icon) => {
-    const input = document.getElementById(inputId);
-    input.type = input.type === 'password' ? 'text' : 'password';
-    icon.classList.toggle('fa-eye');
-    icon.classList.toggle('fa-eye-slash');
-};
