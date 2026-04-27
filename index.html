@@ -38,9 +38,9 @@
         </div>
     </header>
 
-    <div id="user-sidebar" class="sidebar">
+    <div id="user-sidebar" class="user-sidebar">
         <div class="sidebar-header">
-            <div class="user-info-top field-row">
+            <div class="user-info-top">
                 <i class="fa-regular fa-circle-user"></i>
                 <span id="display-username">Загрузка...</span>
                 <button onclick="editField('username')" class="edit-icon-btn">
@@ -77,91 +77,67 @@
                 </div>
             </div>
 
-            <button onclick="logout()" class="logout-link">ВЫЙТИ ИЗ СИСТЕМЫ</button>
+            <button onclick="logout()" class="logout-btn">ВЫЙТИ ИЗ СИСТЕМЫ</button>
         </div>
     </div>
-    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <div class="modal-overlay" id="authModal">
+    <div class="auth-modal" id="authModal">
         <div class="auth-container">
             <span class="close-modal" id="closeAuthBtn">&times;</span>
-            <div class="auth-tabs">
-                <div class="tab active" onclick="switchForm('login', this)">SIGN IN</div>
-                <div class="tab" onclick="switchForm('signup', this)">SIGN UP</div>
+            <div class="tabs-container">
+                <div class="tab active" onclick="switchForm('login', this)">ВОЙТИ</div>
+                <div class="tab" onclick="switchForm('signup', this)">РЕГИСТРАЦИЯ</div>
                 <div class="underline"></div>
             </div>
 
             <form id="login-form" class="auth-form active">
-                <div class="form-group">
-                    <label>USERNAME OR PHONE</label>
-                    <input type="text" name="username" placeholder="Логин или номер" required autocomplete="off">
+                <input type="text" name="identifier" placeholder="Логин или Email" required autocomplete="username">
+                <div class="input-wrapper">
+                    <input type="password" id="login-password" name="password" placeholder="Пароль" required autocomplete="current-password">
+                    <i class="fa-regular fa-eye eye-icon" onclick="togglePassword('login-password', this)"></i>
                 </div>
-                <div class="form-group">
-                    <label>PASSWORD</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="login-password" name="password" placeholder="Введите пароль" required>
-                        <i class="fa-regular fa-eye eye-icon" onclick="togglePassword('login-password', this)"></i>
-                    </div>
-                </div>
-                <button type="submit" class="btn-auth-submit">SIGN IN</button>
+                <button type="submit" class="btn-submit">ВОЙТИ</button>
                 <div class="auth-footer">
-                    <a href="#" class="forgot-password">Забыли пароль?</a>
+                    <a href="#" class="forgot-link">Забыли пароль?</a>
                 </div>
             </form>
 
             <form id="signup-form" class="auth-form">
-                <div class="form-group">
-                    <label>USERNAME</label>
-                    <input type="text" name="username" placeholder="Придумайте логин" required autocomplete="off">
+                <input type="text" name="username" placeholder="Логин" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="tel" name="phone" placeholder="Телефон" required>
+                <div class="input-wrapper">
+                    <input type="password" id="signup-password" name="password" placeholder="Пароль" required>
+                    <i class="fa-regular fa-eye eye-icon" onclick="togglePassword('signup-password', this)"></i>
                 </div>
-                <div class="form-group">
-                    <label>EMAIL ADDRESS</label>
-                    <input type="email" name="email" placeholder="Ваша почта" required autocomplete="off">
-                </div>
-                <div class="form-group">
-                    <label>PHONE NUMBER</label>
-                    <input type="tel" name="phone" placeholder="+7" inputmode="tel" required autocomplete="off">
-                </div>
-                <div class="form-group">
-                    <label>PASSWORD</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="signup-password" name="password" placeholder="Придумайте пароль" required>
-                        <i class="fa-regular fa-eye eye-icon" onclick="togglePassword('signup-password', this)"></i>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>CONFIRM PASSWORD</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="signup-confirm" name="confirm-password" placeholder="Повторите пароль" required>
-                        <i class="fa-regular fa-eye eye-icon" onclick="togglePassword('signup-confirm', this)"></i>
-                    </div>
-                    <div class="error-hint" id="reg-confirm-error">Пароли не совпадают</div>
-                </div>
-                <button type="submit" class="btn-auth-submit">SIGN UP</button> 
+                <button type="submit" class="btn-submit">СОЗДАТЬ АККАУНТ</button>
             </form>
         </div>
     </div>
 
-    <section class="footer-minimal">
-        <div class="customer-service">
-            <h2>CUSTOMER SERVICE</h2>
-            <p>Wanna chat with customer service?</p>
-            <p><strong>Call 8 (918) 008 15 46</strong></p>
-            <p>Пн-Пт: 8:00 - 17:00</p>
+    <footer class="footer-minimal">
+        <div class="footer-grid">
+            <div class="customer-service">
+                <h3>СЛУЖБА ПОДДЕРЖКИ</h3>
+                <p>Есть вопросы? Мы на связи:</p>
+                <p><strong>8 (918) 008 15 46</strong></p>
+                <p>Пн-Пт: 8:00 - 17:00</p>
+            </div>
+            <div class="social-minimal">
+                <a href="https://m.vk.com/kakoy_to_kirill" target="_blank"><i class="fa-brands fa-vk"></i></a>
+                <a href="https://t.me/JustGreenFicus" target="_blank"><i class="fa-brands fa-telegram"></i></a>
+            </div>
+            <div class="newsletter-minimal">
+                <h3>ПОДПИСКА</h3>
+                <p>Узнавайте о новинках первыми.</p>
+                <form class="subscribe-form">
+                    <input type="email" placeholder="Ваш Email" required>
+                    <button type="submit">OK</button>
+                </form>
+            </div>
         </div>
-        <div class="social-minimal">
-            <a href="https://m.vk.com/kakoy_to_kirill" target="_blank"><i class="fa-brands fa-vk"></i></a>
-            <a href="https://t.me/JustGreenFicus" target="_blank"><i class="fa-brands fa-telegram"></i></a>
-        </div>
-        <div class="newsletter-minimal">
-            <h2>BRIGHTEN UP YOUR INBOX</h2>
-            <p>Присоединяйтесь к нам, чтобы получать новости о новинках.</p>
-            <form class="subscribe-form">
-                <input type="email" placeholder="Enter your email address" required>
-                <button type="submit">SIGN UP</button>
-            </form>
-        </div>
-    </section>
+    </footer>
 
     <script src="script.js"></script>
 </body>
