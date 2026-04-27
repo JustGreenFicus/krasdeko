@@ -13,183 +13,163 @@ body {
     overflow-x: hidden;
 }
 
-/* 2. ГЕРОЙ-СЕКЦИЯ */
-.hero {
-    position: relative;
-    height: 100vh;
-    width: 100%;
-    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                url('img/main-bg.jpg') center/cover no-repeat;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-/* 3. ШАПКА И МЕНЮ */
-.navbar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 30px 5%;
-    z-index: 1000;
-}
-
-.logo {
-    color: #fff;
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    z-index: 1001;
-    text-decoration: none;
-}
-
-.logo span {
-    font-weight: 300;
-    opacity: 0.8;
-}
-
-.nav-links {
-    display: flex;
-    list-style: none;
-    gap: 30px;
-}
-
-.nav-links li a {
-    color: #fff;
-    text-decoration: none;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 2px;
-    transition: 0.3s;
-}
-
-/* БУРГЕР-МЕНЮ (АНИМАЦИЯ В КРЕСТИК) */
-.menu-toggle {
-    display: none; 
-    flex-direction: column;
-    gap: 6px;
-    cursor: pointer;
-    z-index: 4000; /* Выше сайдбара, чтобы можно было закрыть */
-    padding: 10px;
-}
-
-.menu-toggle span {
-    display: block;
-    width: 25px;
-    height: 1px;
-    background: #fff;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Эффект крестика */
-.menu-toggle.active span:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-}
-.menu-toggle.active span:nth-child(2) {
-    opacity: 0;
-    transform: translateX(-10px);
-}
-.menu-toggle.active span:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
-}
-
-/* 4. КОНТЕНТ ГЕРОЯ */
-.hero-content h1 {
-    font-size: clamp(2rem, 8vw, 4.5rem);
-    font-weight: 300;
-    letter-spacing: 12px;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-}
-
-.btn-catalog-main {
-    display: inline-block;
-    padding: 16px 45px;
-    border: 1px solid #fff;
-    color: #fff;
-    text-decoration: none;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    letter-spacing: 3px;
-    transition: all 0.4s ease;
-}
-
-/* 6. МОДАЛКА АВТОРИЗАЦИИ */
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9);
-    backdrop-filter: blur(8px);
-    display: none;
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-}
-.modal-overlay.active { display: flex; }
-
-/* 8. САЙДБАР (ИСПРАВЛЕННЫЙ ВЫЕЗД) */
+/* 8. САЙДБАР (ПРЕМИАЛЬНЫЙ ВИД) */
 .sidebar {
     position: fixed;
     top: 0;
-    right: -100%; /* Полностью скрыт вправо */
+    right: -100%;
     width: 400px;
     height: 100vh;
     background: #000;
     z-index: 3000;
-    padding: 80px 40px;
+    padding: 100px 40px; /* Увеличили отступ сверху */
     transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    border-left: 1px solid #222;
+    border-left: 1px solid #1a1a1a;
     display: flex;
     flex-direction: column;
-    visibility: hidden; /* Чтобы не мешал кликам, когда скрыт */
+    visibility: hidden;
 }
 
 .sidebar.active {
-    right: 0; /* Выезжает в ноль */
+    right: 0;
     visibility: visible;
 }
 
-.sidebar-nav {
-    display: none;
-    list-style: none;
-    margin-bottom: 40px;
-}
-.sidebar-nav li { margin-bottom: 20px; }
-.sidebar-nav li a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 1.1rem;
+/* Заголовок профиля */
+.sidebar h2 {
+    font-weight: 200;
+    letter-spacing: 7px;
     text-transform: uppercase;
-    letter-spacing: 3px;
+    font-size: 1.1rem;
+    margin-bottom: 40px;
+    color: #fff;
+    border-bottom: 1px solid #1a1a1a;
+    padding-bottom: 20px;
 }
 
+/* Группа полей настроек */
+.settings-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Ряд поля (ИСПРАВЛЕНО: визуализация как на скриншоте, но красиво) */
 .field-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #1a1a1a;
-    min-height: 40px;
-    margin-bottom: 15px;
+    padding: 20px 0;
+    border-bottom: 1px solid #0f0f0f; /* Очень тонкая линия */
+    transition: 0.3s ease;
 }
+
+.field-row:hover {
+    border-bottom-color: #333;
+}
+
+/* Обертка для текста внутри ряда */
+.field-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.field-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #444; /* Тусклый заголовок поля */
+}
+
+.field-value {
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: #eee;
+    letter-spacing: 1px;
+}
+
+/* Кнопки редактирования (Иконки) */
+.edit-icon-btn {
+    background: none;
+    border: none;
+    color: #222; /* Почти невидимы, пока не наведешь */
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 10px;
+}
+
+.field-row:hover .edit-icon-btn {
+    color: #fff; /* Проявляются при наведении на весь ряд */
+    transform: scale(1.1);
+}
+
+/* Кнопка выхода */
+.btn-logout {
+    margin-top: auto;
+    background: transparent;
+    border: 1px solid #1a1a1a;
+    color: #444;
+    padding: 15px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    font-size: 0.65rem;
+    cursor: pointer;
+    transition: 0.4s;
+}
+
+.btn-logout:hover {
+    color: #fff;
+    border-color: #fff;
+    background: #000;
+}
+
+/* Контейнеры редактирования (поля ввода) */
+.edit-mode-container {
+    width: 100%;
+    animation: fadeIn 0.4s ease;
+    padding: 15px 0;
+}
+
+.edit-mode-container input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #fff;
+    color: #fff;
+    padding: 8px 0;
+    font-size: 0.9rem;
+    outline: none;
+    font-weight: 200;
+}
+
+/* Вспомогательные стили для анимации кнопок сохранения */
+.edit-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    justify-content: flex-end;
+}
+
+.btn-save-mini, .btn-cancel-mini {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.8rem;
+    opacity: 0.6;
+}
+
+.btn-save-mini:hover { opacity: 1; color: #44ff44; }
+.btn-cancel-mini:hover { opacity: 1; color: #ff4444; }
 
 /* 7. АДАПТИВНОСТЬ */
 @media (max-width: 768px) {
     .menu-toggle { display: flex; }
     .nav-links { display: none; }
     .sidebar { 
-        width: 100%; /* На весь экран на мобилке */
+        width: 100%; 
+        padding: 80px 25px;
     }
-    .sidebar-nav { display: block; }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
 }
