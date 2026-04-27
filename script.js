@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (activeTab) moveUnderline(activeTab);
     }, 100);
 
-    // Бургер + Сайдбар
+    // Бургер
     if (menuToggle) {
         menuToggle.onclick = (e) => {
             e.stopPropagation();
@@ -83,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('input[name="phone"]').forEach(applyPhoneMask);
     if (overlay) overlay.onclick = () => toggleSidebar();
 
-    // Загрузка пользователя
     const savedUser = JSON.parse(localStorage.getItem('userAccount'));
     if (savedUser) updateUI(savedUser);
 
@@ -100,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
         closeAuthBtn.onclick = () => authModal.classList.remove('active');
     }
 
-    // Авторизация
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
     if (loginForm) loginForm.onsubmit = (e) => handleAuth(e, 'login');
@@ -122,80 +120,70 @@ document.addEventListener('DOMContentLoaded', () => {
         const originalText = submitBtn.innerText;
         submitBtn.innerText = 'ОБРАБОТКА...';
 
-        try {
-            // Исправлено: формирование URL без двойных слешей
-            const response = await fetch(`${API_URL.replace(/\/$/, '')}/api/${endpoint}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-            const data = await response.json();
-            
-            if (response.ok) {
-                localStorage.setItem('userAccount', JSON.stringify(data.user));
-                showNotification(`Добро пожаловать!`);
-                authModal.classList.remove('active');
-                updateUI(data.user);
-            } else {
-                showNotification(data.message || 'Ошибка доступа', 'error');
+        // МЕХАНИКА УМНОГО ВЫБОРА ПУТИ
+        const base = API_URL.replace(/\/$/, '');
+        const paths = [`${base}/api/${endpoint}`, `${base}/${endpoint}`];
+        
+        let success = false;
+
+        for (let url of paths) {
+            try {
+                console.log("Пробую запрос на:", url);
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.status === 404) continue; // Пробуем следующий путь
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('userAccount', JSON.stringify(data.user));
+                    showNotification(`Добро пожаловать!`);
+                    authModal.classList.remove('active');
+                    updateUI(data.user);
+                    success = true;
+                    break;
+                } else {
+                    showNotification(data.message || 'Ошибка данных', 'error');
+                    success = true; // Запрос дошел, но данные неверны
+                    break;
+                }
+            } catch (error) {
+                console.error("Ошибка запроса:", error);
             }
-        } catch (error) {
-            showNotification('Сервер недоступен', 'error');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerText = originalText;
         }
+
+        if (!success) {
+            showNotification('Сервер не отвечает (404 или Сеть)', 'error');
+        }
+
+        submitBtn.disabled = false;
+        submitBtn.innerText = originalText;
     }
 });
 
 // 5. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
 function updateUI(user) {
     if (!user) return;
-    
     const authSection = document.getElementById('auth-section');
     if (authSection) {
-        authSection.innerHTML = `
-            <a href="#" onclick="toggleSidebar(); return false;" class="user-trigger">
-                <i class="fa-regular fa-circle-user"></i> ${user.username.toUpperCase()}
-            </a>
-        `;
+        authSection.innerHTML = `<a href="#" onclick="toggleSidebar(); return false;" class="user-trigger"><i class="fa-regular fa-circle-user"></i> ${user.username.toUpperCase()}</a>`;
     }
 
     const sidebar = document.getElementById('user-sidebar');
     if (sidebar) {
         sidebar.innerHTML = `
-            <h2>Личный профиль</h2>
+            <h2>Профиль</h2>
             <div class="settings-group">
-                <div class="field-row">
-                    <div class="field-info">
-                        <div class="field-label">Логин</div>
-                        <div class="field-value" id="display-username">${user.username}</div>
-                    </div>
-                    <button class="edit-icon-btn" onclick="editField('username')"><i class="fa-solid fa-pen-nib"></i></button>
-                </div>
-                <div class="field-row">
-                    <div class="field-info">
-                        <div class="field-label">Email</div>
-                        <div class="field-value" id="display-email">${user.email}</div>
-                    </div>
-                    <button class="edit-icon-btn" onclick="editField('email')"><i class="fa-solid fa-pen-nib"></i></button>
-                </div>
-                <div class="field-row">
-                    <div class="field-info">
-                        <div class="field-label">Телефон</div>
-                        <div class="field-value" id="display-phone">${formatPhone(user.phone)}</div>
-                    </div>
-                    <button class="edit-icon-btn" onclick="editField('phone')"><i class="fa-solid fa-pen-nib"></i></button>
-                </div>
-                <div class="field-row">
-                    <div class="field-info">
-                        <div class="field-label">Безопасность</div>
-                        <div class="field-value">••••••••</div>
-                    </div>
-                    <button class="edit-icon-btn" onclick="editField('password')"><i class="fa-solid fa-key"></i></button>
-                </div>
+                <div class="field-row"><div class="field-info"><div class="field-label">Логин</div><div class="field-value" id="display-username">${user.username}</div></div><button class="edit-icon-btn" onclick="editField('username')"><i class="fa-solid fa-pen-nib"></i></button></div>
+                <div class="field-row"><div class="field-info"><div class="field-label">Email</div><div class="field-value" id="display-email">${user.email}</div></div><button class="edit-icon-btn" onclick="editField('email')"><i class="fa-solid fa-pen-nib"></i></button></div>
+                <div class="field-row"><div class="field-info"><div class="field-label">Телефон</div><div class="field-value" id="display-phone">${formatPhone(user.phone)}</div></div><button class="edit-icon-btn" onclick="editField('phone')"><i class="fa-solid fa-pen-nib"></i></button></div>
+                <div class="field-row"><div class="field-info"><div class="field-label">Безопасность</div><div class="field-value">••••••••</div></div><button class="edit-icon-btn" onclick="editField('password')"><i class="fa-solid fa-key"></i></button></div>
             </div>
-            <button class="btn-logout" onclick="logout()">Выйти из системы</button>
+            <button class="btn-logout" onclick="logout()">Выйти</button>
         `;
     }
 }
@@ -207,70 +195,29 @@ function formatPhone(p) {
     return `+7 (${clean.substring(0,3)}) ${clean.substring(3,6)}-${clean.substring(6,8)}-${clean.substring(8,10)}`;
 }
 
-// 6. УПРАВЛЕНИЕ САЙДБАРОМ
+// 6. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
 window.toggleSidebar = () => {
     const sidebar = document.getElementById('user-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
-    const menuToggle = document.getElementById('mobile-menu');
-
     if (!sidebar) return;
-    
     const isActive = sidebar.classList.toggle('active');
     if (overlay) overlay.classList.toggle('active');
-
-    // Синхронизируем состояние бургера
-    if (menuToggle) {
-        if (isActive) menuToggle.classList.add('active');
-        else menuToggle.classList.remove('active');
-    }
-
     if (!isActive) cancelEdit();
 };
 
-// 7. РЕДАКТИРОВАНИЕ
 window.editField = (type) => {
     cancelEdit();
     if (type === 'password') return editPassword();
-
     const displayElem = document.getElementById(`display-${type}`);
     if (!displayElem) return;
-    
     const parentRow = displayElem.closest('.field-row');
     const currentValue = displayElem.innerText;
     parentRow.style.display = 'none';
-
-    const editHTML = `
-        <div class="edit-mode-container field-row-editing" id="edit-container-${type}">
-            <input type="${type === 'email' ? 'email' : 'text'}" id="edit-input-${type}" value="${currentValue}">
-            <div class="edit-actions">
-                <button onclick="saveEdit('${type}')" class="btn-save-mini"><i class="fa-solid fa-check"></i></button>
-                <button onclick="cancelEdit()" class="btn-cancel-mini"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-        </div>
-    `;
+    const editHTML = `<div class="edit-mode-container field-row-editing" id="edit-container-${type}"><input type="${type === 'email' ? 'email' : 'text'}" id="edit-input-${type}" value="${currentValue}"><div class="edit-actions"><button onclick="saveEdit('${type}')" class="btn-save-mini"><i class="fa-solid fa-check"></i></button><button onclick="cancelEdit()" class="btn-cancel-mini"><i class="fa-solid fa-xmark"></i></button></div></div>`;
     parentRow.insertAdjacentHTML('afterend', editHTML);
     const input = document.getElementById(`edit-input-${type}`);
     if (type === 'phone') applyPhoneMask(input);
     input.focus();
-};
-
-window.editPassword = () => {
-    const rows = document.querySelectorAll('.field-row');
-    const passRow = Array.from(rows).find(r => r.innerText.includes('Безопасность'));
-    if (passRow) passRow.style.display = 'none';
-
-    const editHTML = `
-        <div class="edit-mode-container" id="edit-container-password">
-            <input type="password" id="old-password" placeholder="Текущий пароль" style="margin-bottom:10px">
-            <input type="password" id="new-password" placeholder="Новый пароль" style="margin-bottom:10px">
-            <input type="password" id="confirm-password" placeholder="Повторите новый">
-            <div class="edit-actions">
-                <button onclick="savePassword()" class="btn-save-mini"><i class="fa-solid fa-check"></i></button>
-                <button onclick="cancelEdit()" class="btn-cancel-mini"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-        </div>
-    `;
-    if (passRow) passRow.insertAdjacentHTML('afterend', editHTML);
 };
 
 window.cancelEdit = () => {
@@ -278,7 +225,6 @@ window.cancelEdit = () => {
     document.querySelectorAll('.field-row').forEach(el => el.style.display = 'flex');
 };
 
-// 8. СОХРАНЕНИЕ
 window.saveEdit = async (type) => {
     const input = document.getElementById(`edit-input-${type}`);
     const user = JSON.parse(localStorage.getItem('userAccount'));
@@ -297,50 +243,14 @@ window.saveEdit = async (type) => {
             localStorage.setItem('userAccount', JSON.stringify(updatedUser));
             updateUI(updatedUser);
             cancelEdit();
-            showNotification("Данные обновлены");
+            showNotification("Обновлено");
         } else {
             showNotification(data.message, 'error');
         }
-    } catch (e) {
-        showNotification("Ошибка сервера", 'error');
-    }
+    } catch (e) { showNotification("Ошибка сервера", 'error'); }
 };
 
-window.savePassword = async () => {
-    const oldPass = document.getElementById('old-password').value;
-    const newPass = document.getElementById('new-password').value;
-    const confPass = document.getElementById('confirm-password').value;
-    const user = JSON.parse(localStorage.getItem('userAccount'));
-
-    if (!oldPass || !newPass) return showNotification("Заполните поля", "error");
-    if (newPass !== confPass) return showNotification("Пароли не совпадают", "error");
-
-    try {
-        const response = await fetch(`${API_URL.replace(/\/$/, '')}/api/update-profile`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                userId: user._id || user.id, 
-                field: 'password', 
-                oldPassword: oldPass, 
-                value: newPass 
-            })
-        });
-        const data = await response.json();
-        if (response.ok) {
-            showNotification("Пароль изменен");
-            cancelEdit();
-        } else {
-            showNotification(data.message || "Ошибка", "error");
-        }
-    } catch (e) { showNotification("Ошибка связи", "error"); }
-};
-
-// 9. ВСПОМОГАТЕЛЬНЫЕ
-window.logout = () => { 
-    localStorage.removeItem('userAccount'); 
-    window.location.reload(); 
-};
+window.logout = () => { localStorage.removeItem('userAccount'); window.location.reload(); };
 
 window.switchForm = (type, element) => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
