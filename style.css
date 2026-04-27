@@ -1,175 +1,184 @@
-/* 1. ОБЩИЕ НАСТРОЙКИ */
+/* 1. ОБЩИЕ СТИЛИ И ОБНУЛЕНИЕ */
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Segoe UI', Roboto, sans-serif;
 }
 
 body {
-    background-color: #000;
-    color: #fff;
-    line-height: 1.6;
-    overflow-x: hidden;
+    background: #0f0f0f;
+    color: white;
+    min-height: 100vh;
 }
 
-/* 8. САЙДБАР (ПРЕМИАЛЬНЫЙ ВИД) */
-.sidebar {
+/* 2. МОДАЛЬНОЕ ОКНО (КОНТЕЙНЕР) */
+.auth-modal {
+    display: none;
     position: fixed;
-    top: 0;
-    right: -100%;
-    width: 400px;
-    height: 100vh;
-    background: #000;
-    z-index: 3000;
-    padding: 100px 40px; /* Увеличили отступ сверху */
-    transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    border-left: 1px solid #1a1a1a;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-modal.active {
     display: flex;
-    flex-direction: column;
-    visibility: hidden;
 }
 
-.sidebar.active {
-    right: 0;
-    visibility: visible;
+.auth-container {
+    background: #1a1a1a;
+    width: 90%;
+    max-width: 400px;
+    padding: 30px;
+    border-radius: 20px;
+    position: relative;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    border: 1px solid #333;
 }
 
-/* Заголовок профиля */
-.sidebar h2 {
-    font-weight: 200;
-    letter-spacing: 7px;
+/* 3. ТАБЫ (ПЕРЕКЛЮЧАТЕЛИ) */
+.tabs-container {
+    display: flex;
+    position: relative;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #333;
+}
+
+.tab {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 600;
+    color: #888;
+    transition: 0.3s;
     text-transform: uppercase;
-    font-size: 1.1rem;
-    margin-bottom: 40px;
+    font-size: 14px;
+}
+
+.tab.active {
     color: #fff;
-    border-bottom: 1px solid #1a1a1a;
-    padding-bottom: 20px;
 }
 
-/* Группа полей настроек */
-.settings-group {
-    display: flex;
+.underline {
+    position: absolute;
+    bottom: -1px;
+    height: 2px;
+    background: #007bff;
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 4. ФОРМЫ */
+.auth-form {
+    display: none;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
+    animation: fadeIn 0.4s ease;
 }
 
-/* Ряд поля (ИСПРАВЛЕНО: визуализация как на скриншоте, но красиво) */
+.auth-form.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-form input {
+    background: #252525;
+    border: 1px solid #333;
+    padding: 12px 15px;
+    border-radius: 10px;
+    color: white;
+    outline: none;
+    transition: 0.3s;
+}
+
+.auth-form input:focus {
+    border-color: #007bff;
+    background: #2a2a2a;
+}
+
+.btn-submit {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.btn-submit:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+}
+
+.btn-submit:disabled {
+    background: #444;
+    cursor: not-allowed;
+}
+
+/* 5. УВЕДОМЛЕНИЯ (ТОСТЫ) */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+}
+
+.toast {
+    background: #333;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transform: translateX(120%);
+    transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    border-left: 4px solid #007bff;
+}
+
+.toast.show { transform: translateX(0); }
+.toast.error { border-left-color: #ff4444; }
+
+/* 6. САЙДБАР ПРОФИЛЯ */
+.user-sidebar {
+    position: fixed;
+    top: 0; right: -350px;
+    width: 320px; height: 100%;
+    background: #161616;
+    z-index: 1100;
+    padding: 40px 20px;
+    transition: 0.4s;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+}
+
+.user-sidebar.active { right: 0; }
+
 .field-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 0;
-    border-bottom: 1px solid #0f0f0f; /* Очень тонкая линия */
-    transition: 0.3s ease;
-}
-
-.field-row:hover {
-    border-bottom-color: #333;
-}
-
-/* Обертка для текста внутри ряда */
-.field-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.field-label {
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: #444; /* Тусклый заголовок поля */
-}
-
-.field-value {
-    font-size: 0.85rem;
-    font-weight: 300;
-    color: #eee;
-    letter-spacing: 1px;
-}
-
-/* Кнопки редактирования (Иконки) */
-.edit-icon-btn {
-    background: none;
-    border: none;
-    color: #222; /* Почти невидимы, пока не наведешь */
-    cursor: pointer;
-    font-size: 0.75rem;
-    transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    padding: 10px;
-}
-
-.field-row:hover .edit-icon-btn {
-    color: #fff; /* Проявляются при наведении на весь ряд */
-    transform: scale(1.1);
-}
-
-/* Кнопка выхода */
-.btn-logout {
-    margin-top: auto;
-    background: transparent;
-    border: 1px solid #1a1a1a;
-    color: #444;
-    padding: 15px;
-    text-transform: uppercase;
-    letter-spacing: 4px;
-    font-size: 0.65rem;
-    cursor: pointer;
-    transition: 0.4s;
-}
-
-.btn-logout:hover {
-    color: #fff;
-    border-color: #fff;
-    background: #000;
-}
-
-/* Контейнеры редактирования (поля ввода) */
-.edit-mode-container {
-    width: 100%;
-    animation: fadeIn 0.4s ease;
     padding: 15px 0;
+    border-bottom: 1px solid #222;
 }
 
-.edit-mode-container input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #fff;
-    color: #fff;
-    padding: 8px 0;
-    font-size: 0.9rem;
-    outline: none;
-    font-weight: 200;
+.field-label { color: #666; font-size: 12px; }
+.field-value { font-size: 16px; margin-top: 4px; }
+
+.edit-icon-btn {
+    background: none; border: none; color: #007bff;
+    cursor: pointer; font-size: 18px;
 }
 
-/* Вспомогательные стили для анимации кнопок сохранения */
-.edit-actions {
-    display: flex;
-    gap: 15px;
-    margin-top: 10px;
-    justify-content: flex-end;
-}
-
-.btn-save-mini, .btn-cancel-mini {
-    background: none;
-    border: none;
-    color: #fff;
-    cursor: pointer;
-    font-size: 0.8rem;
-    opacity: 0.6;
-}
-
-.btn-save-mini:hover { opacity: 1; color: #44ff44; }
-.btn-cancel-mini:hover { opacity: 1; color: #ff4444; }
-
-/* 7. АДАПТИВНОСТЬ */
-@media (max-width: 768px) {
-    .menu-toggle { display: flex; }
-    .nav-links { display: none; }
-    .sidebar { 
-        width: 100%; 
-        padding: 80px 25px;
-    }
+/* 7. МОБИЛЬНОСТЬ */
+@media (max-width: 480px) {
+    .auth-container { width: 95%; padding: 20px; }
 }
