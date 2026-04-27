@@ -68,21 +68,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.getElementById('mobile-menu');
     const navLinks = document.querySelector('.nav-links');
 
-    // Инициализация подчеркивания табов при старте
-    const activeTab = document.querySelector('.tab.active');
-    if (activeTab) moveUnderline(activeTab);
+    // Исправлено: задержка для корректного расчета подчеркивания табов
+    setTimeout(() => {
+        const activeTab = document.querySelector('.tab.active');
+        if (activeTab) moveUnderline(activeTab);
+    }, 100);
 
+    // ИСПРАВЛЕНО: Синхронная работа бургера и сайдбара
     if (menuToggle) {
         menuToggle.onclick = () => {
-            menuToggle.classList.toggle('active');
-            navLinks.classList.toggle('mobile-active');
+            menuToggle.classList.toggle('active'); // Анимация полосок в крестик
+            toggleSidebar(); // Выезд сайдбара
         };
     }
 
     document.querySelectorAll('input[name="phone"]').forEach(applyPhoneMask);
     if (overlay) overlay.onclick = () => toggleSidebar();
 
-    // Проверка авторизации
     const savedUser = JSON.parse(localStorage.getItem('userAccount'));
     if (savedUser) updateUI(savedUser);
 
@@ -90,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
         openAuthBtn.onclick = (e) => {
             e.preventDefault();
             authModal.classList.add('active');
-            // Принудительно ставим форму входа, чтобы не было наложения
             const loginTab = document.querySelector('.tab[onclick*="login"]');
             if (loginTab) switchForm('login', loginTab);
         };
@@ -100,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeAuthBtn.onclick = () => authModal.classList.remove('active');
     }
 
+    // Авторизация
     async function handleAuth(e, endpoint) {
         e.preventDefault();
         const form = e.target;
@@ -176,17 +178,25 @@ function updateUI(user) {
     }
 }
 
-// 6. УПРАВЛЕНИЕ САЙДБАРОМ
+// 6. УПРАВЛЕНИЕ САЙДБАРОМ (ИСПРАВЛЕНО)
 window.toggleSidebar = () => {
     const sidebar = document.getElementById('user-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
+    const menuToggle = document.getElementById('mobile-menu'); // Добавлено
+
     if (!sidebar) return;
+
     sidebar.classList.toggle('active');
     if (overlay) overlay.classList.toggle('active');
-    if (!sidebar.classList.contains('active')) cancelEdit();
+
+    // ИСПРАВЛЕНО: Если мы закрываем сайдбар через overlay, бургер должен вернуться в "три полоски"
+    if (!sidebar.classList.contains('active')) {
+        if (menuToggle) menuToggle.classList.remove('active');
+        cancelEdit();
+    }
 };
 
-// 7. РЕДАКТИРОВАНИЕ ПРОФИЛЯ
+// 7. РЕДАКТИРОВАНИЕ ПРОФИЛЯ (БЕЗ ИЗМЕНЕНИЙ)
 window.editField = (type) => {
     cancelEdit();
     if (type === 'password') return editPassword();
@@ -318,24 +328,20 @@ window.savePassword = async () => {
     }
 };
 
-// 9. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (ТАБЫ И ВЫХОД)
+// 9. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
 window.logout = () => {
     localStorage.removeItem('userAccount');
     window.location.reload();
 };
 
 window.switchForm = (type, element) => {
-    // 1. Убираем активный класс у всех табов
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    // 2. Скрываем все формы
     document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
     
-    // 3. Активируем нужный таб и форму
     element.classList.add('active');
     const targetForm = document.getElementById(type + '-form');
     if (targetForm) targetForm.classList.add('active');
     
-    // 4. Двигаем линию подчеркивания
     moveUnderline(element);
 };
 
