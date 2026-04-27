@@ -49,7 +49,6 @@ body {
     text-decoration: none;
 }
 
-/* deko без жирноты */
 .logo span {
     font-weight: 300;
     opacity: 0.8;
@@ -72,11 +71,11 @@ body {
 
 /* БУРГЕР-МЕНЮ (АНИМАЦИЯ В КРЕСТИК) */
 .menu-toggle {
-    display: none; /* Появится на 768px */
+    display: none; 
     flex-direction: column;
     gap: 6px;
     cursor: pointer;
-    z-index: 4000;
+    z-index: 4000; /* Выше сайдбара, чтобы можно было закрыть */
     padding: 10px;
 }
 
@@ -88,7 +87,7 @@ body {
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Состояние крестика */
+/* Эффект крестика */
 .menu-toggle.active span:nth-child(1) {
     transform: translateY(7px) rotate(45deg);
 }
@@ -119,12 +118,6 @@ body {
     font-size: 0.8rem;
     letter-spacing: 3px;
     transition: all 0.4s ease;
-    background: transparent;
-}
-
-.btn-catalog-main:hover {
-    background: #fff;
-    color: #000;
 }
 
 /* 6. МОДАЛКА АВТОРИЗАЦИИ */
@@ -138,115 +131,13 @@ body {
     justify-content: center;
     align-items: center;
 }
-
 .modal-overlay.active { display: flex; }
 
-.auth-container {
-    background: #000;
-    width: 90%;
-    max-width: 400px;
-    padding: 50px 40px;
-    position: relative;
-    border: 1px solid #222;
-}
-
-.auth-tabs {
-    display: flex;
-    position: relative;
-    margin-bottom: 30px;
-    border-bottom: 1px solid #222;
-}
-
-.tab {
-    flex: 1;
-    padding: 15px 0;
-    text-align: center;
-    cursor: pointer;
-    font-size: 0.8rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #555;
-    transition: color 0.3s;
-}
-
-.tab.active { color: #fff; }
-
-.underline {
-    position: absolute;
-    bottom: -1px; left: 0;
-    height: 2px;
-    background: #fff;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.auth-form { display: none; animation: fadeIn 0.4s ease; }
-.auth-form.active { display: block; }
-
-.form-group { margin-bottom: 20px; position: relative; }
-
-.auth-form label {
-    display: block;
-    font-size: 0.7rem;
-    color: #555;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-}
-
-.auth-form input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #222;
-    color: #fff;
-    padding: 10px 0;
-    font-size: 0.9rem;
-    outline: none;
-}
-
-.auth-form input.error { border-bottom-color: #ff4444 !important; }
-
-.btn-auth-submit {
-    width: 100%;
-    padding: 15px;
-    background: #fff;
-    color: #000;
-    border: none;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    letter-spacing: 2px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
-/* КНОПКА ЗАБЫЛИ ПАРОЛЬ */
-.auth-footer {
-    margin-top: 35px;
-    text-align: center;
-}
-
-.auth-footer a {
-    display: inline-block !important;
-    color: #fff !important;
-    text-decoration: none !important;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    padding: 12px 25px;
-    border: 1px solid #fff !important;
-    transition: 0.4s ease !important;
-}
-
-.auth-footer a:hover {
-    background: #fff !important;
-    color: #000 !important;
-}
-
-/* 8. САЙДБАР (ПРОФИЛЬ + МОБИЛЬНОЕ МЕНЮ) */
+/* 8. САЙДБАР (ИСПРАВЛЕННЫЙ ВЫЕЗД) */
 .sidebar {
     position: fixed;
     top: 0;
-    right: -100%;
+    right: -100%; /* Полностью скрыт вправо */
     width: 400px;
     height: 100vh;
     background: #000;
@@ -256,8 +147,13 @@ body {
     border-left: 1px solid #222;
     display: flex;
     flex-direction: column;
+    visibility: hidden; /* Чтобы не мешал кликам, когда скрыт */
 }
-.sidebar.active { right: 0; }
+
+.sidebar.active {
+    right: 0; /* Выезжает в ноль */
+    visibility: visible;
+}
 
 .sidebar-nav {
     display: none;
@@ -283,22 +179,14 @@ body {
     margin-bottom: 15px;
 }
 
-.sidebar input {
-    background: transparent !important;
-    border: none !important;
-    color: #fff !important;
-    font-size: 1rem;
-    padding: 5px 0;
-    outline: none !important;
-}
-
 /* 7. АДАПТИВНОСТЬ */
 @media (max-width: 768px) {
     .menu-toggle { display: flex; }
     .nav-links { display: none; }
-    .sidebar { width: 100%; }
+    .sidebar { 
+        width: 100%; /* На весь экран на мобилке */
+    }
     .sidebar-nav { display: block; }
-    .auth-container { width: 95%; padding: 40px 20px; }
 }
 
 @keyframes fadeIn {
